@@ -1,69 +1,582 @@
-import Image from "next/image";
+"use client";
+
+import { CSSProperties, useEffect, useState } from "react";
+
+/* ---------- image-slot replacement: simple placeholder box ---------- */
+function ImageSlot({
+  radius = 12,
+  circle = false,
+  placeholder,
+  style,
+}: {
+  radius?: number;
+  circle?: boolean;
+  placeholder?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        borderRadius: circle ? "50%" : radius,
+        background:
+          "repeating-linear-gradient(135deg, var(--line) 0 12px, transparent 12px 24px), var(--card)",
+        border: "1px solid var(--line)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--muted)",
+        fontSize: 12,
+        textAlign: "center",
+        padding: 12,
+        ...style,
+      }}
+    >
+      {placeholder}
+    </div>
+  );
+}
+
+/* ---------- data ---------- */
+const projects = [
+  { glyph: "≡", name: "Nuvex", sector: "Fintech", desc: "A trustworthy, scalable site that establishes Nuvex as the wealthtech of choice for leading private banks." },
+  { glyph: "◗", name: "Marlin", sector: "Maritime", desc: "A future-facing brand platform empowering Marlin to lead the maritime sector's digital and sustainable transformation." },
+  { glyph: "//", name: "Qorra", sector: "Networks", desc: "Brand and website to position Qorra as best in class in global network optimization." },
+  { glyph: "ıl", name: "Helia", sector: "Pharma", desc: "A scalable brand platform uniting Helia's products and empowering marketers to drive conversion." },
+  { glyph: "V", name: "Vanta", sector: "Sports Tech", desc: "Scalable components and advanced multi-language setup for a fast-growing sports tech brand." },
+];
+
+const experiments = [
+  { name: "ASCII", cat: "Design Tool", h: 180 },
+  { name: "Sketch", cat: "Client Project", h: 240 },
+  { name: "AI Assistant", cat: "Internal", h: 320 },
+  { name: "Noteworthy", cat: "Concept", h: 260 },
+  { name: "Sake Research", cat: "Exploration", h: 150 },
+  { name: "Hubform", cat: "Product", h: 130 },
+  { name: "Midjourney", cat: "Exploration", h: 300 },
+  { name: "FlowGuide", cat: "Template", h: 210 },
+  { name: "GEO Workspace", cat: "Tool", h: 290 },
+  { name: "Japan Posters", cat: "Concept", h: 240 },
+  { name: "Warlock Island", cat: "Game", h: 130 },
+  { name: "Flowie", cat: "Logo", h: 110 },
+  { name: "Cards Against Corona", cat: "Platform", h: 200 },
+  { name: "yearr", cat: "Product Concept", h: 120 },
+  { name: "Tote Bag", cat: "Merchandise", h: 260 },
+];
+
+const footWork = [
+  { glyph: "≡", name: "Nuvex" },
+  { glyph: "◗", name: "Marlin" },
+  { glyph: "ıl", name: "Helia" },
+  { glyph: "//", name: "Qorra" },
+  { glyph: "◑", name: "Teamway" },
+  { glyph: "V", name: "Vanta" },
+  { glyph: "H", name: "Highground" },
+];
+
+const footServices = [
+  { glyph: "⊕", name: "Enterprise-Grade Website" },
+  { glyph: "◈", name: "Scalable Component Build" },
+  { glyph: "✳", name: "GEO (Generative Engine Optimisation)" },
+  { glyph: "Aa", name: "Brand Guidelines" },
+  { glyph: "▤", name: "Website Architecture" },
+  { glyph: "◉", name: "Motion Design" },
+  { glyph: "▣", name: "Handover & Training" },
+  { glyph: "↗", name: "View all services" },
+];
+
+const footProducts = [
+  { glyph: "S", name: "STEEP" },
+  { glyph: "◍", name: "Hubform" },
+  { glyph: "✦", name: "FlowGuide™" },
+];
+
+const footPosts = [
+  "Webflow & AI coding: building websites in 2026",
+  "About Inca",
+  "The Small Studio Advantage In The AI Era",
+  "When AI photography beats stock",
+  "Cookie Consent for Webflow Analyze",
+  "Inviting 55 artists to combat the pandemic",
+  "How we use Midjourney to generate brand visuals",
+  "AEO & GEO: How to stay visible in the age of AI search",
+];
+
+/* ---------- shared style bits ---------- */
+const navPill: CSSProperties = {
+  background: "var(--card)",
+  borderRadius: 3,
+  padding: "7px 11px",
+};
+
+const glyphBox: CSSProperties = {
+  borderRadius: 6,
+  background: "var(--fg)",
+  color: "var(--bg)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: 700,
+};
 
 export default function Home() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
+    setTheme(saved);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem("inca-theme", next);
+      return next;
+    });
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--fg)", padding: "0 24px 48px" }}>
+      {/* Header */}
+      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <a
+            href="#"
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              background: "var(--fg)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 8,
+            }}
+          >
+            <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
+          </a>
+          <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
+            {["Work", "Services", "Posts", "Products", "About"].map((item) => (
+              <a key={item} href="#" style={navPill}>
+                {item}
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
+          <a href="#" style={{ ...navPill, padding: "7px 12px" }}>
+            Contact
+          </a>
+          <button
+            onClick={toggleTheme}
+            title="Cambiar tema"
+            style={{
+              height: 30,
+              width: 30,
+              border: "none",
+              background: "transparent",
+              color: "var(--fg)",
+              cursor: "pointer",
+              fontSize: 17,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 0,
+            }}
+          >
+            {theme === "dark" ? "☀" : "☾"}
+          </button>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <h1
+        style={{
+          fontSize: "clamp(48px, 6.2vw, 96px)",
+          lineHeight: 1.06,
+          letterSpacing: "-0.03em",
+          fontWeight: 400,
+          margin: "118px 0 40px",
+          textWrap: "pretty",
+        }}
+      >
+        Branding, Website &amp; AI Visibility.
+        <br />
+        <em className="serif">Innovation</em> Studio.
+      </h1>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "start" }}>
+        <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
+          <ImageSlot radius={0} placeholder="Video o imagen principal (arrastra aquí)" />
+        </div>
+        <aside style={{ display: "flex", flexDirection: "column", gap: 22, paddingTop: 14 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <h3 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 600 }}>About Inca</h3>
+              <span style={{ display: "flex", gap: 10, color: "var(--fg)", fontSize: 15 }}>
+                <span>⌖</span>
+                <span>+</span>
+              </span>
+            </div>
+            <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
+              Inca is an innovation studio for branding, websites, and AI visibility. Two people helping ambitious brands turn complex
+              products into clear experiences.
+            </p>
+            <div style={{ position: "relative", width: "100%", height: 200 }}>
+              <ImageSlot radius={4} placeholder="Foto del equipo" />
+            </div>
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Insight · July 17, 2026</span>
+              <span style={{ color: "var(--fg)", fontSize: 15 }}>+</span>
+            </div>
+            <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
+              Webflow &amp; AI coding: building websites in 2026
+            </h3>
+            <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
+              For serious B2B marketing sites we still choose Webflow. For tools, prototypes, and experiments we build directly with AI.
+            </p>
+            <div style={{ position: "relative", width: "100%", height: 200 }}>
+              <ImageSlot radius={4} placeholder="Imagen del post" />
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* Projects */}
+      <section style={{ marginTop: 140 }}>
+        <h2
+          style={{
+            margin: "0 0 8px 33%",
+            maxWidth: 560,
+            fontSize: "clamp(28px, 2.4vw, 40px)",
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            fontWeight: 400,
+            textWrap: "pretty",
+          }}
+        >
+          Partnering with <em className="serif">ambitious</em> teams to build relevant digital experiences in the age of prompting.
+        </h2>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+          <a href="#" style={{ ...navPill, padding: "7px 12px", fontSize: 14, fontWeight: 600 }}>
+            Explore all
+          </a>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          {projects.map((p) => (
+            <div
+              key={p.name}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.35fr 1fr 1fr 1fr",
+                gap: 6,
+                borderTop: "1px solid var(--line)",
+                paddingTop: 10,
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", paddingRight: 40 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ ...glyphBox, width: 34, height: 34, borderRadius: 7, fontSize: 15 }}>{p.glyph}</span>
+                  <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
+                    <strong style={{ fontSize: 14 }}>{p.name}</strong>
+                    <span style={{ fontSize: 13, color: "var(--muted)" }}>{p.sector}</span>
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: 13, lineHeight: 1.45, color: "var(--muted)", maxWidth: 320, textWrap: "pretty" }}>
+                  {p.desc}
+                </p>
+              </div>
+              {[1, 2, 3].map((n) => (
+                <div key={n} style={{ aspectRatio: "3 / 2", position: "relative" }}>
+                  <ImageSlot radius={0} placeholder={`Imagen ${n}`} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section style={{ marginTop: 160 }}>
+        <h2
+          style={{
+            margin: "0 0 48px 33%",
+            maxWidth: 540,
+            fontSize: "clamp(28px, 2.4vw, 40px)",
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            fontWeight: 400,
+            textWrap: "pretty",
+          }}
+        >
+          An <em className="serif">award-winning</em> studio that care about good work and developing relationships that enables it.
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 26 }}>
+          {[
+            { name: "Andrés Jara", role: "Founder, No Walls Studio", badge: "✕", badgeBg: "var(--fg)", badgeFg: "var(--bg)" },
+            { name: "Rasmus Kalé", role: "CPO, Helia", badge: "ıl", badgeBg: "#6437e0", badgeFg: "#fff" },
+          ].map((t, i) => (
+            <figure key={i} style={{ margin: 0 }}>
+              <div style={{ width: "100%", height: 520, position: "relative" }}>
+                <ImageSlot radius={0} placeholder={`Video testimonial ${i + 1}`} />
+              </div>
+              <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                <span
+                  style={{
+                    width: 50,
+                    height: 34,
+                    borderRadius: 5,
+                    background: "var(--fg)",
+                    color: "var(--bg)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                  }}
+                >
+                  ▶
+                </span>
+                <span
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 5,
+                    background: t.badgeBg,
+                    color: t.badgeFg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  {t.badge}
+                </span>
+                <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
+                  <strong style={{ fontSize: 14 }}>{t.name}</strong>
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* Experiments masonry */}
+      <section style={{ marginTop: 160 }}>
+        <h2
+          style={{
+            margin: "0 auto 56px",
+            maxWidth: 620,
+            textAlign: "center",
+            fontSize: "clamp(28px, 2.4vw, 40px)",
+            lineHeight: 1.18,
+            letterSpacing: "-0.02em",
+            fontWeight: 400,
+            textWrap: "pretty",
+          }}
+        >
+          Our <em className="serif">experiments, products</em> and <em className="serif">curiosity</em> shapes new ways of working.
+        </h2>
+        <div style={{ columns: 5, columnGap: 10 }}>
+          {experiments.map((e) => (
+            <figure key={e.name} style={{ margin: "0 0 22px", breakInside: "avoid" }}>
+              <div style={{ width: "100%", height: e.h, position: "relative" }}>
+                <ImageSlot radius={0} placeholder={e.name} />
+              </div>
+              <figcaption style={{ marginTop: 8, fontSize: 13 }}>
+                <strong style={{ fontWeight: 600 }}>{e.name}</strong> <span style={{ color: "var(--muted)" }}>/ {e.cat}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      {/* About / studio */}
+      <section
+        style={{
+          marginTop: 160,
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+          gap: 12,
+          alignItems: "stretch",
+        }}
+      >
+        <div
+          style={{
+            background: "var(--card)",
+            padding: "48px 44px",
+            fontSize: "clamp(24px, 2vw, 34px)",
+            lineHeight: 1.28,
+            letterSpacing: "-0.015em",
+            textWrap: "pretty",
+          }}
+        >
+          <p style={{ margin: "0 0 1em" }}>
+            Inca© is a digital innovation studio working across <em className="serif">branding</em>, <em className="serif">websites</em>,
+            and <em className="serif">AI visibility</em>.
+          </p>
+          <p style={{ margin: "0 0 1em" }}>
+            We help ambitious brands turn complex products into clear brands, scalable websites, and digital experiences built for{" "}
+            <em className="serif">scale</em> and <em className="serif">conversion</em>.
+          </p>
+          <p style={{ margin: 0 }}>
+            Small by choice and entrepreneurial by heart, we work from strategy to design to build, eliminating bureaucracy so ideas can
+            move faster and land better.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ position: "relative", width: "100%", height: 480 }}>
+            <ImageSlot radius={0} placeholder="Foto de la oficina" />
+            <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5 }}>
+              <strong>Lima</strong>
+              <br />
+              <span style={{ opacity: 0.75 }}>Oficina</span>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
+            {[
+              { name: "Daniel B.", role: "Founder & Builder" },
+              { name: "Casper N.", role: "Founder & Builder" },
+            ].map((f) => (
+              <div key={f.name} style={{ background: "var(--card)", padding: "14px 16px 16px" }}>
+                <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>
+                  <strong>{f.name}</strong>
+                  <br />
+                  <span style={{ color: "var(--muted)" }}>{f.role}</span>
+                </div>
+                <div style={{ position: "relative", width: "100%", height: 300 }}>
+                  <ImageSlot radius={0} placeholder="Retrato" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ marginTop: 160 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 40 }}>
+          <FooterColumn title="Work">
+            {footWork.map((w) => (
+              <FooterLink key={w.name} glyph={w.glyph} label={w.name} />
+            ))}
+          </FooterColumn>
+          <FooterColumn title="Services">
+            {footServices.map((s) => (
+              <FooterLink key={s.name} glyph={s.glyph} label={s.name} />
+            ))}
+          </FooterColumn>
+          <FooterColumn title="Products">
+            {footProducts.map((pr) => (
+              <FooterLink key={pr.name} glyph={pr.glyph} label={pr.name} />
+            ))}
+          </FooterColumn>
+          <FooterColumn title="Posts">
+            {footPosts.map((po) => (
+              <a
+                key={po}
+                href="#"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "15px 0",
+                  borderBottom: "1px solid var(--line)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}
+              >
+                {po}
+              </a>
+            ))}
+          </FooterColumn>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.2fr)",
+            gap: 40,
+            alignItems: "center",
+            marginTop: 130,
+            paddingBottom: 60,
+          }}
+        >
+          <span
+            style={{
+              width: 164,
+              height: 164,
+              borderRadius: "50%",
+              background: "var(--fg)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ width: 96, height: 116, borderRadius: 22, background: "var(--bg)", display: "inline-block" }} />
+          </span>
+          <div>
+            <h2
+              style={{
+                margin: "0 0 40px",
+                maxWidth: 420,
+                fontSize: "clamp(26px, 2.2vw, 38px)",
+                lineHeight: 1.2,
+                letterSpacing: "-0.02em",
+                fontWeight: 400,
+                textWrap: "pretty",
+              }}
+            >
+              Want a peek at how we could collaborate?
+            </h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 44, fontSize: 14, fontWeight: 600 }}>
+              <a href="#" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "8px 13px", borderRadius: 3 }}>
+                Book a call
+              </a>
+              <a href="mailto:hello@inca.co">hello@inca.co</a>
+              <a href="tel:+5114801001">(+51) 4180 1001</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+  );
+}
+
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 style={{ margin: "0 0 24px", fontSize: "clamp(28px, 2.2vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em" }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function FooterLink({ glyph, label }: { glyph: string; label: string }) {
+  return (
+    <a
+      href="#"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "12px 0",
+        borderBottom: "1px solid var(--line)",
+        fontSize: 14,
+        fontWeight: 600,
+      }}
+    >
+      <span style={{ ...glyphBox, width: 26, height: 26, fontSize: 12 }}>{glyph}</span>
+      {label}
+    </a>
   );
 }
