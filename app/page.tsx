@@ -7,21 +7,52 @@ function ImageSlot({
   radius = 12,
   circle = false,
   placeholder,
+  src,
+  video,
   style,
 }: {
   radius?: number;
   circle?: boolean;
   placeholder?: string;
+  /** URL de imagen a mostrar (object-fit: cover) */
+  src?: string;
+  /** URL de video a reproducir en bucle, muteado (object-fit: cover) */
+  video?: string;
   style?: CSSProperties;
 }) {
+  const box: CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    borderRadius: circle ? "50%" : radius,
+    overflow: "hidden",
+    ...style,
+  };
+
+  if (video) {
+    return (
+      <video
+        style={{ ...box, objectFit: "cover" }}
+        src={video}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+      />
+    );
+  }
+
+  if (src) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img style={{ ...box, objectFit: "cover" }} src={src} alt={placeholder ?? ""} />;
+  }
+
   return (
     <div
       style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        borderRadius: circle ? "50%" : radius,
+        ...box,
         background:
           "repeating-linear-gradient(135deg, var(--line) 0 12px, transparent 12px 24px), var(--card)",
         border: "1px solid var(--line)",
@@ -32,13 +63,18 @@ function ImageSlot({
         fontSize: 12,
         textAlign: "center",
         padding: 12,
-        ...style,
       }}
     >
       {placeholder}
     </div>
   );
 }
+
+/* ---------- media URLs (Cloudinary) ---------- */
+const MEDIA_VIDEO =
+  "https://res.cloudinary.com/dhkb93mix/video/upload/v1773250748/11929213_1920_1080_60fps_ulvu5b.mp4";
+const MEDIA_IMAGE =
+  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211023/big-ca579d84d7d5736a2999e621892f1a44_upjf05.jpg";
 
 /* ---------- data ---------- */
 const projects = [
@@ -214,7 +250,7 @@ export default function Home() {
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "start" }}>
         <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
-          <ImageSlot radius={0} placeholder="Video o imagen principal (arrastra aquí)" />
+          <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder="Video principal" />
         </div>
         <aside style={{ display: "flex", flexDirection: "column", gap: 22, paddingTop: 14 }}>
           <div>
@@ -327,7 +363,7 @@ export default function Home() {
           ].map((t, i) => (
             <figure key={i} style={{ margin: 0 }}>
               <div style={{ width: "100%", height: 520, position: "relative" }}>
-                <ImageSlot radius={0} placeholder={`Video testimonial ${i + 1}`} />
+                <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder={`Video testimonial ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <span
@@ -455,7 +491,7 @@ export default function Home() {
                   <span style={{ color: "var(--muted)" }}>{f.role}</span>
                 </div>
                 <div style={{ position: "relative", width: "100%", height: 300 }}>
-                  <ImageSlot radius={0} placeholder="Retrato" />
+                  <ImageSlot radius={0} src={MEDIA_IMAGE} placeholder="Retrato" />
                 </div>
               </div>
             ))}

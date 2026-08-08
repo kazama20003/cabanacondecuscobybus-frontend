@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import SmoothScroll from "@/components/smooth-scroll";
 
 const instrumentSans = Instrument_Sans({
   variable: "--font-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }
