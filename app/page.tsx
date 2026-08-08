@@ -1,6 +1,7 @@
 "use client";
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { Bus, Car, MapPin, Compass, Users, Phone } from "lucide-react";
 
 /* ---------- image-slot replacement: simple placeholder box ---------- */
 function ImageSlot({
@@ -251,15 +252,23 @@ export default function Home() {
             <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
           </a>
           <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
-            {["Tours", "Destinos", "Paquetes", "Nosotros", "Blog"].map((item) => (
-              <a key={item} href="#" style={navPill}>
-                {item}
+            {[
+              { label: "Transporte", Icon: Bus },
+              { label: "Traslados", Icon: Car },
+              { label: "Tours", Icon: MapPin },
+              { label: "Destinos", Icon: Compass },
+              { label: "Nosotros", Icon: Users },
+            ].map(({ label, Icon }) => (
+              <a key={label} href="#" style={{ ...navPill, display: "flex", alignItems: "center", gap: 6 }}>
+                <Icon size={15} strokeWidth={2} />
+                {label}
               </a>
             ))}
           </nav>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
-          <a href="#" style={{ ...navPill, padding: "7px 12px" }}>
+          <a href="#" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
+            <Phone size={15} strokeWidth={2} />
             Contacto
           </a>
           <button
