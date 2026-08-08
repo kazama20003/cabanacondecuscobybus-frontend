@@ -248,11 +248,25 @@ export default function Home() {
         <em className="serif">Innovation</em> Studio.
       </h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
         <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
           <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder="Video principal" />
         </div>
-        <aside style={{ display: "flex", flexDirection: "column", gap: 22, paddingTop: 14 }}>
+        {/* aside: mismo alto que el video (el contenido absoluto no estira la fila);
+            solo esta columna hace scroll interno */}
+        <aside style={{ position: "relative", minWidth: 0 }}>
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: 22,
+              paddingTop: 14,
+              paddingRight: 6,
+            }}
+          >
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <h3 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 600 }}>About Inca</h3>
@@ -283,6 +297,22 @@ export default function Home() {
             <div style={{ position: "relative", width: "100%", height: 200 }}>
               <ImageSlot radius={4} placeholder="Imagen del post" />
             </div>
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Reel · 2026</span>
+              <span style={{ color: "var(--fg)", fontSize: 15 }}>+</span>
+            </div>
+            <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
+              Behind the studio
+            </h3>
+            <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
+              A short look at how we work — from first sketch to shipped brand.
+            </p>
+            <div style={{ position: "relative", width: "100%", height: 200 }}>
+              <ImageSlot radius={4} video={MEDIA_VIDEO} placeholder="Video del estudio" />
+            </div>
+          </div>
           </div>
         </aside>
       </div>
