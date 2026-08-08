@@ -75,6 +75,12 @@ const MEDIA_VIDEO =
   "https://res.cloudinary.com/dhkb93mix/video/upload/v1773250748/11929213_1920_1080_60fps_ulvu5b.mp4";
 const MEDIA_IMAGE =
   "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211023/big-ca579d84d7d5736a2999e621892f1a44_upjf05.jpg";
+const IMG_SAN_LAZARO =
+  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211023/the-san-lazaro-neighborhood-the-oldest-in-arequipa-272_nac7bs.jpg";
+const IMG_TEMPLO =
+  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211022/arequipa-peru-temple-7186-main_uxvqws.jpg";
+// pool para rellenar slots repetidos (galeria, experimentos)
+const PHOTOS = [MEDIA_IMAGE, IMG_SAN_LAZARO, IMG_TEMPLO];
 
 /* ---------- data ---------- */
 const projects = [
@@ -328,7 +334,7 @@ export default function Home() {
               products into clear experiences.
             </p>
             <div style={{ position: "relative", width: "100%", height: 200 }}>
-              <ImageSlot radius={4} placeholder="Foto del equipo" />
+              <ImageSlot radius={4} src={IMG_SAN_LAZARO} placeholder="Foto del equipo" />
             </div>
           </div>
           <div>
@@ -343,7 +349,7 @@ export default function Home() {
               For serious B2B marketing sites we still choose Webflow. For tools, prototypes, and experiments we build directly with AI.
             </p>
             <div style={{ position: "relative", width: "100%", height: 200 }}>
-              <ImageSlot radius={4} placeholder="Imagen del post" />
+              <ImageSlot radius={4} src={IMG_TEMPLO} placeholder="Imagen del post" />
             </div>
           </div>
           <div>
@@ -411,7 +417,7 @@ export default function Home() {
               </div>
               {[1, 2, 3].map((n) => (
                 <div key={n} style={{ aspectRatio: "3 / 2", position: "relative" }}>
-                  <ImageSlot radius={0} placeholder={`Imagen ${n}`} />
+                  <ImageSlot radius={0} src={PHOTOS[n % PHOTOS.length]} placeholder={`Imagen ${n}`} />
                 </div>
               ))}
             </div>
@@ -502,10 +508,10 @@ export default function Home() {
           Our <em className="serif">experiments, products</em> and <em className="serif">curiosity</em> shapes new ways of working.
         </h2>
         <div style={{ columns: 5, columnGap: 10 }}>
-          {experiments.map((e) => (
+          {experiments.map((e, i) => (
             <figure key={e.name} style={{ margin: "0 0 22px", breakInside: "avoid" }}>
               <div style={{ width: "100%", height: e.h, position: "relative" }}>
-                <ImageSlot radius={0} placeholder={e.name} />
+                <ImageSlot radius={0} src={PHOTOS[i % PHOTOS.length]} placeholder={e.name} />
               </div>
               <figcaption style={{ marginTop: 8, fontSize: 13 }}>
                 <strong style={{ fontWeight: 600 }}>{e.name}</strong> <span style={{ color: "var(--muted)" }}>/ {e.cat}</span>
@@ -550,7 +556,7 @@ export default function Home() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ position: "relative", width: "100%", height: 480 }}>
-            <ImageSlot radius={0} placeholder="Foto de la oficina" />
+            <ImageSlot radius={0} src={MEDIA_IMAGE} placeholder="Foto de la oficina" />
             <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5 }}>
               <strong>Lima</strong>
               <br />
