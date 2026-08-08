@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 
 /* ---------- image-slot replacement: simple placeholder box ---------- */
 function ImageSlot({
@@ -160,6 +160,29 @@ const glyphBox: CSSProperties = {
 
 export default function Home() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const asideScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll aislado en el aside: mientras pueda scrollear internamente,
+  // bloquea la pagina (Lenis); en el borde (arriba/abajo) suelta el evento
+  // para que la pagina siga con normalidad.
+  useEffect(() => {
+    const el = asideScrollRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      const atTop = el.scrollTop <= 0;
+      const atBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight;
+      const goingDown = e.deltaY > 0;
+      const canScrollInner = (goingDown && !atBottom) || (!goingDown && !atTop);
+      if (canScrollInner) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.scrollTop += e.deltaY;
+      }
+      // en el borde: no hacemos nada -> el evento llega a Lenis y baja/sube la pagina
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   useEffect(() => {
     const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
@@ -256,8 +279,8 @@ export default function Home() {
             solo esta columna hace scroll interno */}
         <aside style={{ position: "relative", minWidth: 0 }}>
           <div
+            ref={asideScrollRef}
             className="no-scrollbar"
-            data-lenis-prevent
             style={{
               position: "absolute",
               inset: 0,
