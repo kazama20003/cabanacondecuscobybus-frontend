@@ -1,7 +1,7 @@
 "use client";
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { Bus, Car, MapPin, Compass, Users, Phone } from "lucide-react";
+import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
 
 /* ---------- image-slot replacement: simple placeholder box ---------- */
 function ImageSlot({
@@ -270,6 +270,21 @@ export default function Home() {
           <a href="#" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
             <Phone size={15} strokeWidth={2} />
             Contacto
+          </a>
+          <a
+            href="#"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "7px 13px",
+              borderRadius: 3,
+              background: "var(--btn-bg)",
+              color: "var(--btn-fg)",
+            }}
+          >
+            <LogIn size={15} strokeWidth={2} />
+            Iniciar sesión
           </a>
           <button
             onClick={toggleTheme}
