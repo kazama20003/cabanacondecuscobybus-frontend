@@ -162,13 +162,27 @@ export default function Home() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const asideScrollRef = useRef<HTMLDivElement>(null);
 
-  // Scroll aislado en el aside: mientras pueda scrollear internamente,
-  // bloquea la pagina (Lenis); en el borde (arriba/abajo) suelta el evento
-  // para que la pagina siga con normalidad.
+  // Scroll aislado + suave (tipo Lenis) en el aside: mientras pueda scrollear
+  // internamente, bloquea la pagina y desliza el aside con lerp; en el borde
+  // (arriba/abajo) suelta el evento para que la pagina siga con normalidad.
   useEffect(() => {
     const el = asideScrollRef.current;
     if (!el) return;
+    let target = el.scrollTop;
+    let raf = 0;
+    let animating = false;
+    const animate = () => {
+      const diff = target - el.scrollTop;
+      if (Math.abs(diff) < 0.5) {
+        el.scrollTop = target;
+        animating = false;
+        return;
+      }
+      el.scrollTop += diff * 0.15; // lerp
+      raf = requestAnimationFrame(animate);
+    };
     const onWheel = (e: WheelEvent) => {
+      const max = el.scrollHeight - el.clientHeight;
       const atTop = el.scrollTop <= 0;
       const atBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight;
       const goingDown = e.deltaY > 0;
@@ -176,12 +190,21 @@ export default function Home() {
       if (canScrollInner) {
         e.preventDefault();
         e.stopPropagation();
-        el.scrollTop += e.deltaY;
+        target = Math.max(0, Math.min(max, target + e.deltaY));
+        if (!animating) {
+          animating = true;
+          raf = requestAnimationFrame(animate);
+        }
+      } else {
+        // borde: sincroniza el objetivo y deja pasar el evento a Lenis (pagina)
+        target = el.scrollTop;
       }
-      // en el borde: no hacemos nada -> el evento llega a Lenis y baja/sube la pagina
     };
     el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
