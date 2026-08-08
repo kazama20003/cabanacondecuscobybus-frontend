@@ -199,7 +199,7 @@ export default function Home() {
             <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
           </a>
           <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
-            {["Work", "Services", "Posts", "Products", "About"].map((item) => (
+            {["Tours", "Destinos", "Paquetes", "Nosotros", "Blog"].map((item) => (
               <a key={item} href="#" style={navPill}>
                 {item}
               </a>
@@ -208,7 +208,7 @@ export default function Home() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
           <a href="#" style={{ ...navPill, padding: "7px 12px" }}>
-            Contact
+            Contacto
           </a>
           <button
             onClick={toggleTheme}
@@ -243,9 +243,9 @@ export default function Home() {
           textWrap: "pretty",
         }}
       >
-        Branding, Website &amp; AI Visibility.
+        Los mejores viajes &amp; tours.
         <br />
-        <em className="serif">Innovation</em> Studio.
+        Agencia de <em className="serif">viajes</em>.
       </h1>
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
@@ -256,6 +256,8 @@ export default function Home() {
             solo esta columna hace scroll interno */}
         <aside style={{ position: "relative", minWidth: 0 }}>
           <div
+            className="no-scrollbar"
+            data-lenis-prevent
             style={{
               position: "absolute",
               inset: 0,
