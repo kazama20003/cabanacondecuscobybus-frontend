@@ -41,7 +41,24 @@ export default function SiteHeader() {
   };
 
   return (
-    <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", flexWrap: "wrap", gap: 8 }}>
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        margin: "0 -24px",
+        flexWrap: "wrap",
+        gap: 8,
+        background: "color-mix(in srgb, var(--bg) 82%, transparent)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        borderBottom: "1px solid var(--line)",
+      }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
         <Link
           href="/"
