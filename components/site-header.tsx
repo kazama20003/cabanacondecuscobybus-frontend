@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
 
 const navPill: CSSProperties = {
-  background: "var(--card)",
+  background: "var(--pill-bg)",
+  color: "var(--pill-fg)",
   borderRadius: 3,
   padding: "7px 11px",
 };
@@ -53,10 +54,7 @@ export default function SiteHeader() {
         margin: "0 -24px",
         flexWrap: "wrap",
         gap: 8,
-        background: "color-mix(in srgb, var(--bg) 82%, transparent)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        borderBottom: "1px solid var(--line)",
+        background: "var(--bg)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
