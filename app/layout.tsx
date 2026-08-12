@@ -17,14 +17,18 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Inca — Innovation Studio",
-  description: "Branding, Website & AI Visibility. Innovation Studio.",
+  title: {
+    default: "Inca Travel Peru — Transporte Turístico, Tours y Traslados",
+    template: "%s",
+  },
+  description:
+    "Agencia de turismo en el sur del Perú: transporte turístico entre Cusco, Arequipa, Colca y Puno, tours a Machu Picchu y traslados privados.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={cn(instrumentSans.variable, instrumentSerif.variable, "font-sans")}
       suppressHydrationWarning
     >

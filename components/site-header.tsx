@@ -1,0 +1,127 @@
+"use client";
+
+import { CSSProperties, useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
+
+const navPill: CSSProperties = {
+  background: "var(--card)",
+  borderRadius: 3,
+  padding: "7px 11px",
+};
+
+const NAV = [
+  { label: "Transporte", href: "/transporte", Icon: Bus },
+  { label: "Traslados", href: "/traslados", Icon: Car },
+  { label: "Tours", href: "/tours", Icon: MapPin },
+  { label: "Destinos", href: "/destinos", Icon: Compass },
+  { label: "Nosotros", href: "/nosotros", Icon: Users },
+];
+
+export default function SiteHeader() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
+    setTheme(saved);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem("inca-theme", next);
+      return next;
+    });
+  };
+
+  return (
+    <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", flexWrap: "wrap", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+        <Link
+          href="/"
+          aria-label="Inca Travel Peru — inicio"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: "var(--fg)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 8,
+          }}
+        >
+          <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
+        </Link>
+        <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", flexWrap: "wrap" }}>
+          {NAV.map(({ label, href, Icon }) => {
+            const active = pathname === href || pathname.startsWith(href + "/");
+            return (
+              <Link
+                key={label}
+                href={href}
+                style={{
+                  ...navPill,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  ...(active ? { background: "var(--fg)", color: "var(--bg)" } : {}),
+                }}
+              >
+                <Icon size={15} strokeWidth={2} />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
+        <Link href="/contacto" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
+          <Phone size={15} strokeWidth={2} />
+          Contacto
+        </Link>
+        <a
+          href="/contacto"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "7px 13px",
+            borderRadius: 3,
+            background: "var(--btn-bg)",
+            color: "var(--btn-fg)",
+          }}
+        >
+          <LogIn size={15} strokeWidth={2} />
+          Iniciar sesión
+        </a>
+        <button
+          onClick={toggleTheme}
+          title="Cambiar tema"
+          aria-label="Cambiar tema"
+          style={{
+            height: 30,
+            width: 30,
+            border: "none",
+            background: "transparent",
+            color: "var(--fg)",
+            cursor: "pointer",
+            fontSize: 17,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 0,
+          }}
+        >
+          {theme === "dark" ? "☀" : "☾"}
+        </button>
+      </div>
+    </header>
+  );
+}
