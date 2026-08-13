@@ -34,9 +34,9 @@ export default function TrasladosPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         {transfers.map((t) => (
-          <figure key={t.name} style={{ margin: 0, background: "var(--card)", padding: 16, display: "flex", flexDirection: "column" }}>
+          <figure key={t.name} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
             <div style={{ position: "relative", width: "100%", height: 200 }}>
-              <ImageSlot radius={0} src={t.image} placeholder={t.name} />
+              <ImageSlot radius={10} src={t.image} placeholder={t.name} />
               <span
                 style={{
                   position: "absolute",
@@ -47,7 +47,7 @@ export default function TrasladosPage() {
                   fontSize: 11.5,
                   fontWeight: 700,
                   padding: "4px 8px",
-                  borderRadius: 3,
+                  borderRadius: 8,
                   letterSpacing: "0.02em",
                 }}
               >
@@ -74,7 +74,7 @@ export default function TrasladosPage() {
                   href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar el traslado ${t.name}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 3 }}
+                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
                 >
                   Reservar
                 </a>
@@ -84,7 +84,7 @@ export default function TrasladosPage() {
         ))}
       </div>
 
-      <section style={{ marginTop: 120, background: "var(--card)", padding: "48px 44px" }}>
+      <section style={{ marginTop: 120, background: "var(--card)", padding: "48px 44px", borderRadius: 16 }}>
         <h2 style={{ margin: "0 0 20px", fontSize: "clamp(24px, 2vw, 34px)", fontWeight: 400, letterSpacing: "-0.015em", textWrap: "pretty" }}>
           ¿Vuelo retrasado? <em className="serif">Sin problema.</em>
         </h2>
@@ -97,11 +97,11 @@ export default function TrasladosPage() {
             href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hola, quiero reservar un traslado")}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 3 }}
+            style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
           >
             Reservar traslado
           </a>
-          <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 3, border: "1px solid var(--line)" }}>
+          <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
             Consultar tarifa a otro destino
           </Link>
         </div>

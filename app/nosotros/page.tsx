@@ -61,10 +61,10 @@ export default function NosotrosPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
         <div style={{ position: "relative", width: "100%", minHeight: 380 }}>
-          <ImageSlot radius={0} src={MEDIA_IMAGE} placeholder="Nuestra flota" />
+          <ImageSlot radius={10} src={MEDIA_IMAGE} placeholder="Nuestra flota" />
         </div>
         <div style={{ position: "relative", width: "100%", minHeight: 380 }}>
-          <ImageSlot radius={0} src={IMG_SAN_LAZARO} placeholder="El equipo en ruta" />
+          <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="El equipo en ruta" />
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function NosotrosPage() {
 
       {/* Formalidad + CTA */}
       <section style={{ marginTop: 130, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 12, alignItems: "stretch" }}>
-        <div style={{ background: "var(--card)", padding: "48px 44px", fontSize: "clamp(20px, 1.6vw, 28px)", lineHeight: 1.35, letterSpacing: "-0.015em", textWrap: "pretty" }}>
+        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16, fontSize: "clamp(20px, 1.6vw, 28px)", lineHeight: 1.35, letterSpacing: "-0.015em", textWrap: "pretty" }}>
           <p style={{ margin: "0 0 1em" }}>
             Somos una empresa <em className="serif">formal</em>: agencia registrada en MINCETUR, flota habilitada por el
             MTC y seguros de viaje vigentes en todas las rutas.
@@ -116,16 +116,16 @@ export default function NosotrosPage() {
             llegar <em className="serif">bien</em>.
           </p>
           <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
-            <Link href="/transporte" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 3 }}>
+            <Link href="/transporte" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}>
               Ver rutas de transporte
             </Link>
-            <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 3, border: "1px solid var(--line)" }}>
+            <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
               Hablar con nosotros
             </Link>
           </div>
         </div>
         <div style={{ position: "relative", width: "100%", minHeight: 380 }}>
-          <ImageSlot radius={0} src={IMG_TEMPLO} placeholder="Oficina en Cusco" />
+          <ImageSlot radius={10} src={IMG_TEMPLO} placeholder="Oficina en Cusco" />
           <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
             <strong>Cusco</strong>
             <br />

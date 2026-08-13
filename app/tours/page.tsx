@@ -34,9 +34,9 @@ export default function ToursPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         {tours.map((t) => (
-          <figure key={t.slug} style={{ margin: 0, background: "var(--card)", padding: 16, display: "flex", flexDirection: "column" }}>
+          <figure key={t.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
             <div style={{ position: "relative", width: "100%", height: 220 }}>
-              <ImageSlot radius={0} src={t.image} placeholder={t.name} />
+              <ImageSlot radius={10} src={t.image} placeholder={t.name} />
               <span
                 style={{
                   position: "absolute",
@@ -47,7 +47,7 @@ export default function ToursPage() {
                   fontSize: 11.5,
                   fontWeight: 700,
                   padding: "4px 8px",
-                  borderRadius: 3,
+                  borderRadius: 8,
                   letterSpacing: "0.02em",
                 }}
               >
@@ -72,7 +72,7 @@ export default function ToursPage() {
                   href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${t.name}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 3 }}
+                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
                 >
                   Reservar
                 </a>
@@ -91,7 +91,7 @@ export default function ToursPage() {
         </p>
         <Link
           href="/contacto"
-          style={{ display: "inline-block", fontSize: 14, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 18px", borderRadius: 3 }}
+          style={{ display: "inline-block", fontSize: 14, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 18px", borderRadius: 8 }}
         >
           Pedir itinerario personalizado
         </Link>

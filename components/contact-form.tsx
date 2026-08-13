@@ -9,7 +9,7 @@ const field: CSSProperties = {
   background: "var(--bg)",
   color: "var(--fg)",
   padding: "11px 13px",
-  borderRadius: 3,
+  borderRadius: 8,
   fontSize: 14,
   fontFamily: "inherit",
 };
@@ -114,7 +114,7 @@ export default function ContactForm() {
           background: "var(--btn-bg)",
           color: "var(--btn-fg)",
           padding: "12px 18px",
-          borderRadius: 3,
+          borderRadius: 8,
           fontSize: 14.5,
           fontWeight: 600,
           fontFamily: "inherit",

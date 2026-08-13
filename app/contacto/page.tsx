@@ -30,7 +30,7 @@ export default function ContactoPage() {
       </p>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 12, alignItems: "stretch" }}>
-        <div style={{ background: "var(--card)", padding: "40px 36px" }}>
+        <div style={{ background: "var(--card)", padding: "40px 36px", borderRadius: 16 }}>
           <h2 style={{ margin: "0 0 24px", fontSize: 22, fontWeight: 400, letterSpacing: "-0.015em" }}>
             Pide tu <em className="serif">cotización</em>
           </h2>
@@ -38,7 +38,7 @@ export default function ContactoPage() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ background: "var(--card)", padding: "40px 36px", flex: 1 }}>
+          <div style={{ background: "var(--card)", padding: "40px 36px", borderRadius: 16, flex: 1 }}>
             <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 400, letterSpacing: "-0.015em" }}>
               Canales <em className="serif">directos</em>
             </h2>
@@ -68,7 +68,7 @@ export default function ContactoPage() {
             </dl>
           </div>
           <div style={{ position: "relative", width: "100%", minHeight: 240 }}>
-            <ImageSlot radius={0} src={IMG_TEMPLO} placeholder="Oficina en Cusco" />
+            <ImageSlot radius={10} src={IMG_TEMPLO} placeholder="Oficina en Cusco" />
           </div>
         </div>
       </div>

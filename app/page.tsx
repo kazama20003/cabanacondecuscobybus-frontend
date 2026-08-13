@@ -84,7 +84,7 @@ export default function Home() {
 
       <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
         <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
-          <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder="Video principal" />
+          <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video principal" />
         </div>
         {/* aside: mismo alto que el video (el contenido absoluto no estira la fila);
             solo esta columna hace scroll interno */}
@@ -115,7 +115,7 @@ export default function Home() {
                 Machu Picchu — con flota propia, guías locales y salidas diarias.
               </p>
               <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={4} src={IMG_SAN_LAZARO} placeholder="Foto del equipo" />
+                <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="Foto del equipo" />
               </div>
             </div>
             <div>
@@ -132,7 +132,7 @@ export default function Home() {
                 Nuestra ruta insignia: asientos semicama, WiFi a bordo y salidas diarias 07:30 y 20:30. Desde S/ 90.
               </p>
               <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={4} src={IMG_TEMPLO} placeholder="Bus turístico" />
+                <ImageSlot radius={10} src={IMG_TEMPLO} placeholder="Bus turístico" />
               </div>
             </div>
             <div>
@@ -149,7 +149,7 @@ export default function Home() {
                 Un vistazo al camino: volcanes, valles y el altiplano desde la ventana de nuestra flota.
               </p>
               <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={4} video={MEDIA_VIDEO} placeholder="Video en ruta" />
+                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video en ruta" />
               </div>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function Home() {
         <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
           <Link
             href="/transporte"
-            style={{ background: "var(--card)", borderRadius: 3, padding: "7px 12px", fontSize: 14, fontWeight: 600 }}
+            style={{ background: "var(--card)", borderRadius: 8, padding: "7px 12px", fontSize: 14, fontWeight: 600 }}
           >
             Ver todas las rutas
           </Link>
@@ -237,7 +237,7 @@ export default function Home() {
                 </div>
               </div>
               <div style={{ aspectRatio: "3 / 2", position: "relative" }}>
-                <ImageSlot radius={0} src={r.image} placeholder={`${r.from} — ${r.to}`} />
+                <ImageSlot radius={10} src={r.image} placeholder={`${r.from} — ${r.to}`} />
               </div>
             </Link>
           ))}
@@ -266,7 +266,7 @@ export default function Home() {
           ].map((t, i) => (
             <figure key={i} style={{ margin: 0 }}>
               <div style={{ width: "100%", height: 520, position: "relative" }}>
-                <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder={`Video testimonial ${i + 1}`} />
+                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`Video testimonial ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <span
@@ -330,7 +330,7 @@ export default function Home() {
           {tours.map((t, i) => (
             <Link key={t.slug} href="/tours" style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
               <div style={{ width: "100%", height: 160 + ((i * 67) % 160), position: "relative" }}>
-                <ImageSlot radius={0} src={t.image} placeholder={t.name} />
+                <ImageSlot radius={10} src={t.image} placeholder={t.name} />
               </div>
               <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
                 <strong style={{ fontWeight: 600 }}>{t.name}</strong>{" "}
@@ -345,7 +345,7 @@ export default function Home() {
           {destinations.map((d, i) => (
             <Link key={d.slug} href="/destinos" style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
               <div style={{ width: "100%", height: 140 + ((i * 89) % 180), position: "relative" }}>
-                <ImageSlot radius={0} src={d.image} placeholder={d.name} />
+                <ImageSlot radius={10} src={d.image} placeholder={d.name} />
               </div>
               <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
                 <strong style={{ fontWeight: 600 }}>{d.name}</strong>{" "}
@@ -393,7 +393,7 @@ export default function Home() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ position: "relative", width: "100%", height: 480 }}>
-            <ImageSlot radius={0} src={IMG_SAN_LAZARO} placeholder="Foto de la oficina" />
+            <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="Foto de la oficina" />
             <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
               <strong>Cusco</strong>
               <br />
@@ -405,14 +405,14 @@ export default function Home() {
               { name: "Transporte turístico", role: "6 rutas · salidas diarias", href: "/transporte" },
               { name: "Traslados privados", role: "Aeropuerto · hoteles · 24/7", href: "/traslados" },
             ].map((f) => (
-              <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", display: "block" }}>
+              <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
                 <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>
                   <strong>{f.name}</strong>
                   <br />
                   <span style={{ color: "var(--muted)" }}>{f.role}</span>
                 </div>
                 <div style={{ position: "relative", width: "100%", height: 300 }}>
-                  <ImageSlot radius={0} src={IMG_TEMPLO} placeholder={f.name} />
+                  <ImageSlot radius={10} src={IMG_TEMPLO} placeholder={f.name} />
                 </div>
               </Link>
             ))}

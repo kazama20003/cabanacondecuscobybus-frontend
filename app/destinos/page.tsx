@@ -46,7 +46,7 @@ export default function DestinosPage() {
             }}
           >
             <div style={{ position: "relative", width: "100%", minHeight: 300, direction: "ltr" }}>
-              <ImageSlot radius={0} src={d.image} placeholder={d.name} />
+              <ImageSlot radius={10} src={d.image} placeholder={d.name} />
             </div>
             <div style={{ direction: "ltr", display: "flex", flexDirection: "column", justifyContent: "center", gap: 12, padding: "12px 0" }}>
               <div style={{ fontSize: 13, color: "var(--muted)" }}>
@@ -56,16 +56,16 @@ export default function DestinosPage() {
               <p style={{ margin: 0, maxWidth: 480, fontSize: 15, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>{d.desc}</p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
                 {d.highlights.map((h) => (
-                  <span key={h} style={{ fontSize: 12.5, fontWeight: 600, background: "var(--card)", padding: "6px 10px", borderRadius: 3 }}>
+                  <span key={h} style={{ fontSize: 12.5, fontWeight: 600, background: "var(--card)", padding: "6px 10px", borderRadius: 8 }}>
                     {h}
                   </span>
                 ))}
               </div>
               <div style={{ display: "flex", gap: 16, marginTop: 12, fontSize: 13.5, fontWeight: 600 }}>
-                <Link href="/transporte" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "8px 13px", borderRadius: 3 }}>
+                <Link href="/transporte" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "8px 13px", borderRadius: 8 }}>
                   Cómo llegar
                 </Link>
-                <Link href="/tours" style={{ padding: "8px 13px", borderRadius: 3, border: "1px solid var(--line)" }}>
+                <Link href="/tours" style={{ padding: "8px 13px", borderRadius: 8, border: "1px solid var(--line)" }}>
                   Tours aquí
                 </Link>
               </div>

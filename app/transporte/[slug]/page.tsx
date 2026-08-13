@@ -52,7 +52,7 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
       </p>
 
       <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 480" }}>
-        <ImageSlot radius={0} src={route.image} placeholder={`${route.from} — ${route.to}`} />
+        <ImageSlot radius={10} src={route.image} placeholder={`${route.from} — ${route.to}`} />
       </div>
 
       {/* Ficha resumen */}
@@ -131,11 +131,11 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
                 href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar la ruta ${route.from} - ${route.to}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 3 }}
+                style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
               >
                 Reservar por WhatsApp
               </a>
-              <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 3, border: "1px solid var(--line)" }}>
+              <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
                 Consultar
               </Link>
             </div>
@@ -150,9 +150,9 @@ export default async function RoutePage({ params }: { params: Promise<{ slug: st
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
           {others.map((r) => (
-            <Link key={r.slug} href={`/transporte/${r.slug}`} style={{ background: "var(--card)", padding: 16, display: "block" }}>
+            <Link key={r.slug} href={`/transporte/${r.slug}`} style={{ background: "var(--card)", padding: 16, borderRadius: 14, display: "block" }}>
               <div style={{ position: "relative", width: "100%", height: 170 }}>
-                <ImageSlot radius={0} src={r.image} placeholder={`${r.from} — ${r.to}`} />
+                <ImageSlot radius={10} src={r.image} placeholder={`${r.from} — ${r.to}`} />
               </div>
               <div style={{ marginTop: 12, fontSize: 15, fontWeight: 600 }}>
                 {r.from} → {r.to}

@@ -34,7 +34,7 @@ export default function TransportePage() {
       </p>
 
       <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 500", minWidth: 0 }}>
-        <ImageSlot radius={0} video={MEDIA_VIDEO} placeholder="Video de flota" />
+        <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video de flota" />
       </div>
 
       {/* Rutas */}
@@ -89,7 +89,7 @@ export default function TransportePage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 2" }}>
-                  <ImageSlot radius={0} src={r.image} placeholder={`${r.from} — ${r.to}`} />
+                  <ImageSlot radius={10} src={r.image} placeholder={`${r.from} — ${r.to}`} />
                 </div>
                 <span style={{ fontSize: 14, fontWeight: 700 }}>
                   Desde S/ {r.priceFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>por persona</span>
@@ -118,9 +118,9 @@ export default function TransportePage() {
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
           {fleet.map((v) => (
-            <figure key={v.name} style={{ margin: 0, background: "var(--card)", padding: 16 }}>
+            <figure key={v.name} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14 }}>
               <div style={{ position: "relative", width: "100%", height: 220 }}>
-                <ImageSlot radius={0} src={v.image} placeholder={v.name} />
+                <ImageSlot radius={10} src={v.image} placeholder={v.name} />
               </div>
               <figcaption style={{ marginTop: 14, lineHeight: 1.5 }}>
                 <strong style={{ fontSize: 15 }}>{v.name}</strong>
@@ -138,7 +138,7 @@ export default function TransportePage() {
 
       {/* Cómo reservar */}
       <section style={{ marginTop: 140, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
-        <div style={{ background: "var(--card)", padding: "48px 44px" }}>
+        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16 }}>
           <h2 style={{ margin: "0 0 24px", fontSize: "clamp(24px, 2vw, 34px)", lineHeight: 1.25, letterSpacing: "-0.015em", fontWeight: 400 }}>
             Reservar es <em className="serif">simple</em>.
           </h2>
@@ -153,16 +153,16 @@ export default function TransportePage() {
               href={`https://wa.me/${CONTACT.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 3 }}
+              style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
             >
               Reservar por WhatsApp
             </a>
-            <Link href="/contacto" style={{ background: "var(--bg)", padding: "10px 16px", borderRadius: 3, border: "1px solid var(--line)" }}>
+            <Link href="/contacto" style={{ background: "var(--bg)", padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
               Formulario de contacto
             </Link>
           </div>
         </div>
-        <div style={{ background: "var(--card)", padding: "48px 44px" }}>
+        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16 }}>
           <h2 style={{ margin: "0 0 24px", fontSize: "clamp(24px, 2vw, 34px)", lineHeight: 1.25, letterSpacing: "-0.015em", fontWeight: 400 }}>
             Preguntas <em className="serif">frecuentes</em>
           </h2>
