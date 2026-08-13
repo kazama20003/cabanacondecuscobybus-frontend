@@ -26,15 +26,16 @@ function GoogleIcon() {
   );
 }
 
-/* Acceso únicamente con Google: sin contraseñas ni formularios.
+/* Acceso únicamente con Google, sobre la card de vidrio del layout (auth).
    El mismo botón crea la cuenta la primera vez e inicia sesión después. */
 export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const isLogin = mode === "login";
   const [clicked, setClicked] = useState(false);
+  const [hover, setHover] = useState(false);
 
   return (
-    <div>
-      <h1 style={{ margin: "0 0 8px", fontSize: "clamp(28px, 3vw, 38px)", lineHeight: 1.1, letterSpacing: "-0.02em", fontWeight: 400 }}>
+    <div style={{ color: "#fff", textAlign: "center" }}>
+      <h1 style={{ margin: "0 0 10px", fontSize: "clamp(28px, 3vw, 36px)", lineHeight: 1.12, letterSpacing: "-0.02em", fontWeight: 400 }}>
         {isLogin ? (
           <>
             Bienvenido de <em className="serif">vuelta</em>.
@@ -45,7 +46,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           </>
         )}
       </h1>
-      <p style={{ margin: "0 0 32px", fontSize: 14, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
+      <p style={{ margin: "0 0 30px", fontSize: 14, lineHeight: 1.55, color: "rgba(255,255,255,.72)", textWrap: "pretty" }}>
         {isLogin
           ? "Ingresa con tu cuenta de Google para ver y gestionar tus reservas."
           : "Usa tu cuenta de Google y listo: sin contraseñas ni formularios."}
@@ -57,6 +58,8 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           setClicked(true);
           /* TODO: iniciar flujo OAuth de Google cuando el backend esté listo */
         }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
           width: "100%",
           display: "flex",
@@ -66,61 +69,63 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           padding: "13px 16px",
           fontSize: 15,
           fontWeight: 600,
-          borderRadius: 8,
+          borderRadius: 12,
           border: "none",
-          background: "var(--btn-bg)",
-          color: "var(--btn-fg)",
+          background: "#fff",
+          color: "#111110",
           cursor: "pointer",
+          transform: hover ? "translateY(-1px)" : "none",
+          boxShadow: hover ? "0 12px 30px rgba(0,0,0,.35)" : "0 6px 18px rgba(0,0,0,.25)",
+          transition: "transform .2s ease, box-shadow .2s ease",
         }}
       >
-        <span
-          style={{
-            width: 26,
-            height: 26,
-            borderRadius: "50%",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <GoogleIcon />
-        </span>
+        <GoogleIcon />
         Continuar con Google
       </button>
 
       {clicked && (
-        <p role="status" style={{ margin: "16px 0 0", fontSize: 13, color: "var(--muted)", textAlign: "center", textWrap: "pretty" }}>
+        <p role="status" style={{ margin: "16px 0 0", fontSize: 13, color: "rgba(255,255,255,.72)", textWrap: "pretty" }}>
           El acceso con Google estará disponible muy pronto. Mientras tanto, reserva por WhatsApp o desde la página de contacto.
         </p>
       )}
 
-      <ul style={{ margin: "28px 0 0", padding: 0, listStyle: "none", fontSize: 13, color: "var(--muted)", lineHeight: 2 }}>
-        <li>✓ Sin contraseñas que recordar</li>
-        <li>✓ Tus reservas de transporte, tours y traslados en un solo lugar</li>
-        <li>✓ Solo usamos tu nombre y correo, nada más</li>
-      </ul>
+      <div
+        style={{
+          margin: "28px 0 0",
+          padding: "18px 0 0",
+          borderTop: "1px solid rgba(255,255,255,.14)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          fontSize: 13,
+          color: "rgba(255,255,255,.72)",
+          textAlign: "left",
+        }}
+      >
+        <span>✓ Sin contraseñas que recordar</span>
+        <span>✓ Tus reservas de transporte, tours y traslados en un solo lugar</span>
+        <span>✓ Solo usamos tu nombre y correo, nada más</span>
+      </div>
 
-      <p style={{ margin: "28px 0 0", fontSize: 13.5, color: "var(--muted)", textAlign: "center" }}>
+      <p style={{ margin: "28px 0 0", fontSize: 13.5, color: "rgba(255,255,255,.72)" }}>
         {isLogin ? (
           <>
             ¿Primera vez aquí?{" "}
-            <Link href="/registro" style={{ fontWeight: 600 }}>
+            <Link href="/registro" style={{ fontWeight: 600, color: "#fff" }}>
               Crea tu cuenta
             </Link>
           </>
         ) : (
           <>
             ¿Ya tienes cuenta?{" "}
-            <Link href="/login" style={{ fontWeight: 600 }}>
+            <Link href="/login" style={{ fontWeight: 600, color: "#fff" }}>
               Inicia sesión
             </Link>
           </>
         )}
       </p>
-      <p style={{ margin: "18px 0 0", fontSize: 12, color: "var(--muted)", textAlign: "center" }}>
-        <Link href="/" style={{ color: "var(--muted)" }}>
+      <p style={{ margin: "16px 0 0", fontSize: 12 }}>
+        <Link href="/" style={{ color: "rgba(255,255,255,.6)" }}>
           ← Volver al inicio
         </Link>
       </p>

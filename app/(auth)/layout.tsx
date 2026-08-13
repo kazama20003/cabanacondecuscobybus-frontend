@@ -2,79 +2,86 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { MEDIA_VIDEO } from "@/lib/data";
 
-/* Layout propio del grupo (auth): pantalla dividida sin header ni footer del
-   sitio. Izquierda: video de marca con mensaje. Derecha: formulario. */
+/* Layout del grupo (auth): experiencia inmersiva propia, sin header ni
+   footer del sitio. Video a pantalla completa con overlay oscuro y una
+   card de vidrio (glassmorphism) centrada con el contenido. */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
-        background: "var(--bg)",
-        color: "var(--fg)",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "48px 20px",
+        overflow: "hidden",
+        color: "#fff",
       }}
     >
-      {/* Panel de marca */}
-      <div style={{ position: "relative", minHeight: 320, overflow: "hidden" }}>
-        <video
-          src={MEDIA_VIDEO}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-        />
-        <div
+      {/* Fondo: video + gradiente */}
+      <video
+        src={MEDIA_VIDEO}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        style={{ position: "fixed", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: -2 }}
+      />
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: -1,
+          background: "radial-gradient(120% 90% at 50% 10%, rgba(10,10,10,.35) 0%, rgba(10,10,10,.72) 100%)",
+        }}
+      />
+
+      {/* Marca */}
+      <Link
+        href="/"
+        aria-label="Inca Travel Peru — inicio"
+        style={{ display: "flex", alignItems: "center", gap: 10, color: "#fff", marginBottom: 28 }}
+      >
+        <span
           style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.15) 45%, rgba(0,0,0,.55) 100%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            background: "#fff",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "28px 32px",
-            color: "#fff",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Link href="/" aria-label="Inca Travel Peru — inicio" style={{ display: "flex", alignItems: "center", gap: 10, color: "#fff" }}>
-            <span
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 8,
-                background: "#fff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span style={{ width: 16, height: 16, borderRadius: "50%", background: "#111110", display: "inline-block" }} />
-            </span>
-            <strong style={{ fontSize: 15, letterSpacing: "-0.01em" }}>Inca Travel Peru</strong>
-          </Link>
-          <div style={{ maxWidth: 420 }}>
-            <p style={{ margin: "0 0 10px", fontSize: "clamp(24px, 2.6vw, 36px)", lineHeight: 1.2, letterSpacing: "-0.02em", textWrap: "pretty" }}>
-              Tu cuenta, tus <em className="serif">viajes</em> por el sur del Perú.
-            </p>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, opacity: 0.85, textWrap: "pretty" }}>
-              Guarda tus reservas de transporte, tours y traslados en un solo lugar.
-            </p>
-          </div>
-        </div>
-      </div>
+          <span style={{ width: 18, height: 18, borderRadius: "50%", background: "#111110", display: "inline-block" }} />
+        </span>
+        <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>Inca Travel Peru</strong>
+      </Link>
 
-      {/* Panel de formulario */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 24px" }}>
-        <div style={{ width: "100%", maxWidth: 400 }}>{children}</div>
-      </div>
+      {/* Card de vidrio */}
+      <main
+        style={{
+          width: "100%",
+          maxWidth: 420,
+          borderRadius: 22,
+          padding: "40px 36px",
+          background: "rgba(20, 20, 19, .55)",
+          border: "1px solid rgba(255,255,255,.14)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
+          boxShadow: "0 30px 80px rgba(0,0,0,.45)",
+        }}
+      >
+        {children}
+      </main>
+
+      {/* Pie mínimo */}
+      <p style={{ margin: "26px 0 0", fontSize: 12.5, color: "rgba(255,255,255,.65)", textAlign: "center" }}>
+        Transporte · Tours · Traslados — sur del Perú
+      </p>
     </div>
   );
 }
