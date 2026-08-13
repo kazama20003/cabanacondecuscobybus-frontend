@@ -1,7 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSesionGoogle } from "@/hooks/use-auth";
+import { avatarStorage } from "@/lib/api";
+
+/* El ID token de Google es un JWT: el payload trae picture/name. */
+function extraerFotoGoogle(credential: string): string {
+  try {
+    const payload = JSON.parse(
+      atob(credential.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+    ) as { picture?: string };
+    return payload.picture ?? "";
+  } catch {
+    return "";
+  }
+}
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
+
+type CredencialGoogle = { credential?: string };
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (respuesta: CredencialGoogle) => void;
+          }) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
 
 function GoogleIcon() {
   return (
@@ -30,8 +65,59 @@ function GoogleIcon() {
    título grande con serif itálica, card blanca redondeada y botón sólido. */
 export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const isLogin = mode === "login";
-  const [clicked, setClicked] = useState(false);
   const [hover, setHover] = useState(false);
+  const [mensaje, setMensaje] = useState<string | null>(null);
+  const gisListo = useRef(false);
+  const router = useRouter();
+  const sesionGoogle = useSesionGoogle();
+
+  const alRecibirCredencial = useCallback(
+    (respuesta: CredencialGoogle) => {
+      if (!respuesta.credential) return;
+      setMensaje(null);
+      const foto = extraerFotoGoogle(respuesta.credential);
+      if (foto) avatarStorage.guardar(foto);
+      sesionGoogle.mutate(respuesta.credential, {
+        onSuccess: (sesion) =>
+          router.push(
+            sesion.usuario.rol === "ADMINISTRADOR" || sesion.usuario.rol === "OPERADOR"
+              ? "/dashboard"
+              : "/",
+          ),
+        onError: (error) =>
+          setMensaje(error instanceof Error ? error.message : "No se pudo iniciar sesión."),
+      });
+    },
+    [router, sesionGoogle],
+  );
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || document.getElementById("google-gsi")) return;
+    const script = document.createElement("script");
+    script.id = "google-gsi";
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    document.head.appendChild(script);
+  }, []);
+
+  const iniciarConGoogle = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setMensaje("Falta configurar NEXT_PUBLIC_GOOGLE_CLIENT_ID en el frontend.");
+      return;
+    }
+    if (!window.google) {
+      setMensaje("Google aún está cargando, intenta de nuevo en un segundo.");
+      return;
+    }
+    if (!gisListo.current) {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: alRecibirCredencial,
+      });
+      gisListo.current = true;
+    }
+    window.google.accounts.id.prompt();
+  };
 
   return (
     <div>
@@ -66,10 +152,8 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       <div style={{ background: "var(--card)", borderRadius: 16, padding: "32px 28px" }}>
         <button
           type="button"
-          onClick={() => {
-            setClicked(true);
-            /* TODO: iniciar flujo OAuth de Google cuando el backend esté listo */
-          }}
+          onClick={iniciarConGoogle}
+          disabled={sesionGoogle.isPending}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           style={{
@@ -85,7 +169,8 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
             border: "none",
             background: "var(--btn-bg)",
             color: "var(--btn-fg)",
-            cursor: "pointer",
+            cursor: sesionGoogle.isPending ? "wait" : "pointer",
+            opacity: sesionGoogle.isPending ? 0.7 : 1,
             transform: hover ? "translateY(-1px)" : "none",
             boxShadow: hover ? "0 10px 26px rgba(0,0,0,.14)" : "none",
             transition: "transform .2s ease, box-shadow .2s ease",
@@ -105,12 +190,12 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           >
             <GoogleIcon />
           </span>
-          Continuar con Google
+          {sesionGoogle.isPending ? "Verificando…" : "Continuar con Google"}
         </button>
 
-        {clicked && (
+        {mensaje && (
           <p role="status" style={{ margin: "14px 0 0", fontSize: 13, color: "var(--muted)", textAlign: "center", textWrap: "pretty" }}>
-            El acceso con Google estará disponible muy pronto. Mientras tanto, reserva por WhatsApp o desde la página de contacto.
+            {mensaje}
           </p>
         )}
 

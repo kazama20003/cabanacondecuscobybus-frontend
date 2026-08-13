@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import { Instrument_Sans, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import SmoothScroll from "@/components/smooth-scroll";
+import Providers from "@/components/providers";
 
-const instrumentSans = Instrument_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
@@ -29,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={cn(instrumentSans.variable, instrumentSerif.variable, "font-sans")}
+      className={cn(inter.variable, instrumentSerif.variable, "font-sans")}
       suppressHydrationWarning
     >
       <head>
@@ -40,7 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body>
-        <SmoothScroll>{children}</SmoothScroll>
+        <Providers>
+          <SmoothScroll>{children}</SmoothScroll>
+        </Providers>
       </body>
     </html>
   );
