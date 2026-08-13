@@ -19,7 +19,7 @@ export default function ContactoPage() {
           lineHeight: 1.06,
           letterSpacing: "-0.03em",
           fontWeight: 400,
-          margin: "90px 0 24px",
+          margin: "48px 0 24px",
           textWrap: "pretty",
         }}
       >

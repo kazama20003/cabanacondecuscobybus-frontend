@@ -19,7 +19,7 @@ export default function TrasladosPage() {
           lineHeight: 1.06,
           letterSpacing: "-0.03em",
           fontWeight: 400,
-          margin: "90px 0 24px",
+          margin: "48px 0 24px",
           textWrap: "pretty",
         }}
       >
@@ -34,16 +34,50 @@ export default function TrasladosPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         {transfers.map((t) => (
-          <figure key={t.name} style={{ margin: 0, background: "var(--card)", padding: 16 }}>
+          <figure key={t.name} style={{ margin: 0, background: "var(--card)", padding: 16, display: "flex", flexDirection: "column" }}>
             <div style={{ position: "relative", width: "100%", height: 200 }}>
               <ImageSlot radius={0} src={t.image} placeholder={t.name} />
+              <span
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: 10,
+                  background: "var(--btn-bg)",
+                  color: "var(--btn-fg)",
+                  fontSize: 11.5,
+                  fontWeight: 700,
+                  padding: "4px 8px",
+                  borderRadius: 3,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {t.availability}
+              </span>
             </div>
-            <figcaption style={{ marginTop: 14 }}>
-              <strong style={{ fontSize: 15, letterSpacing: "-0.01em" }}>{t.name}</strong>
-              <p style={{ margin: "8px 0 12px", fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>{t.desc}</p>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13.5 }}>
-                <span style={{ color: "var(--muted)" }}>{t.duration}</span>
-                <strong>Desde S/ {t.priceFrom}</strong>
+            <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+              <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                {t.vehicle} · {t.capacity}
+              </div>
+              <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{t.name}</strong>
+              <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty", flex: 1 }}>{t.desc}</p>
+              <ul style={{ margin: "4px 0 8px", padding: 0, listStyle: "none", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.7 }}>
+                {t.includes.map((i) => (
+                  <li key={i}>✓ {i}</li>
+                ))}
+              </ul>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.35 }}>
+                  <strong style={{ fontSize: 15 }}>Desde S/ {t.priceFrom}</strong>
+                  <span style={{ fontSize: 12, color: "var(--muted)" }}>{t.duration}</span>
+                </span>
+                <a
+                  href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar el traslado ${t.name}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 3 }}
+                >
+                  Reservar
+                </a>
               </div>
             </figcaption>
           </figure>

@@ -9,7 +9,6 @@ import {
   MEDIA_VIDEO,
   IMG_SAN_LAZARO,
   IMG_TEMPLO,
-  PHOTOS,
   transportRoutes,
   tours,
   destinations,
@@ -217,7 +216,7 @@ export default function Home() {
                       {r.from} → {r.to}
                     </strong>
                     <span style={{ fontSize: 13, color: "var(--muted)" }}>
-                      {r.duration} · desde S/ {r.priceFrom}
+                      {r.duration} · {r.distance}
                     </span>
                   </span>
                 </div>
@@ -225,11 +224,21 @@ export default function Home() {
                   {r.description}
                 </p>
               </div>
-              {[1, 2, 3].map((n) => (
-                <div key={n} style={{ aspectRatio: "3 / 2", position: "relative" }}>
-                  <ImageSlot radius={0} src={PHOTOS[n % PHOTOS.length]} placeholder={`Imagen ${n}`} />
+              <div style={{ fontSize: 13, lineHeight: 1.65, alignSelf: "center" }}>
+                <div style={{ color: "var(--muted)" }}>Salidas</div>
+                <div style={{ fontWeight: 600 }}>{r.departures.join(" · ")}</div>
+                <div style={{ color: "var(--muted)", marginTop: 4 }}>{r.frequency}</div>
+              </div>
+              <div style={{ fontSize: 13, lineHeight: 1.65, alignSelf: "center" }}>
+                <div style={{ color: "var(--muted)" }}>Vehículo</div>
+                <div style={{ fontWeight: 600, textWrap: "pretty" }}>{r.vehicle}</div>
+                <div style={{ fontWeight: 700, marginTop: 4 }}>
+                  Desde S/ {r.priceFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>p/persona</span>
                 </div>
-              ))}
+              </div>
+              <div style={{ aspectRatio: "3 / 2", position: "relative" }}>
+                <ImageSlot radius={0} src={r.image} placeholder={`${r.from} — ${r.to}`} />
+              </div>
             </Link>
           ))}
         </div>
@@ -323,9 +332,13 @@ export default function Home() {
               <div style={{ width: "100%", height: 160 + ((i * 67) % 160), position: "relative" }}>
                 <ImageSlot radius={0} src={t.image} placeholder={t.name} />
               </div>
-              <div style={{ marginTop: 8, fontSize: 13 }}>
+              <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
                 <strong style={{ fontWeight: 600 }}>{t.name}</strong>{" "}
                 <span style={{ color: "var(--muted)" }}>/ {t.location}</span>
+                <br />
+                <span style={{ color: "var(--muted)", fontSize: 12.5 }}>
+                  {t.duration} · desde S/ {t.priceFrom}
+                </span>
               </div>
             </Link>
           ))}
@@ -334,9 +347,11 @@ export default function Home() {
               <div style={{ width: "100%", height: 140 + ((i * 89) % 180), position: "relative" }}>
                 <ImageSlot radius={0} src={d.image} placeholder={d.name} />
               </div>
-              <div style={{ marginTop: 8, fontSize: 13 }}>
+              <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
                 <strong style={{ fontWeight: 600 }}>{d.name}</strong>{" "}
                 <span style={{ color: "var(--muted)" }}>/ {d.region}</span>
+                <br />
+                <span style={{ color: "var(--muted)", fontSize: 12.5 }}>{d.altitude}</span>
               </div>
             </Link>
           ))}

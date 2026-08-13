@@ -20,7 +20,7 @@ export default function TransportePage() {
           lineHeight: 1.06,
           letterSpacing: "-0.03em",
           fontWeight: 400,
-          margin: "90px 0 24px",
+          margin: "48px 0 24px",
           textWrap: "pretty",
         }}
       >
@@ -125,7 +125,11 @@ export default function TransportePage() {
               <figcaption style={{ marginTop: 14, lineHeight: 1.5 }}>
                 <strong style={{ fontSize: 15 }}>{v.name}</strong>
                 <div style={{ fontSize: 13, color: "var(--muted)", margin: "4px 0 8px" }}>{v.capacity}</div>
-                <p style={{ margin: 0, fontSize: 13, color: "var(--muted)", textWrap: "pretty" }}>{v.features}</p>
+                <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.7 }}>
+                  {v.features.split(", ").map((f) => (
+                    <li key={f}>✓ {f.charAt(0).toUpperCase() + f.slice(1)}</li>
+                  ))}
+                </ul>
               </figcaption>
             </figure>
           ))}

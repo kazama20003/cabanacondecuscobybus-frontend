@@ -246,6 +246,10 @@ export type Transfer = {
   desc: string;
   duration: string;
   priceFrom: number;
+  vehicle: string;
+  capacity: string;
+  includes: string[];
+  availability: string;
   image: string;
 };
 
@@ -255,6 +259,10 @@ export const transfers: Transfer[] = [
     desc: "Recepción con cartel en el aeropuerto Alejandro Velasco Astete y traslado directo a tu hotel en el centro histórico.",
     duration: "20–30 min",
     priceFrom: 25,
+    vehicle: "Auto o van privada",
+    capacity: "1–10 pasajeros",
+    includes: ["Recepción con cartel", "Monitoreo de vuelo", "Ayuda con equipaje", "Conductor bilingüe"],
+    availability: "24/7, todos los días",
     image: MEDIA_IMAGE,
   },
   {
@@ -262,6 +270,10 @@ export const transfers: Transfer[] = [
     desc: "Traslado privado desde el aeropuerto Rodríguez Ballón hasta tu alojamiento en el centro de Arequipa.",
     duration: "25–35 min",
     priceFrom: 25,
+    vehicle: "Auto o van privada",
+    capacity: "1–10 pasajeros",
+    includes: ["Recepción con cartel", "Monitoreo de vuelo", "Ayuda con equipaje"],
+    availability: "24/7, todos los días",
     image: IMG_SAN_LAZARO,
   },
   {
@@ -269,6 +281,10 @@ export const transfers: Transfer[] = [
     desc: "Traslado privado hasta la estación de tren para tu conexión a Machu Picchu, con horario coordinado a tu tren.",
     duration: "1 h 45 min",
     priceFrom: 80,
+    vehicle: "Van privada",
+    capacity: "1–10 pasajeros",
+    includes: ["Horario coordinado a tu tren", "Recojo en tu hotel", "Paradas fotográficas a solicitud"],
+    availability: "Todos los días, según horario de tren",
     image: IMG_TEMPLO,
   },
   {
@@ -276,6 +292,10 @@ export const transfers: Transfer[] = [
     desc: "Traslado privado a hoteles del Valle Sagrado: Urubamba, Yucay, Calca. Paradas fotográficas a solicitud.",
     duration: "1 h 30 min",
     priceFrom: 90,
+    vehicle: "Van privada",
+    capacity: "1–10 pasajeros",
+    includes: ["Recojo en tu hotel", "Paradas fotográficas", "Conductor conocedor de la zona"],
+    availability: "Todos los días, horario flexible",
     image: MEDIA_IMAGE,
   },
   {
@@ -283,6 +303,10 @@ export const transfers: Transfer[] = [
     desc: "Servicio 24/7 para vuelos de madrugada, salidas de trek (Salkantay, Inca Trail) y conexiones tempranas.",
     duration: "Según destino",
     priceFrom: 35,
+    vehicle: "Auto o van privada",
+    capacity: "1–10 pasajeros",
+    includes: ["Puntualidad garantizada", "Confirmación la noche anterior", "Experiencia en salidas de trek"],
+    availability: "24/7, incluye feriados",
     image: IMG_SAN_LAZARO,
   },
   {
@@ -290,6 +314,10 @@ export const transfers: Transfer[] = [
     desc: "Vehículo con conductor a tu disposición para reuniones, compras o rutas personalizadas dentro y fuera de la ciudad.",
     duration: "Mínimo 3 h",
     priceFrom: 120,
+    vehicle: "Auto, van o sprinter",
+    capacity: "1–19 pasajeros",
+    includes: ["Itinerario a tu medida", "Combustible y peajes", "Espera incluida"],
+    availability: "Previa reserva, 24 h de anticipación",
     image: IMG_TEMPLO,
   },
 ];
@@ -303,6 +331,8 @@ export type Tour = {
   duration: string;
   priceFrom: number;
   type: string;
+  departure: string;
+  difficulty: string;
   desc: string;
   includes: string[];
   image: string;
@@ -316,6 +346,8 @@ export const tours: Tour[] = [
     duration: "Full day",
     priceFrom: 120,
     type: "Cultural",
+    departure: "Salida 08:00 · recojo en hotel",
+    difficulty: "Fácil",
     desc: "Pisac, Ollantaytambo y Chinchero en un día: mercados andinos, fortalezas incas y paisajes del río Urubamba.",
     includes: ["Transporte turístico", "Guía bilingüe", "Almuerzo buffet en Urubamba"],
     image: MEDIA_IMAGE,
@@ -327,6 +359,8 @@ export const tours: Tour[] = [
     duration: "Full day",
     priceFrom: 890,
     type: "Imperdible",
+    departure: "Salida 04:30 · estación Ollantaytambo",
+    difficulty: "Moderada",
     desc: "Tren desde Ollantaytambo, bus de subida y visita guiada de la ciudadela. Todo coordinado en un solo día.",
     includes: ["Traslados y tren", "Ticket de ingreso", "Bus Consettur", "Guía profesional"],
     image: IMG_TEMPLO,
@@ -338,6 +372,8 @@ export const tours: Tour[] = [
     duration: "Full day",
     priceFrom: 110,
     type: "Aventura",
+    departure: "Salida 04:30 · recojo en hotel",
+    difficulty: "Exigente · 5 036 m",
     desc: "Caminata a 5 036 m hasta la montaña arcoíris, con desayuno y almuerzo en ruta. Salida 4:30 am.",
     includes: ["Transporte", "Desayuno y almuerzo", "Guía", "Bastones y oxígeno"],
     image: IMG_SAN_LAZARO,
@@ -349,6 +385,8 @@ export const tours: Tour[] = [
     duration: "Medio día",
     priceFrom: 70,
     type: "Cultural",
+    departure: "Salida 13:30 · Plaza Regocijo",
+    difficulty: "Fácil",
     desc: "Qorikancha, Sacsayhuamán, Q'enqo, Puka Pukara y Tambomachay: la introducción perfecta a la capital inca.",
     includes: ["Transporte turístico", "Guía bilingüe"],
     image: MEDIA_IMAGE,
@@ -360,6 +398,8 @@ export const tours: Tour[] = [
     duration: "2 días",
     priceFrom: 250,
     type: "Naturaleza",
+    departure: "Salida 08:00 · recojo en hotel",
+    difficulty: "Moderada",
     desc: "Valle del Colca con noche en Chivay, aguas termales de La Calera y amanecer en la Cruz del Cóndor.",
     includes: ["Transporte", "Hotel en Chivay", "Guía", "Desayunos"],
     image: IMG_SAN_LAZARO,
@@ -371,6 +411,8 @@ export const tours: Tour[] = [
     duration: "Medio día",
     priceFrom: 60,
     type: "Cultural",
+    departure: "Salida 09:00 y 14:00",
+    difficulty: "Fácil",
     desc: "Centro histórico de sillar, monasterio de Santa Catalina, mirador de Yanahuara y barrio de San Lázaro.",
     includes: ["Transporte", "Guía bilingüe"],
     image: IMG_TEMPLO,
@@ -382,6 +424,8 @@ export const tours: Tour[] = [
     duration: "Full day",
     priceFrom: 100,
     type: "Aventura",
+    departure: "Salida 04:30 · recojo en hotel",
+    difficulty: "Exigente · 4 200 m",
     desc: "Caminata hasta la laguna turquesa al pie del nevado Salkantay (4 200 m), con desayuno y almuerzo.",
     includes: ["Transporte", "Desayuno y almuerzo", "Guía", "Bastones"],
     image: MEDIA_IMAGE,
@@ -393,6 +437,8 @@ export const tours: Tour[] = [
     duration: "Full day",
     priceFrom: 130,
     type: "Cultural",
+    departure: "Salida 06:40 · puerto de Puno",
+    difficulty: "Fácil",
     desc: "Navegación por el lago navegable más alto del mundo: islas flotantes de los Uros y la isla textil de Taquile.",
     includes: ["Lancha turística", "Guía", "Almuerzo en Taquile"],
     image: IMG_SAN_LAZARO,

@@ -19,7 +19,7 @@ export default function ToursPage() {
           lineHeight: 1.06,
           letterSpacing: "-0.03em",
           fontWeight: 400,
-          margin: "90px 0 24px",
+          margin: "48px 0 24px",
           textWrap: "pretty",
         }}
       >
@@ -56,9 +56,10 @@ export default function ToursPage() {
             </div>
             <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
               <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                {t.location} · {t.duration}
+                {t.location} · {t.duration} · {t.difficulty}
               </div>
               <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{t.name}</strong>
+              <div style={{ fontSize: 12.5, fontWeight: 600 }}>{t.departure}</div>
               <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty", flex: 1 }}>{t.desc}</p>
               <ul style={{ margin: "4px 0 8px", padding: 0, listStyle: "none", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.7 }}>
                 {t.includes.map((i) => (
