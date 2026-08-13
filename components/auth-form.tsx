@@ -114,21 +114,6 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           </p>
         )}
 
-        <ul
-          style={{
-            margin: "22px 0 0",
-            padding: "18px 0 0",
-            borderTop: "1px solid var(--line)",
-            listStyle: "none",
-            fontSize: 13,
-            color: "var(--muted)",
-            lineHeight: 2,
-          }}
-        >
-          <li>✓ Sin contraseñas que recordar</li>
-          <li>✓ Tus reservas de transporte, tours y traslados en un solo lugar</li>
-          <li>✓ Solo usamos tu nombre y correo, nada más</li>
-        </ul>
       </div>
 
       <p style={{ margin: "24px 0 0", fontSize: 13.5, color: "var(--muted)", textAlign: "center" }}>
