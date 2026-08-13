@@ -8,5 +8,6 @@ export * from "./tipos";
 export { servicioArchivos } from "./servicios/archivos";
 export { servicioAutenticacion } from "./servicios/autenticacion";
 export { servicioCatalogo } from "./servicios/catalogo";
+export { servicioPromociones } from "./servicios/promociones";
 export { servicioReservas } from "./servicios/reservas";
 export { servicioUsuarios } from "./servicios/usuarios";

@@ -17,6 +17,8 @@ const titulos: Record<string, string> = {
   "/dashboard/reservas": "Reservas",
   "/dashboard/pagos": "Pagos",
   "/dashboard/usuarios": "Usuarios",
+  "/dashboard/promociones/nueva": "Nueva promoción",
+  "/dashboard/promociones": "Promociones",
 };
 
 export function PanelHeader() {

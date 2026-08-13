@@ -8,6 +8,7 @@ import {
   CalendarClockIcon,
   CreditCardIcon,
   ImageIcon,
+  TagIcon,
   LayoutDashboardIcon,
   MapIcon,
   MountainIcon,
@@ -51,6 +52,7 @@ const navegacion = [
     items: [
       { titulo: "Reservas", url: "/dashboard/reservas", icono: <TicketIcon /> },
       { titulo: "Pagos", url: "/dashboard/pagos", icono: <CreditCardIcon /> },
+      { titulo: "Promociones", url: "/dashboard/promociones", icono: <TagIcon /> },
     ],
   },
   {

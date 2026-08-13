@@ -237,6 +237,43 @@ export interface ActualizarSalidaEntrada {
   fechaHoraSalida?: string;
 }
 
+/* --- Promociones --- */
+
+export type TipoPromocion = "OFERTA" | "DESCUENTO" | "EVENTO_ESPECIAL" | "ANIVERSARIO";
+export type ObjetivoPromocion = "TODOS" | "TRANSPORTES" | "TOURS";
+
+export interface PromocionApi {
+  id: string;
+  titulo: string;
+  descripcion: string | null;
+  tipo: TipoPromocion;
+  objetivo: ObjetivoPromocion;
+  codigo: string | null;
+  porcentajeDescuento: number | null;
+  montoDescuento: string | number | null;
+  fechaInicio: string;
+  fechaFin: string;
+  limiteUsos: number | null;
+  usos: number;
+  imagenUrl: string | null;
+  activo: boolean;
+}
+
+export interface CrearPromocionEntrada {
+  titulo: string;
+  descripcion?: string;
+  tipo: TipoPromocion;
+  objetivo?: ObjetivoPromocion;
+  codigo?: string;
+  porcentajeDescuento?: number;
+  montoDescuento?: number;
+  fechaInicio: string;
+  fechaFin: string;
+  limiteUsos?: number;
+  imagenUrl?: string;
+  activo?: boolean;
+}
+
 /* --- Reservas --- */
 
 export interface PasajeroEntrada {

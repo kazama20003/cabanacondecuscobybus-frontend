@@ -82,7 +82,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           router.push(
             sesion.usuario.rol === "ADMINISTRADOR" || sesion.usuario.rol === "OPERADOR"
               ? "/dashboard"
-              : "/",
+              : "/cuenta",
           ),
         onError: (error) =>
           setMensaje(error instanceof Error ? error.message : "No se pudo iniciar sesión."),

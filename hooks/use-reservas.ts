@@ -8,6 +8,14 @@ export function useCrearReserva() {
   return useMutation({ mutationFn: servicioReservas.crear });
 }
 
+export function useMisReservas(habilitado = true) {
+  return useQuery({
+    queryKey: ["reservas", "mias"],
+    queryFn: servicioReservas.mias,
+    enabled: habilitado,
+  });
+}
+
 export function useReservaInvitado(codigo: string, token: string) {
   return useQuery({
     queryKey: claves.reservas.detalle(codigo, token),

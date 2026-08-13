@@ -40,8 +40,16 @@ export const endpoints = {
     listar: "/administracion/usuarios",
     actualizar: (id: string) => `/administracion/usuarios/${id}`,
   },
+  promociones: {
+    vigentes: "/promociones",
+    listar: "/administracion/promociones",
+    crear: "/administracion/promociones",
+    actualizar: (id: string) => `/administracion/promociones/${id}`,
+    eliminar: (id: string) => `/administracion/promociones/${id}`,
+  },
   reservas: {
     crear: "/reservas",
+    mias: "/reservas/mias",
     verInvitado: (codigo: string) => `/reservas/${codigo}`,
     iniciarPagoAdelanto: (codigo: string) => `/reservas/${codigo}/iniciar-pago-adelanto`,
     comprobanteSaldo: (codigo: string) => `/reservas/${codigo}/comprobantes-saldo`,

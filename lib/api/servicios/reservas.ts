@@ -10,6 +10,8 @@ export const servicioReservas = {
   crear: (datos: CrearReservaEntrada) =>
     solicitar<ReservaApi>(endpoints.reservas.crear, { metodo: "POST", cuerpo: datos }),
 
+  mias: () => solicitar<ReservaApi[]>(endpoints.reservas.mias),
+
   verInvitado: (codigo: string, token: string) =>
     solicitar<ReservaApi>(endpoints.reservas.verInvitado(codigo), {
       query: { token },
