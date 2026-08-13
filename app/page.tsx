@@ -5,6 +5,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import ImageSlot from "@/components/image-slot";
+import RouteCard from "@/components/route-card";
 import {
   MEDIA_VIDEO,
   IMG_SAN_LAZARO,
@@ -180,66 +181,9 @@ export default function Home() {
             Ver todas las rutas
           </Link>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {transportRoutes.slice(0, 4).map((r) => (
-            <Link
-              key={r.slug}
-              href={`/transporte/${r.slug}`}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1.35fr 1fr 1fr 1fr",
-                gap: 6,
-                borderTop: "1px solid var(--line)",
-                paddingTop: 10,
-              }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", paddingRight: 40 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span
-                    style={{
-                      borderRadius: 7,
-                      background: "var(--fg)",
-                      color: "var(--bg)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: 700,
-                      width: 34,
-                      height: 34,
-                      fontSize: 15,
-                    }}
-                  >
-                    ⇄
-                  </span>
-                  <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
-                    <strong style={{ fontSize: 14 }}>
-                      {r.from} → {r.to}
-                    </strong>
-                    <span style={{ fontSize: 13, color: "var(--muted)" }}>
-                      {r.duration} · {r.distance}
-                    </span>
-                  </span>
-                </div>
-                <p style={{ margin: 0, fontSize: 13, lineHeight: 1.45, color: "var(--muted)", maxWidth: 320, textWrap: "pretty" }}>
-                  {r.description}
-                </p>
-              </div>
-              <div style={{ fontSize: 13, lineHeight: 1.65, alignSelf: "center" }}>
-                <div style={{ color: "var(--muted)" }}>Salidas</div>
-                <div style={{ fontWeight: 600 }}>{r.departures.join(" · ")}</div>
-                <div style={{ color: "var(--muted)", marginTop: 4 }}>{r.frequency}</div>
-              </div>
-              <div style={{ fontSize: 13, lineHeight: 1.65, alignSelf: "center" }}>
-                <div style={{ color: "var(--muted)" }}>Vehículo</div>
-                <div style={{ fontWeight: 600, textWrap: "pretty" }}>{r.vehicle}</div>
-                <div style={{ fontWeight: 700, marginTop: 4 }}>
-                  Desde S/ {r.priceFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>p/persona</span>
-                </div>
-              </div>
-              <div style={{ aspectRatio: "3 / 2", position: "relative" }}>
-                <ImageSlot radius={10} src={r.image} placeholder={`${r.from} — ${r.to}`} />
-              </div>
-            </Link>
+            <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} compact />
           ))}
         </div>
       </section>

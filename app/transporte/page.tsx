@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
+import RouteCard from "@/components/route-card";
 import { transportRoutes, fleet, transportFaq, CONTACT, MEDIA_VIDEO } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -54,48 +55,9 @@ export default function TransportePage() {
           Salidas diarias, todo el año. Precios por persona en soles (PEN); confirma disponibilidad al reservar.
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {transportRoutes.map((r) => (
-            <Link
-              key={r.slug}
-              href={`/transporte/${r.slug}`}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "minmax(220px, 1.35fr) minmax(180px, 1fr) minmax(160px, 1fr) minmax(200px, 1fr)",
-                gap: 16,
-                borderTop: "1px solid var(--line)",
-                paddingTop: 14,
-                paddingBottom: 6,
-              }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingRight: 20 }}>
-                <strong style={{ fontSize: 18, letterSpacing: "-0.01em" }}>
-                  {r.from} <span style={{ color: "var(--muted)" }}>→</span> {r.to}
-                </strong>
-                <p style={{ margin: 0, fontSize: 13, lineHeight: 1.45, color: "var(--muted)", maxWidth: 340, textWrap: "pretty" }}>
-                  {r.description}
-                </p>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>Ver ruta →</span>
-              </div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.7 }}>
-                <div style={{ color: "var(--muted)" }}>Salidas</div>
-                <div style={{ fontWeight: 600 }}>{r.departures.join(" · ")}</div>
-                <div style={{ color: "var(--muted)", marginTop: 6 }}>{r.frequency}</div>
-              </div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.7 }}>
-                <div style={{ color: "var(--muted)" }}>Duración</div>
-                <div style={{ fontWeight: 600 }}>{r.duration}</div>
-                <div style={{ color: "var(--muted)", marginTop: 6 }}>{r.distance}</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 2" }}>
-                  <ImageSlot radius={10} src={r.image} placeholder={`${r.from} — ${r.to}`} />
-                </div>
-                <span style={{ fontSize: 14, fontWeight: 700 }}>
-                  Desde S/ {r.priceFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>por persona</span>
-                </span>
-              </div>
-            </Link>
+            <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} />
           ))}
         </div>
       </section>
