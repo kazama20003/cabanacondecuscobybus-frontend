@@ -74,7 +74,7 @@ export default function Home() {
           lineHeight: 1.06,
           letterSpacing: "-0.03em",
           fontWeight: 400,
-          margin: "118px 0 40px",
+          margin: "48px 0 40px",
           textWrap: "pretty",
         }}
       >
@@ -104,55 +104,91 @@ export default function Home() {
               paddingRight: 6,
             }}
           >
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h3 style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 600 }}>Sobre Inca Travel Peru</h3>
-                <Link href="/nosotros" style={{ color: "var(--fg)", fontSize: 15 }}>
-                  +
-                </Link>
-              </div>
-              <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
-                Agencia de turismo con base en Cusco. Conectamos el circuito sur — Cusco, Arequipa, Colca, Puno y
-                Machu Picchu — con flota propia, guías locales y salidas diarias.
-              </p>
-              <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="Foto del equipo" />
-              </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Transporte turístico</h3>
+              <Link href="/transporte" style={{ color: "var(--fg)", fontSize: 13.5, fontWeight: 600 }}>
+                Ver todas +
+              </Link>
             </div>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "var(--muted)" }}>Transporte · Ruta destacada</span>
-                <Link href="/transporte/cusco-arequipa" style={{ color: "var(--fg)", fontSize: 15 }}>
-                  +
-                </Link>
+            {transportRoutes.slice(0, 3).map((ruta, i) => (
+              <div
+                key={ruta.slug}
+                style={{
+                  paddingTop: i === 0 ? 0 : 20,
+                  borderTop: i === 0 ? "none" : "1px solid var(--line)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 12.5, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    Ruta {String(i + 1).padStart(2, "0")} · {ruta.duration}
+                  </span>
+                  <Link href={`/transporte/${ruta.slug}`} style={{ color: "var(--fg)", fontSize: 15 }}>
+                    +
+                  </Link>
+                </div>
+                <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
+                  {ruta.from} → {ruta.to}
+                </h3>
+                <p
+                  style={{
+                    margin: "0 0 10px",
+                    fontSize: 13.5,
+                    lineHeight: 1.45,
+                    color: "var(--muted)",
+                    textWrap: "pretty",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {ruta.description}
+                </p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "0 0 12px" }}>
+                  <span style={{ fontSize: 12.5, color: "var(--muted)" }}>Desde</span>
+                  <span style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em" }}>
+                    S/ {ruta.priceFrom}
+                  </span>
+                  <span style={{ fontSize: 12.5, color: "var(--muted)" }}>por persona</span>
+                </div>
+                <div style={{ position: "relative", width: "100%", height: 200 }}>
+                  <ImageSlot radius={10} src={ruta.image} placeholder={`${ruta.from} → ${ruta.to}`} />
+                  <span
+                    style={{
+                      position: "absolute",
+                      bottom: 10,
+                      left: 10,
+                      background: "var(--pill-bg)",
+                      color: "var(--pill-fg)",
+                      borderRadius: 999,
+                      padding: "5px 12px",
+                      fontSize: 12.5,
+                      fontWeight: 700,
+                      pointerEvents: "none",
+                      boxShadow: "0 2px 10px rgba(0,0,0,.18)",
+                    }}
+                  >
+                    Desde S/ {ruta.priceFrom}
+                  </span>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: "rgba(0,0,0,.55)",
+                      color: "#fff",
+                      borderRadius: 999,
+                      padding: "4px 10px",
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    Salidas: {ruta.departures.join(" · ")}
+                  </span>
+                </div>
               </div>
-              <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
-                Cusco → Arequipa en bus turístico
-              </h3>
-              <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
-                Nuestra ruta insignia: asientos semicama, WiFi a bordo y salidas diarias 07:30 y 20:30. Desde S/ 90.
-              </p>
-              <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={10} src={IMG_TEMPLO} placeholder="Bus turístico" />
-              </div>
-            </div>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "var(--muted)" }}>Video · En ruta</span>
-                <Link href="/destinos" style={{ color: "var(--fg)", fontSize: 15 }}>
-                  +
-                </Link>
-              </div>
-              <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
-                Así se viaja con nosotros
-              </h3>
-              <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.45, color: "var(--muted)", textWrap: "pretty" }}>
-                Un vistazo al camino: volcanes, valles y el altiplano desde la ventana de nuestra flota.
-              </p>
-              <div style={{ position: "relative", width: "100%", height: 200 }}>
-                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video en ruta" />
-              </div>
-            </div>
+            ))}
           </div>
         </aside>
       </div>

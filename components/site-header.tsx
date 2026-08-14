@@ -4,6 +4,7 @@ import { CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
+import { LOGO_URL } from "@/lib/data";
 
 const navPill: CSSProperties = {
   background: "var(--pill-bg)",
@@ -103,17 +104,17 @@ export default function SiteHeader() {
           href="/"
           aria-label="Inca Travel Peru — inicio"
           style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: "var(--fg)",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
             marginRight: 8,
           }}
         >
-          <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LOGO_URL}
+            alt="Inca Travel Peru"
+            style={{ height: 34, width: "auto", display: "block", borderRadius: 8 }}
+          />
         </Link>
         <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", flexWrap: "wrap" }}>
           {NAV.map(({ label, href, Icon }) => {

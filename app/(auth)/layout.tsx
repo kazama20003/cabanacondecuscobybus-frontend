@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { LOGO_URL } from "@/lib/data";
 
 /* Layout del grupo (auth): mismo lenguaje visual de las vistas principales
    (fondo del sitio, tipografía y cards), sin header ni footer globales. */
@@ -19,19 +20,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       {/* Marca, como el header pero mínima */}
       <div style={{ width: "100%", maxWidth: 1080, padding: "12px 0" }}>
         <Link href="/" aria-label="Inca Travel Peru — inicio" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-          <span
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: "var(--fg)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--bg)", display: "inline-block" }} />
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={LOGO_URL}
+            alt="Inca Travel Peru"
+            style={{ height: 34, width: "auto", display: "block", borderRadius: 8 }}
+          />
           <strong style={{ fontSize: 14.5, letterSpacing: "-0.01em" }}>Inca Travel Peru</strong>
         </Link>
       </div>

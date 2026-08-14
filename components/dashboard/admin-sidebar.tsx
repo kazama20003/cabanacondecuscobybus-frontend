@@ -11,7 +11,6 @@ import {
   TagIcon,
   LayoutDashboardIcon,
   MapIcon,
-  MountainIcon,
   TicketIcon,
   UsersIcon,
 } from "lucide-react";
@@ -30,6 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { avatarStorage } from "@/lib/api";
+import { LOGO_URL } from "@/lib/data";
 
 const navegacion = [
   {
@@ -85,7 +85,8 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <Link href="/dashboard">
-                <MountainIcon className="size-5!" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={LOGO_URL} alt="" className="size-6! rounded-md object-contain" />
                 <span className="text-base font-semibold">Inca Travel Peru</span>
               </Link>
             </SidebarMenuButton>
