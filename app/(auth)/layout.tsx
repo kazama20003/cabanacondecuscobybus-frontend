@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { LOGO_URL } from "@/lib/data";
+import LangSwitcher from "@/components/lang-switcher";
 
 /* Layout del grupo (auth): mismo lenguaje visual de las vistas principales
    (fondo del sitio, tipografía y cards), sin header ni footer globales. */
@@ -17,8 +18,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         padding: "0 24px 48px",
       }}
     >
-      {/* Marca, como el header pero mínima */}
-      <div style={{ width: "100%", maxWidth: 1080, padding: "12px 0" }}>
+      {/* Marca, como el header pero mínima, con selector de idioma */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 1080,
+          padding: "12px 0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <Link href="/" aria-label="Inca Travel Peru — inicio" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -28,6 +38,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           />
           <strong style={{ fontSize: 14.5, letterSpacing: "-0.01em" }}>Inca Travel Peru</strong>
         </Link>
+        <LangSwitcher />
       </div>
 
       <main
