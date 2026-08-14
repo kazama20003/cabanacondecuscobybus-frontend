@@ -31,7 +31,8 @@ declare global {
             client_id: string;
             callback: (respuesta: CredencialGoogle) => void;
           }) => void;
-          prompt: () => void;
+          prompt: (momento?: (notificacion: unknown) => void) => void;
+          cancel: () => void;
         };
       };
     };
@@ -68,6 +69,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [hover, setHover] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const gisListo = useRef(false);
+  const promptEnCurso = useRef(false);
   const router = useRouter();
   const sesionGoogle = useSesionGoogle();
 
@@ -92,12 +94,19 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   );
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID || document.getElementById("google-gsi")) return;
-    const script = document.createElement("script");
-    script.id = "google-gsi";
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    document.head.appendChild(script);
+    if (GOOGLE_CLIENT_ID && !document.getElementById("google-gsi")) {
+      const script = document.createElement("script");
+      script.id = "google-gsi";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      document.head.appendChild(script);
+    }
+    // Al desmontar (navegar login <-> registro), cancela cualquier prompt
+    // FedCM pendiente para que no quede una peticion colgada/abortada.
+    return () => {
+      promptEnCurso.current = false;
+      window.google?.accounts.id.cancel();
+    };
   }, []);
 
   const iniciarConGoogle = () => {
@@ -109,6 +118,8 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       setMensaje("Google aún está cargando, intenta de nuevo en un segundo.");
       return;
     }
+    // FedCM solo admite una peticion a la vez: ignora clics repetidos.
+    if (promptEnCurso.current) return;
     if (!gisListo.current) {
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
@@ -116,7 +127,11 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       });
       gisListo.current = true;
     }
-    window.google.accounts.id.prompt();
+    promptEnCurso.current = true;
+    window.google.accounts.id.prompt(() => {
+      // Momento resuelto (mostrado, omitido o cerrado): libera el guard.
+      promptEnCurso.current = false;
+    });
   };
 
   return (

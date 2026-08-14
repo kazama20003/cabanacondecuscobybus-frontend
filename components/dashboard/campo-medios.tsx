@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { servicioArchivos } from "@/lib/api";
 import type { MedioEntrada } from "@/lib/api";
 
-/* Subida de imágenes y videos a Cloudflare R2 (URL firmada del backend).
+/* Subida de imágenes y videos a AWS S3 (URL firmada del backend).
    Los medios quedan como lista de URLs públicas que se envían junto al
    transporte/tour al crearlo. */
 export function CampoMedios({
@@ -127,8 +127,8 @@ export function CampoMedios({
         </ul>
       )}
       <p className="text-muted-foreground text-xs">
-        JPG, PNG, WebP, MP4, WebM o MOV. Se guardan en Cloudflare R2 — requiere
-        las credenciales R2_* en el backend.
+        JPG, PNG, WebP, MP4, WebM o MOV. Se guardan en AWS S3 — requiere las
+        credenciales AWS_* y S3_BUCKET en el backend.
       </p>
     </div>
   );
