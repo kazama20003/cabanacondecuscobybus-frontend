@@ -15,6 +15,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
+import LangSwitcher from "@/components/lang-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -119,6 +120,9 @@ export function AdminSidebar(props: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <div className="px-2 pb-1">
+          <LangSwitcher direction="up" align="left" />
+        </div>
         <NavUser user={usuario} />
       </SidebarFooter>
     </Sidebar>
