@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSesionGoogle } from "@/hooks/use-auth";
@@ -22,6 +22,13 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 type CredencialGoogle = { credential?: string };
 
+let googleInicializado = false;
+let manejarCredencialActiva: ((respuesta: CredencialGoogle) => void) | null = null;
+
+function reenviarCredencialGoogle(respuesta: CredencialGoogle) {
+  manejarCredencialActiva?.(respuesta);
+}
+
 declare global {
   interface Window {
     google?: {
@@ -30,9 +37,9 @@ declare global {
           initialize: (config: {
             client_id: string;
             callback: (respuesta: CredencialGoogle) => void;
+            use_fedcm_for_prompt: boolean;
           }) => void;
-          prompt: (momento?: (notificacion: unknown) => void) => void;
-          cancel: () => void;
+          prompt: () => void;
         };
       };
     };
@@ -68,13 +75,11 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const isLogin = mode === "login";
   const [hover, setHover] = useState(false);
   const [mensaje, setMensaje] = useState<string | null>(null);
-  const gisListo = useRef(false);
-  const promptEnCurso = useRef(false);
   const router = useRouter();
   const sesionGoogle = useSesionGoogle();
 
-  const alRecibirCredencial = useCallback(
-    (respuesta: CredencialGoogle) => {
+  const manejarCredencialRef = useRef<(respuesta: CredencialGoogle) => void>(() => {});
+  manejarCredencialRef.current = (respuesta) => {
       if (!respuesta.credential) return;
       setMensaje(null);
       const foto = extraerFotoGoogle(respuesta.credential);
@@ -89,11 +94,11 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
         onError: (error) =>
           setMensaje(error instanceof Error ? error.message : "No se pudo iniciar sesión."),
       });
-    },
-    [router, sesionGoogle],
-  );
+  };
 
   useEffect(() => {
+    manejarCredencialActiva = (respuesta) => manejarCredencialRef.current(respuesta);
+
     if (GOOGLE_CLIENT_ID && !document.getElementById("google-gsi")) {
       const script = document.createElement("script");
       script.id = "google-gsi";
@@ -101,11 +106,10 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       script.async = true;
       document.head.appendChild(script);
     }
-    // Al desmontar (navegar login <-> registro), cancela cualquier prompt
-    // FedCM pendiente para que no quede una peticion colgada/abortada.
     return () => {
-      promptEnCurso.current = false;
-      window.google?.accounts.id.cancel();
+      if (manejarCredencialActiva) {
+        manejarCredencialActiva = null;
+      }
     };
   }, []);
 
@@ -118,20 +122,15 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       setMensaje("Google aún está cargando, intenta de nuevo en un segundo.");
       return;
     }
-    // FedCM solo admite una peticion a la vez: ignora clics repetidos.
-    if (promptEnCurso.current) return;
-    if (!gisListo.current) {
+    if (!googleInicializado) {
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
-        callback: alRecibirCredencial,
+        callback: reenviarCredencialGoogle,
+        use_fedcm_for_prompt: true,
       });
-      gisListo.current = true;
+      googleInicializado = true;
     }
-    promptEnCurso.current = true;
-    window.google.accounts.id.prompt(() => {
-      // Momento resuelto (mostrado, omitido o cerrado): libera el guard.
-      promptEnCurso.current = false;
-    });
+    window.google.accounts.id.prompt();
   };
 
   return (
