@@ -37,6 +37,7 @@ interface FilaParada {
   minutos: string;
   duracionParadaMinutos: string;
   descripcion: string;
+  medios: MedioEntrada[];
 }
 
 const paradaVacia: FilaParada = {
@@ -46,6 +47,7 @@ const paradaVacia: FilaParada = {
   minutos: "",
   duracionParadaMinutos: "",
   descripcion: "",
+  medios: [],
 };
 
 const inicial = {
@@ -61,6 +63,7 @@ const inicial = {
 export default function PaginaNuevaRuta() {
   const router = useRouter();
   const [campos, setCampos] = useState(inicial);
+  const [tituloAutomatico, setTituloAutomatico] = useState(true);
   const [contenido, setContenido] = useState({
     titulo: "",
     resumen: "",
@@ -69,6 +72,23 @@ export default function PaginaNuevaRuta() {
   const [paradas, setParadas] = useState<FilaParada[]>([]);
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
   const crear = useCrearTransporte();
+
+  const tituloRuta = [campos.origenNombre, campos.destinoNombre]
+    .filter(Boolean)
+    .join(" → ");
+
+  const cambiarLugar = (clave: "origenNombre" | "destinoNombre", valor: string) => {
+    const siguiente = { ...campos, [clave]: valor };
+    setCampos(siguiente);
+    if (tituloAutomatico) {
+      setContenido((actual) => ({
+        ...actual,
+        titulo: [siguiente.origenNombre, siguiente.destinoNombre]
+          .filter(Boolean)
+          .join(" → "),
+      }));
+    }
+  };
 
   const cambiarParada = (i: number, clave: keyof FilaParada, valor: string) =>
     setParadas((f) =>
@@ -97,10 +117,14 @@ export default function PaginaNuevaRuta() {
                 ? Number(p.duracionParadaMinutos)
                 : 0,
               descripcion: p.descripcion || undefined,
+              medios: p.medios.length ? p.medios : undefined,
             }))
           : undefined,
         medios: medios.length ? medios : undefined,
-        contenido: contenido.titulo ? contenido : undefined,
+        contenido: {
+          ...contenido,
+          titulo: contenido.titulo.trim() || tituloRuta,
+        },
       },
       { onSuccess: () => router.push("/dashboard/transportes") },
     );
@@ -151,10 +175,43 @@ export default function PaginaNuevaRuta() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="titulo">Título</Label>
-              <Input id="titulo" required placeholder="Bus turístico Cusco → Cabanaconde por el Valle del Colca" value={contenido.titulo} onChange={(e) => setContenido((c) => ({ ...c, titulo: e.target.value }))} />
+            <div className="rounded-xl border bg-muted/30 px-4 py-3">
+              <p className="text-muted-foreground text-xs font-medium">Nombre de la ruta</p>
+              <p className="mt-1 text-lg font-semibold">{tituloRuta || "Origen → Destino"}</p>
+              <p className="text-muted-foreground mt-1 text-xs">Se genera automáticamente con el origen y destino.</p>
             </div>
+            <details className="group rounded-lg border">
+              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium">
+                Personalizar título comercial <span className="text-muted-foreground font-normal">(opcional)</span>
+              </summary>
+              <div className="grid gap-2 border-t px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <Label htmlFor="titulo">Título personalizado</Label>
+                  {!tituloAutomatico && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto p-0 text-xs"
+                      onClick={() => {
+                        setTituloAutomatico(true);
+                        setContenido((actual) => ({ ...actual, titulo: tituloRuta }));
+                      }}
+                    >
+                      Restablecer automático
+                    </Button>
+                  )}
+                </div>
+                <Input
+                  id="titulo"
+                  placeholder="Viaje panorámico Cabanaconde → Cusco"
+                  value={contenido.titulo}
+                  onChange={(e) => {
+                    setTituloAutomatico(false);
+                    setContenido((c) => ({ ...c, titulo: e.target.value }));
+                  }}
+                />
+              </div>
+            </details>
             <div className="grid gap-2">
               <Label htmlFor="resumen">Resumen corto</Label>
               <Input id="resumen" required placeholder="Viaje panorámico con paradas para fotos en los miradores del Colca" value={contenido.resumen} onChange={(e) => setContenido((c) => ({ ...c, resumen: e.target.value }))} />
@@ -183,7 +240,7 @@ export default function PaginaNuevaRuta() {
               </p>
             )}
             {paradas.map((fila, i) => (
-              <div key={i} className="grid gap-3 rounded-lg border p-4 md:grid-cols-2">
+              <div key={i} className="grid gap-4 rounded-xl border bg-muted/20 p-4 md:grid-cols-2">
                 <div className="flex items-center justify-between md:col-span-2">
                   <span className="text-muted-foreground text-xs font-semibold">
                     PARADA {i + 1}
@@ -235,6 +292,18 @@ export default function PaginaNuevaRuta() {
                     onChange={(e) => cambiarParada(i, "descripcion", e.target.value)}
                   />
                 </div>
+                <div className="md:col-span-2 rounded-lg border bg-background p-3">
+                  <CampoMedios
+                    categoria="transportes"
+                    medios={fila.medios}
+                    onCambiar={(mediosParada) =>
+                      setParadas((actuales) => actuales.map((parada, indice) =>
+                        indice === i ? { ...parada, medios: mediosParada } : parada,
+                      ))
+                    }
+                    soloImagenes
+                  />
+                </div>
               </div>
             ))}
             <Button
@@ -262,7 +331,7 @@ export default function PaginaNuevaRuta() {
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="origenNombre">Origen</Label>
-                <Input id="origenNombre" required placeholder="Cusco" value={campos.origenNombre} onChange={(e) => setCampos((c) => ({ ...c, origenNombre: e.target.value }))} />
+               <Input id="origenNombre" required placeholder="Cabanaconde" value={campos.origenNombre} onChange={(e) => cambiarLugar("origenNombre", e.target.value)} />
               </div>
               <CampoCoordenadas
                 etiqueta="Coordenadas del origen"
@@ -274,7 +343,7 @@ export default function PaginaNuevaRuta() {
               />
               <div className="grid gap-2">
                 <Label htmlFor="destinoNombre">Destino</Label>
-                <Input id="destinoNombre" required placeholder="Cabanaconde" value={campos.destinoNombre} onChange={(e) => setCampos((c) => ({ ...c, destinoNombre: e.target.value }))} />
+               <Input id="destinoNombre" required placeholder="Cusco" value={campos.destinoNombre} onChange={(e) => cambiarLugar("destinoNombre", e.target.value)} />
               </div>
               <CampoCoordenadas
                 etiqueta="Coordenadas del destino"
@@ -284,14 +353,18 @@ export default function PaginaNuevaRuta() {
                   setCampos((c) => ({ ...c, destinoLatitud: lat, destinoLongitud: lng }))
                 }
               />
-              <CampoDuracion
+               <CampoDuracion
                 etiqueta="Duración estimada del viaje"
                 requerido
                 minutosTotales={campos.duracionMinutosEstimada}
                 onCambiar={(minutos) =>
                   setCampos((c) => ({ ...c, duracionMinutosEstimada: minutos }))
                 }
-              />
+               />
+               <div className="rounded-lg border border-dashed bg-muted/30 p-3">
+                 <p className="text-muted-foreground text-xs font-medium">Así verá el cliente la dirección</p>
+                 <p className="mt-1 text-base font-semibold">{tituloRuta || "Origen → Destino"}</p>
+               </div>
             </CardContent>
           </Card>
 

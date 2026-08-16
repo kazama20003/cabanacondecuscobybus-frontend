@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
@@ -40,6 +41,7 @@ const inicial = {
 export default function PaginaNuevoTour() {
   const router = useRouter();
   const [campos, setCampos] = useState(inicial);
+  const [contenido, setContenido] = useState({ titulo: "", resumen: "", descripcion: "", queLlevar: "" });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
   const crear = useCrearTour();
 
@@ -57,6 +59,7 @@ export default function PaginaNuevoTour() {
         destinoLongitud: Number(campos.destinoLongitud),
         duracionMinutos: Number(campos.duracionMinutos),
         medios: medios.length ? medios : undefined,
+        contenido: contenido.titulo ? contenido : undefined,
       },
       { onSuccess: () => router.push("/dashboard/tours") },
     );
@@ -72,15 +75,28 @@ export default function PaginaNuevoTour() {
           </Link>
         </Button>
       </div>
-      <Card className="max-w-2xl">
-        <CardHeader>
-          <CardTitle>Nuevo tour</CardTitle>
-          <CardDescription>
-            El slug se genera a partir del nombre del tour.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={enviar} className="grid gap-4">
+      <form onSubmit={enviar} className="grid max-w-6xl gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>1 · Experiencia del viajero</CardTitle>
+              <CardDescription>Este contenido se publica en la ficha del tour y se traduce automáticamente al inglés.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2"><Label htmlFor="titulo">Título comercial</Label><Input id="titulo" required placeholder="Valle Sagrado: historia, cultura y paisajes" value={contenido.titulo} onChange={(e) => setContenido((actual) => ({ ...actual, titulo: e.target.value }))} /></div>
+              <div className="grid gap-2"><Label htmlFor="resumen">Resumen corto</Label><Input id="resumen" required placeholder="Un día entre sitios arqueológicos y pueblos andinos" value={contenido.resumen} onChange={(e) => setContenido((actual) => ({ ...actual, resumen: e.target.value }))} /></div>
+              <div className="grid gap-2"><Label htmlFor="descripcion">Descripción completa</Label><Textarea id="descripcion" required rows={5} placeholder="Explica qué verá y vivirá el viajero durante el tour…" value={contenido.descripcion} onChange={(e) => setContenido((actual) => ({ ...actual, descripcion: e.target.value }))} /></div>
+              <div className="grid gap-2"><Label htmlFor="queLlevar">Qué llevar</Label><Input id="queLlevar" placeholder="Bloqueador, agua, casaca ligera y documento de identidad" value={contenido.queLlevar} onChange={(e) => setContenido((actual) => ({ ...actual, queLlevar: e.target.value }))} /></div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid content-start gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>2 · Datos del tour</CardTitle>
+              <CardDescription>El slug se genera automáticamente desde el nombre.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="nombreTour">Nombre del tour</Label>
               <Input id="nombreTour" required placeholder="Valle Sagrado full day" value={campos.nombre} onChange={cambiar("nombre")} />
@@ -106,23 +122,27 @@ export default function PaginaNuevoTour() {
               }
             />
 
-            <CampoMedios categoria="tours" medios={medios} onCambiar={setMedios} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>3 · Fotos y videos</CardTitle><CardDescription>Usa imágenes atractivas del tour; después podrás añadir fotos a cada paso del itinerario.</CardDescription></CardHeader>
+            <CardContent><CampoMedios categoria="tours" medios={medios} onCambiar={setMedios} /></CardContent>
+          </Card>
+        </div>
 
+        <div className="flex items-center gap-2 lg:col-span-3">
             {crear.isError && (
               <p className="text-destructive text-sm">{crear.error.message}</p>
             )}
 
-            <div className="flex gap-2">
-              <Button type="submit" disabled={crear.isPending}>
-                {crear.isPending ? "Guardando…" : "Crear tour"}
-              </Button>
-              <Button type="button" variant="outline" asChild>
-                <Link href="/dashboard/tours">Cancelar</Link>
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            <Button type="submit" disabled={crear.isPending}>
+              {crear.isPending ? "Guardando…" : "Crear tour"}
+            </Button>
+            <Button type="button" variant="outline" asChild>
+              <Link href="/dashboard/tours">Cancelar</Link>
+            </Button>
+        </div>
+      </form>
     </div>
   );
 }
