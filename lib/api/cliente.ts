@@ -88,6 +88,14 @@ export async function solicitar<T>(
       throw new ApiError(res.status, mensaje);
     }
     return (await res.json()) as T;
+  } catch (error) {
+    if (error instanceof TypeError && error.message === "Failed to fetch") {
+      throw new ApiError(
+        0,
+        "No se pudo conectar con el servidor. Verifica que el backend esté iniciado y disponible.",
+      );
+    }
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
