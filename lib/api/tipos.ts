@@ -100,6 +100,7 @@ export interface ParadaApi {
   minutos: number;
   duracionParadaMinutos: number;
   descripcion: string | null;
+  imagenes?: ImagenApi[];
 }
 
 export interface ParadaEntrada {
@@ -109,6 +110,7 @@ export interface ParadaEntrada {
   minutos: number;
   duracionParadaMinutos?: number;
   descripcion?: string;
+  medios?: MedioEntrada[];
 }
 
 export interface TransporteApi {
@@ -129,6 +131,7 @@ export interface TourApi {
   nombre?: string;
   imagenes?: ImagenApi[];
   salidas?: SalidaApi[];
+  itinerarios?: ItinerarioApi[];
   [clave: string]: unknown;
 }
 
@@ -192,6 +195,7 @@ export interface ItinerarioEntrada {
   descripcion: string;
   latitud?: number;
   longitud?: number;
+  medios?: MedioEntrada[];
 }
 
 export interface ItinerarioApi {
@@ -201,6 +205,7 @@ export interface ItinerarioApi {
   descripcion: string;
   latitud?: number | string | null;
   longitud?: number | string | null;
+  imagenes?: ImagenApi[];
 }
 
 /* --- Salidas (administración) --- */
