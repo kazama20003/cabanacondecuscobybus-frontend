@@ -27,6 +27,13 @@ function FlagUS({ size = 16 }: { size?: number }) {
 const LANGS = [
   { code: "es", label: "Español", short: "ES", Flag: FlagPE },
   { code: "en", label: "English", short: "EN", Flag: FlagUS },
+  { code: "fr", label: "Français", short: "FR", Flag: FlagUS },
+  { code: "it", label: "Italiano", short: "IT", Flag: FlagUS },
+  { code: "pt", label: "Português", short: "PT", Flag: FlagUS },
+  { code: "zh", label: "中文", short: "ZH", Flag: FlagUS },
+  { code: "ja", label: "日本語", short: "JA", Flag: FlagUS },
+  { code: "ru", label: "Русский", short: "RU", Flag: FlagUS },
+  { code: "de", label: "Deutsch", short: "DE", Flag: FlagUS },
 ] as const;
 
 export type LangCode = (typeof LANGS)[number]["code"];

@@ -17,17 +17,19 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
+import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useDefinirItinerario, useTour } from "@/hooks/use-catalogo";
-import type { ItinerarioApi } from "@/lib/api";
+import type { ItinerarioApi, MedioEntrada } from "@/lib/api";
 
 interface FilaItem {
   titulo: string;
   descripcion: string;
   latitud: string;
   longitud: string;
+  medios: MedioEntrada[];
 }
 
-const itemVacio: FilaItem = { titulo: "", descripcion: "", latitud: "", longitud: "" };
+const itemVacio: FilaItem = { titulo: "", descripcion: "", latitud: "", longitud: "", medios: [] };
 
 export default function PaginaItinerario({
   params,
@@ -42,7 +44,7 @@ export default function PaginaItinerario({
 
   useEffect(() => {
     if (!tour) return;
-    const items = (tour.itinerarios as ItinerarioApi[] | undefined) ?? [];
+    const items = tour.itinerarios ?? [];
     setFilas(
       items.length
         ? items.map((i) => ({
@@ -50,6 +52,7 @@ export default function PaginaItinerario({
             descripcion: i.descripcion,
             latitud: i.latitud != null ? String(i.latitud) : "",
             longitud: i.longitud != null ? String(i.longitud) : "",
+            medios: i.imagenes?.map(({ url, clave, textoAlterno, tipo }) => ({ url, clave: clave ?? undefined, textoAlterno: textoAlterno ?? undefined, tipo })) ?? [],
           }))
         : [{ ...itemVacio }],
     );
@@ -69,6 +72,7 @@ export default function PaginaItinerario({
           descripcion: f.descripcion,
           latitud: f.latitud ? Number(f.latitud) : undefined,
           longitud: f.longitud ? Number(f.longitud) : undefined,
+          medios: f.medios.length ? f.medios : undefined,
         })),
       },
       { onSuccess: () => router.push("/dashboard/tours") },
@@ -95,7 +99,7 @@ export default function PaginaItinerario({
         </Button>
       </div>
 
-      <Card className="max-w-3xl">
+      <Card className="max-w-4xl">
         <CardHeader>
           <CardTitle>Itinerario: {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}</CardTitle>
           <CardDescription>
@@ -106,8 +110,8 @@ export default function PaginaItinerario({
         <CardContent>
           <form onSubmit={guardar} className="grid gap-4">
             {filas.map((fila, i) => (
-              <div key={i} className="grid gap-3 rounded-lg border p-4">
-                <div className="flex items-center justify-between">
+              <div key={i} className="grid gap-3 rounded-xl border bg-muted/20 p-4 md:grid-cols-2">
+                <div className="flex items-center justify-between md:col-span-2">
                   <span className="text-muted-foreground text-xs font-semibold">
                     PASO {i + 1}
                   </span>
@@ -151,6 +155,14 @@ export default function PaginaItinerario({
                     cambiar(i, "longitud", lng);
                   }}
                 />
+                <div className="md:col-span-2 rounded-lg border bg-background p-3">
+                  <CampoMedios
+                    categoria="tours"
+                    medios={fila.medios}
+                    onCambiar={(medios) => setFilas((actuales) => actuales.map((item, indice) => indice === i ? { ...item, medios } : item))}
+                    soloImagenes
+                  />
+                </div>
               </div>
             ))}
 

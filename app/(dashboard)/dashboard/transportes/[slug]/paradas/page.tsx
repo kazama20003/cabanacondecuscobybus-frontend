@@ -17,7 +17,9 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
+import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useDefinirParadas, useTransporte } from "@/hooks/use-catalogo";
+import type { MedioEntrada } from "@/lib/api";
 
 interface FilaParada {
   nombre: string;
@@ -26,6 +28,7 @@ interface FilaParada {
   minutos: string;
   duracionParadaMinutos: string;
   descripcion: string;
+  medios: MedioEntrada[];
 }
 
 const filaVacia: FilaParada = {
@@ -35,6 +38,7 @@ const filaVacia: FilaParada = {
   minutos: "",
   duracionParadaMinutos: "",
   descripcion: "",
+  medios: [],
 };
 
 /* Link de Google Maps con la ruta completa: origen → paradas → destino */
@@ -77,6 +81,7 @@ export default function PaginaParadas({
       minutos: String(p.minutos),
       duracionParadaMinutos: String(p.duracionParadaMinutos ?? 0),
       descripcion: p.descripcion ?? "",
+      medios: p.imagenes?.map(({ url, clave, textoAlterno, tipo }) => ({ url, clave: clave ?? undefined, textoAlterno: textoAlterno ?? undefined, tipo })) ?? [],
     }));
     setFilas(existentes.length ? existentes : [{ ...filaVacia }]);
   }, [transporte]);
@@ -101,6 +106,7 @@ export default function PaginaParadas({
             ? Number(f.duracionParadaMinutos)
             : 0,
           descripcion: f.descripcion || undefined,
+          medios: f.medios.length ? f.medios : undefined,
         })),
       },
       { onSuccess: () => router.push("/dashboard/transportes") },
@@ -141,7 +147,7 @@ export default function PaginaParadas({
         </Button>
       </div>
 
-      <Card className="max-w-2xl">
+      <Card className="max-w-4xl">
         <CardHeader>
           <CardTitle>
             Paradas: {transporte.origenNombre} → {transporte.destinoNombre}
@@ -155,8 +161,8 @@ export default function PaginaParadas({
         <CardContent>
           <form onSubmit={guardar} className="grid gap-4">
             {filas.map((fila, i) => (
-              <div key={i} className="grid gap-2 rounded-lg border p-3">
-                <div className="flex items-center justify-between">
+              <div key={i} className="grid gap-3 rounded-xl border bg-muted/20 p-4 md:grid-cols-2">
+                <div className="flex items-center justify-between md:col-span-2">
                   <span className="text-muted-foreground text-xs font-semibold">
                     PARADA {i + 1}
                   </span>
@@ -178,6 +184,14 @@ export default function PaginaParadas({
                     placeholder="Mirador de los Andes"
                     value={fila.nombre}
                     onChange={(e) => cambiar(i, "nombre", e.target.value)}
+                  />
+                </div>
+                <div className="md:col-span-2 rounded-lg border bg-background p-3">
+                  <CampoMedios
+                    categoria="transportes"
+                    medios={fila.medios}
+                    onCambiar={(medios) => setFilas((actuales) => actuales.map((parada, indice) => indice === i ? { ...parada, medios } : parada))}
+                    soloImagenes
                   />
                 </div>
                 <CampoCoordenadas

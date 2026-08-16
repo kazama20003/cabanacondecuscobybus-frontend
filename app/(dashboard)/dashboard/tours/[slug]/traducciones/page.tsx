@@ -27,7 +27,15 @@ import type { TraduccionApi } from "@/lib/api";
 const NOMBRES_IDIOMA: Record<string, string> = {
   es: "Español",
   en: "English",
+  fr: "Français",
+  it: "Italiano",
+  pt: "Português",
+  zh: "中文",
+  ja: "日本語",
+  ru: "Русский",
+  de: "Deutsch",
 };
+const IDIOMAS = Object.keys(NOMBRES_IDIOMA);
 
 function FormularioIdioma({
   traduccion,
@@ -193,8 +201,9 @@ export default function PaginaTraduccionesTour({
                   </TabsTrigger>
                 ))}
               </TabsList>
-              {!traducciones.some((t) => t.idioma === "en") && (
-                <Button
+               {IDIOMAS.filter((idioma) => !traducciones.some((t) => t.idioma === idioma)).map((idioma) => (
+                 <Button
+                   key={idioma}
                   type="button"
                   variant="outline"
                   size="sm"
@@ -205,14 +214,14 @@ export default function PaginaTraduccionesTour({
                     crearTraduccion.mutate({
                       tipo: "tours",
                       id: tour.id,
-                      idioma: "en",
+                       idioma,
                       datos: { titulo: espanol.titulo, resumen: espanol.resumen, descripcion: espanol.descripcion, queLlevar: espanol.queLlevar ?? undefined, estado: "BORRADOR" },
                     });
                   }}
                 >
-                  Añadir inglés
-                </Button>
-              )}
+                   Añadir {NOMBRES_IDIOMA[idioma]}
+                 </Button>
+               ))}
               </div>
               {traducciones.map((t) => (
                 <TabsContent key={t.idioma} value={t.idioma} className="pt-4">
