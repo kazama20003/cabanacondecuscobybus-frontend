@@ -15,15 +15,15 @@ export default function PaginaImagenes() {
         <CardHeader>
           <CardTitle>Imágenes</CardTitle>
           <CardDescription>
-            El backend genera URLs firmadas de carga a AWS S3 vía
-            POST /api/administracion/archivos/cargas (admin y operador). Las
-            imágenes se suben desde los formularios de rutas y tours.
+            Las imágenes y videos se cargan de forma segura a Cloudinary desde
+            los formularios de rutas, tours y promociones. Al eliminar un medio
+            antes de guardar, también se elimina su recurso remoto.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            Requiere en el backend: AWS_REGION, AWS_ACCESS_KEY_ID,
-            AWS_SECRET_ACCESS_KEY y S3_BUCKET.
+            Requiere CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y
+            CLOUDINARY_API_SECRET en el backend.
           </p>
         </CardContent>
       </Card>

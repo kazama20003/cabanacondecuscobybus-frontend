@@ -22,8 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useCrearPromocion } from "@/hooks/use-promociones";
-import type { ObjetivoPromocion, TipoPromocion } from "@/lib/api";
+import type { MedioEntrada, ObjetivoPromocion, TipoPromocion } from "@/lib/api";
 
 const TIPOS: { valor: TipoPromocion; nombre: string }[] = [
   { valor: "DESCUENTO", nombre: "Descuento con cupón" },
@@ -48,6 +49,7 @@ export default function PaginaNuevaPromocion() {
     fechaFin: "",
     limiteUsos: "",
   });
+  const [medios, setMedios] = useState<MedioEntrada[]>([]);
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +71,8 @@ export default function PaginaNuevaPromocion() {
         fechaInicio: new Date(campos.fechaInicio).toISOString(),
         fechaFin: new Date(campos.fechaFin).toISOString(),
         limiteUsos: campos.limiteUsos ? Number(campos.limiteUsos) : undefined,
+        imagenUrl: medios[0]?.url,
+        imagenClave: medios[0]?.clave,
       },
       { onSuccess: () => router.push("/dashboard/promociones") },
     );
@@ -127,6 +131,7 @@ export default function PaginaNuevaPromocion() {
                 </Select>
               </div>
             </div>
+            <CampoMedios categoria="promociones" medios={medios} onCambiar={setMedios} soloImagenes maximo={1} />
             <div className="grid gap-2">
               <Label htmlFor="cuponPromo">Cupón (opcional)</Label>
               <Input id="cuponPromo" placeholder="ANIV20 — el cliente lo escribe al reservar" value={campos.codigo} onChange={(e) => setCampos((c) => ({ ...c, codigo: e.target.value.toUpperCase() }))} />

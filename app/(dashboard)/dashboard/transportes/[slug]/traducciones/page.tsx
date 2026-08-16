@@ -125,6 +125,7 @@ export default function PaginaTraducciones({
     "transportes",
     transporte?.id,
   );
+  const crearTraduccion = useEditarTraduccion();
 
   if (isLoading || !transporte || !traducciones) {
     return (
@@ -152,8 +153,8 @@ export default function PaginaTraducciones({
             Traducciones: {transporte.origenNombre} → {transporte.destinoNombre}
           </CardTitle>
           <CardDescription>
-            El inglés se generó automáticamente con Google Translate — revisa y
-            corrige lo que suene raro. Los cambios se publican al guardar.
+            Redacta y publica las traducciones manualmente. El sitio usa español
+            mientras una traducción publicada no esté disponible.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -164,6 +165,7 @@ export default function PaginaTraducciones({
             </p>
           ) : (
             <Tabs defaultValue={traducciones[0].idioma}>
+              <div className="flex flex-wrap items-center gap-2">
               <TabsList>
                 {traducciones.map((t) => (
                   <TabsTrigger key={t.idioma} value={t.idioma}>
@@ -177,6 +179,27 @@ export default function PaginaTraducciones({
                   </TabsTrigger>
                 ))}
               </TabsList>
+              {!traducciones.some((t) => t.idioma === "en") && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={crearTraduccion.isPending}
+                  onClick={() => {
+                    const espanol = traducciones.find((t) => t.idioma === "es");
+                    if (!espanol) return;
+                    crearTraduccion.mutate({
+                      tipo: "transportes",
+                      id: transporte.id,
+                      idioma: "en",
+                      datos: { titulo: espanol.titulo, resumen: espanol.resumen, descripcion: espanol.descripcion, estado: "BORRADOR" },
+                    });
+                  }}
+                >
+                  Añadir inglés
+                </Button>
+              )}
+              </div>
               {traducciones.map((t) => (
                 <TabsContent key={t.idioma} value={t.idioma} className="pt-4">
                   <FormularioIdioma

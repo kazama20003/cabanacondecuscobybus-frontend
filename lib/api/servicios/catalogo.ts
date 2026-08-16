@@ -50,6 +50,12 @@ export const servicioCatalogo = {
       cuerpo: datos,
     }),
 
+  eliminarTransporte: (id: string) =>
+    solicitar<{ mensaje: string }>(endpoints.catalogo.eliminarTransporte(id), { metodo: "DELETE" }),
+
+  eliminarTour: (id: string) =>
+    solicitar<{ mensaje: string }>(endpoints.catalogo.eliminarTour(id), { metodo: "DELETE" }),
+
   definirParadas: (transporteId: string, paradas: ParadaEntrada[]) =>
     solicitar<ParadaApi[]>(endpoints.catalogo.definirParadas(transporteId), {
       metodo: "POST",

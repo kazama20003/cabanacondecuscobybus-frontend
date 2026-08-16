@@ -1,33 +1,39 @@
-import { solicitar } from "../cliente";
-import { endpoints } from "../config";
+import { apiConfig, endpoints } from "../config";
+import { tokenStorage } from "../cliente";
 import type { CargaArchivo } from "../tipos";
 
 export const servicioArchivos = {
-  /** Pide al backend una URL firmada de carga a Cloudflare R2. */
-  crearCarga: (archivo: File, categoria: "transportes" | "tours" | "comprobantes") =>
-    solicitar<CargaArchivo>(endpoints.archivos.crearCarga, {
-      metodo: "POST",
-      cuerpo: {
-        nombreArchivo: archivo.name,
-        tipoContenido: archivo.type,
-        categoria,
-      },
-    }),
-
-  /** Flujo completo: URL firmada + PUT del archivo a R2. Devuelve la URL pública. */
+  /** Sube el archivo al backend para que Cloudinary nunca exponga credenciales al navegador. */
   async subir(
     archivo: File,
-    categoria: "transportes" | "tours" | "comprobantes",
+    categoria: "transportes" | "tours" | "promociones" | "comprobantes",
   ): Promise<CargaArchivo> {
-    const carga = await servicioArchivos.crearCarga(archivo, categoria);
-    const respuesta = await fetch(carga.urlCarga, {
-      method: "PUT",
-      headers: { "Content-Type": archivo.type },
-      body: archivo,
+    const datos = new FormData();
+    datos.append("archivo", archivo);
+    const respuesta = await fetch(`${apiConfig.baseUrl}${endpoints.uploads.subir(categoria)}`, {
+      method: "POST",
+      headers: tokenStorage.obtener() ? { Authorization: `Bearer ${tokenStorage.obtener()}` } : {},
+      body: datos,
     });
     if (!respuesta.ok) {
-      throw new Error(`Falló la subida a R2 (HTTP ${respuesta.status})`);
+      const detalle = await respuesta.json().catch(() => null);
+      throw new Error(detalle?.message ?? `Falló la subida (HTTP ${respuesta.status})`);
     }
-    return carga;
+    return respuesta.json() as Promise<CargaArchivo>;
+  },
+
+  async eliminar(
+    clave: string,
+    tipo: "IMAGEN" | "VIDEO",
+    categoria: "transportes" | "tours" | "promociones" | "comprobantes",
+  ) {
+    const url = new URL(`${apiConfig.baseUrl}${endpoints.uploads.subir(categoria)}`);
+    url.searchParams.set("clave", clave);
+    url.searchParams.set("tipo", tipo);
+    const respuesta = await fetch(url, {
+      method: "DELETE",
+      headers: tokenStorage.obtener() ? { Authorization: `Bearer ${tokenStorage.obtener()}` } : {},
+    });
+    if (!respuesta.ok) throw new Error(`No se pudo eliminar el archivo (HTTP ${respuesta.status})`);
   },
 };

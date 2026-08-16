@@ -19,10 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { LanguagesIcon, MapPinIcon, PlusIcon } from "lucide-react";
+import { LanguagesIcon, MapPinIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
-import { useTransportes } from "@/hooks/use-catalogo";
+import { useEliminarTransporte, useTransportes } from "@/hooks/use-catalogo";
 
 export default function PaginaTransportes() {
   const [pagina, setPagina] = useState(1);
@@ -31,6 +31,7 @@ export default function PaginaTransportes() {
     porPagina: 10,
   });
   const transportes = resultado?.datos ?? [];
+  const eliminar = useEliminarTransporte();
 
   return (
     <div className="flex flex-col gap-4 p-4 lg:p-6">
@@ -98,6 +99,17 @@ export default function PaginaTransportes() {
                             <MapPinIcon />
                             Paradas ({t.paradas?.length ?? 0})
                           </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive"
+                          disabled={eliminar.isPending || (t.salidas?.length ?? 0) > 0}
+                          onClick={() => {
+                            if (window.confirm("Se eliminará la ruta y todos sus medios de Cloudinary. ¿Continuar?")) eliminar.mutate(t.id);
+                          }}
+                        >
+                          <Trash2Icon /> Eliminar
                         </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/dashboard/transportes/${t.slug}/traducciones`}>

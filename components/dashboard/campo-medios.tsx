@@ -8,17 +8,19 @@ import { Label } from "@/components/ui/label";
 import { servicioArchivos } from "@/lib/api";
 import type { MedioEntrada } from "@/lib/api";
 
-/* Subida de imágenes y videos a AWS S3 (URL firmada del backend).
-   Los medios quedan como lista de URLs públicas que se envían junto al
-   transporte/tour al crearlo. */
+/* El backend carga los medios a Cloudinary y devuelve la clave para su limpieza. */
 export function CampoMedios({
   categoria,
   medios,
   onCambiar,
+  soloImagenes = false,
+  maximo,
 }: {
-  categoria: "transportes" | "tours";
+  categoria: "transportes" | "tours" | "promociones";
   medios: MedioEntrada[];
   onCambiar: (medios: MedioEntrada[]) => void;
+  soloImagenes?: boolean;
+  maximo?: number;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [subiendo, setSubiendo] = useState(0);
@@ -30,9 +32,10 @@ export function CampoMedios({
     setSubiendo(archivos.length);
     const nuevos: MedioEntrada[] = [];
     try {
-      for (const archivo of Array.from(archivos)) {
+      const disponibles = maximo === undefined ? archivos.length : Math.max(0, maximo - medios.length);
+      for (const archivo of Array.from(archivos).slice(0, disponibles)) {
         const carga = await servicioArchivos.subir(archivo, categoria);
-        nuevos.push({ url: carga.urlPublica, tipo: carga.tipo });
+        nuevos.push({ url: carga.urlPublica, clave: carga.clave, tipo: carga.tipo });
         setSubiendo((n) => n - 1);
       }
       onCambiar([...medios, ...nuevos]);
@@ -53,14 +56,14 @@ export function CampoMedios({
         type="file"
         hidden
         multiple
-        accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"
+        accept={soloImagenes ? "image/jpeg,image/png,image/webp" : "image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"}
         onChange={(e) => subirArchivos(e.target.files)}
       />
       <div>
         <Button
           type="button"
           variant="outline"
-          disabled={subiendo > 0}
+          disabled={subiendo > 0 || (maximo !== undefined && medios.length >= maximo)}
           onClick={() => inputRef.current?.click()}
         >
           {subiendo > 0 ? (
@@ -117,7 +120,14 @@ export function CampoMedios({
                 variant="ghost"
                 size="icon"
                 className="text-destructive size-7"
-                onClick={() => onCambiar(medios.filter((_, j) => j !== i))}
+                onClick={async () => {
+                  try {
+                    if (medio.clave) await servicioArchivos.eliminar(medio.clave, medio.tipo ?? "IMAGEN", categoria);
+                    onCambiar(medios.filter((_, j) => j !== i));
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "No se pudo eliminar el archivo");
+                  }
+                }}
                 aria-label="Quitar"
               >
                 <Trash2Icon />
@@ -127,8 +137,7 @@ export function CampoMedios({
         </ul>
       )}
       <p className="text-muted-foreground text-xs">
-        JPG, PNG, WebP, MP4, WebM o MOV. Se guardan en AWS S3 — requiere las
-        credenciales AWS_* y S3_BUCKET en el backend.
+        {soloImagenes ? "JPG, PNG o WebP." : "JPG, PNG, WebP, MP4, WebM o MOV."} Se almacenan de forma segura en Cloudinary.
       </p>
     </div>
   );

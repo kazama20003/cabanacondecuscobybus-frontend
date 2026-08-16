@@ -19,10 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { LanguagesIcon, ListOrderedIcon, PlusIcon } from "lucide-react";
+import { LanguagesIcon, ListOrderedIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
-import { useTours } from "@/hooks/use-catalogo";
+import { useEliminarTour, useTours } from "@/hooks/use-catalogo";
 
 export default function PaginaTours() {
   const [pagina, setPagina] = useState(1);
@@ -31,6 +31,7 @@ export default function PaginaTours() {
     porPagina: 10,
   });
   const tours = resultado?.datos ?? [];
+  const eliminar = useEliminarTour();
 
   return (
     <div className="flex flex-col gap-4 p-4 lg:p-6">
@@ -96,6 +97,17 @@ export default function PaginaTours() {
                             <ListOrderedIcon />
                             Itinerario
                           </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive"
+                          disabled={eliminar.isPending || (tour.salidas?.length ?? 0) > 0}
+                          onClick={() => {
+                            if (window.confirm("Se eliminará el tour y todos sus medios de Cloudinary. ¿Continuar?")) eliminar.mutate(tour.id);
+                          }}
+                        >
+                          <Trash2Icon /> Eliminar
                         </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/dashboard/tours/${tour.slug}/traducciones`}>

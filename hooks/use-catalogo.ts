@@ -73,6 +73,22 @@ export function useCrearTour() {
   });
 }
 
+export function useEliminarTransporte() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => servicioCatalogo.eliminarTransporte(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+export function useEliminarTour() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => servicioCatalogo.eliminarTour(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
 export function useDefinirParadas() {
   const queryClient = useQueryClient();
   return useMutation({

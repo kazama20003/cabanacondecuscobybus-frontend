@@ -20,6 +20,8 @@ export const endpoints = {
     tour: (slug: string) => `/tours/${slug}`,
     crearTransporte: "/administracion/transportes",
     crearTour: "/administracion/tours",
+    eliminarTransporte: (id: string) => `/administracion/transportes/${id}`,
+    eliminarTour: (id: string) => `/administracion/tours/${id}`,
     definirParadas: (id: string) => `/administracion/transportes/${id}/paradas`,
     traducciones: (tipo: "transportes" | "tours", id: string) =>
       `/administracion/${tipo}/${id}/traducciones`,
@@ -33,8 +35,9 @@ export const endpoints = {
     actualizarSalida: (tipo: "transporte" | "tour", id: string) =>
       `/administracion/salidas/${tipo}/${id}`,
   },
-  archivos: {
-    crearCarga: "/administracion/archivos/cargas",
+  uploads: {
+    subir: (categoria: "transportes" | "tours" | "promociones" | "comprobantes") =>
+      `/administracion/uploads/${categoria}`,
   },
   usuarios: {
     listar: "/administracion/usuarios",

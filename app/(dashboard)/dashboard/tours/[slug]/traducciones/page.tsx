@@ -140,6 +140,7 @@ export default function PaginaTraduccionesTour({
   const { slug } = use(params);
   const { data: tour } = useTour(slug);
   const { data: traducciones, isLoading } = useTraducciones("tours", tour?.id);
+  const crearTraduccion = useEditarTraduccion();
 
   if (isLoading || !tour || !traducciones) {
     return (
@@ -167,8 +168,8 @@ export default function PaginaTraduccionesTour({
             Traducciones: {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}
           </CardTitle>
           <CardDescription>
-            El inglés se generó automáticamente — revisa y corrige lo que suene
-            raro. Los cambios se publican al guardar.
+            Redacta y publica las traducciones manualmente. El sitio usa español
+            mientras una traducción publicada no esté disponible.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -178,6 +179,7 @@ export default function PaginaTraduccionesTour({
             </p>
           ) : (
             <Tabs defaultValue={traducciones[0].idioma}>
+              <div className="flex flex-wrap items-center gap-2">
               <TabsList>
                 {traducciones.map((t) => (
                   <TabsTrigger key={t.idioma} value={t.idioma}>
@@ -191,6 +193,27 @@ export default function PaginaTraduccionesTour({
                   </TabsTrigger>
                 ))}
               </TabsList>
+              {!traducciones.some((t) => t.idioma === "en") && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={crearTraduccion.isPending}
+                  onClick={() => {
+                    const espanol = traducciones.find((t) => t.idioma === "es");
+                    if (!espanol) return;
+                    crearTraduccion.mutate({
+                      tipo: "tours",
+                      id: tour.id,
+                      idioma: "en",
+                      datos: { titulo: espanol.titulo, resumen: espanol.resumen, descripcion: espanol.descripcion, queLlevar: espanol.queLlevar ?? undefined, estado: "BORRADOR" },
+                    });
+                  }}
+                >
+                  Añadir inglés
+                </Button>
+              )}
+              </div>
               {traducciones.map((t) => (
                 <TabsContent key={t.idioma} value={t.idioma} className="pt-4">
                   <FormularioIdioma traduccion={t} tourId={tour.id} />

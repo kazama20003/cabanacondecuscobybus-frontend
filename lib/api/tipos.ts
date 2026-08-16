@@ -62,6 +62,7 @@ export type TipoMedio = "IMAGEN" | "VIDEO";
 
 export interface ImagenApi {
   url: string;
+  clave?: string | null;
   textoAlterno?: string | null;
   tipo?: TipoMedio;
   orden?: number;
@@ -69,6 +70,7 @@ export interface ImagenApi {
 
 export interface MedioEntrada {
   url: string;
+  clave?: string;
   textoAlterno?: string;
   tipo?: TipoMedio;
 }
@@ -76,9 +78,7 @@ export interface MedioEntrada {
 export interface CargaArchivo {
   clave: string;
   tipo: TipoMedio;
-  urlCarga: string;
   urlPublica: string;
-  venceEnSegundos: number;
 }
 
 export interface SalidaApi {
@@ -256,6 +256,7 @@ export interface PromocionApi {
   limiteUsos: number | null;
   usos: number;
   imagenUrl: string | null;
+  imagenClave?: string | null;
   activo: boolean;
 }
 
@@ -271,6 +272,7 @@ export interface CrearPromocionEntrada {
   fechaFin: string;
   limiteUsos?: number;
   imagenUrl?: string;
+  imagenClave?: string;
   activo?: boolean;
 }
 
