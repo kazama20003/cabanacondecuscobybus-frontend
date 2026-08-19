@@ -1,16 +1,40 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import { tours, CONTACT } from "@/lib/data";
+import { CONTACT } from "@/lib/data";
+import { useTours } from "@/hooks/use-catalogo";
+import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
-export const metadata: Metadata = {
-  title: "Tours — Inca Travel Peru",
-  description:
-    "Tours en Cusco, Arequipa y Puno: Machu Picchu, Valle Sagrado, Montaña de 7 Colores, Cañón del Colca y Lago Titicaca. Guías profesionales y salidas diarias.",
-};
+function traduccionDe(item: TourApi): TraduccionApi | undefined {
+  const arr = item.traducciones as TraduccionApi[] | undefined;
+  return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
+}
+
+function formatearDuracion(minutos?: number): string | null {
+  if (!minutos || minutos <= 0) return null;
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
+}
+
+function precioDesde(salidas?: SalidaApi[]): number | null {
+  if (!salidas || salidas.length === 0) return null;
+  const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
+  if (precios.length === 0) return null;
+  return Math.min(...precios);
+}
+
+function tituloTour(t: TourApi): string {
+  const tr = traduccionDe(t);
+  return tr?.titulo || t.nombre || (t.destinoNombre as string | undefined) || "Tour";
+}
 
 export default function ToursPage() {
+  const { data, isLoading, isError } = useTours();
+  const tours = data?.datos ?? [];
+
   return (
     <PageShell>
       <h1
@@ -32,54 +56,60 @@ export default function ToursPage() {
         guías oficiales en español e inglés.
       </p>
 
+      {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>Cargando tours…</p>}
+      {isError && (
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>No se pudieron cargar los tours. Intenta de nuevo más tarde.</p>
+      )}
+      {!isLoading && !isError && tours.length === 0 && (
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>Aún no hay tours disponibles.</p>
+      )}
+
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-        {tours.map((t) => (
-          <figure key={t.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
-            <div style={{ position: "relative", width: "100%", height: 220 }}>
-              <ImageSlot radius={10} src={t.image} placeholder={t.name} />
-              <span
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  left: 10,
-                  background: "var(--btn-bg)",
-                  color: "var(--btn-fg)",
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                  padding: "4px 8px",
-                  borderRadius: 8,
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {t.type}
-              </span>
-            </div>
-            <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-              <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                {t.location} · {t.duration} · {t.difficulty}
-              </div>
-              <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{t.name}</strong>
-              <div style={{ fontSize: 12.5, fontWeight: 600 }}>{t.departure}</div>
-              <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty", flex: 1 }}>{t.desc}</p>
-              <ul style={{ margin: "4px 0 8px", padding: 0, listStyle: "none", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.7 }}>
-                {t.includes.map((i) => (
-                  <li key={i}>✓ {i}</li>
-                ))}
-              </ul>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <strong style={{ fontSize: 15 }}>Desde S/ {t.priceFrom}</strong>
-                <a
-                  href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${t.name}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
-                >
-                  Reservar
-                </a>
-              </div>
-            </figcaption>
-          </figure>
-        ))}
+        {tours.map((t) => {
+          const tr = traduccionDe(t);
+          const titulo = tituloTour(t);
+          const dur = formatearDuracion(t.duracionMinutos as number | undefined);
+          const precio = precioDesde(t.salidas);
+          return (
+            <figure key={t.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
+              <Link href={`/tours/${t.slug}`} style={{ display: "block" }}>
+                <div style={{ position: "relative", width: "100%", height: 220 }}>
+                  <ImageSlot radius={10} src={t.imagenes?.[0]?.url} placeholder={titulo} />
+                </div>
+              </Link>
+              <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                {(t.destinoNombre || dur) && (
+                  <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                    {[t.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ")}
+                  </div>
+                )}
+                <Link href={`/tours/${t.slug}`} style={{ color: "inherit" }}>
+                  <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{titulo}</strong>
+                </Link>
+                {tr?.resumen && (
+                  <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty", flex: 1 }}>
+                    {tr.resumen}
+                  </p>
+                )}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                  {precio != null ? (
+                    <strong style={{ fontSize: 15 }}>Desde S/ {precio}</strong>
+                  ) : (
+                    <span />
+                  )}
+                  <a
+                    href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${titulo}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
+                  >
+                    Reservar
+                  </a>
+                </div>
+              </figcaption>
+            </figure>
+          );
+        })}
       </div>
 
       <section style={{ marginTop: 120, textAlign: "center" }}>
