@@ -183,20 +183,27 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-a {
-  color: var(--fg);
-  text-decoration: none;
-}
+/* Reglas de enlaces del sitio público en @layer base: así las utilidades de
+   texto de Tailwind (text-primary-foreground, etc. en @layer utilities) ganan
+   la cascada. Sin la capa, esta regla de elemento `a` es "unlayered" y pisa a
+   las utilidades, dejando botones-enlace con texto casi-negro (invisible sobre
+   fondos oscuros como bg-primary). */
+@layer base {
+  a {
+    color: var(--fg);
+    text-decoration: none;
+  }
 
-a:hover {
-  color: var(--muted);
-}
+  a:hover {
+    color: var(--muted);
+  }
 
-/* Dentro del panel (sidebar/dashboard) los enlaces usan los colores de la UI,
-   no los del sitio público. */
-[data-slot="sidebar-wrapper"] a,
-[data-slot="sidebar-wrapper"] a:hover {
-  color: inherit;
+  /* Dentro del panel (sidebar/dashboard) los enlaces usan los colores de la UI,
+     no los del sitio público. */
+  [data-slot="sidebar-wrapper"] a,
+  [data-slot="sidebar-wrapper"] a:hover {
+    color: inherit;
+  }
 }
 
 .serif {
