@@ -1,17 +1,41 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import RouteCard from "@/components/route-card";
-import { transportRoutes, fleet, transportFaq, CONTACT, MEDIA_VIDEO } from "@/lib/data";
+import { CONTACT } from "@/lib/data";
+import { useTransportes } from "@/hooks/use-catalogo";
+import type { TransporteApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
-export const metadata: Metadata = {
-  title: "Transporte Turístico — Inca Travel Peru",
-  description:
-    "Transporte turístico en el sur del Perú: Cusco, Arequipa, Colca, Puno e Hidroeléctrica (Machu Picchu). Horarios diarios, buses modernos y reserva por WhatsApp.",
-};
+function traduccionDe(item: TransporteApi | undefined): TraduccionApi | undefined {
+  if (!item) return undefined;
+  const arr = item.traducciones as TraduccionApi[] | undefined;
+  return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
+}
+
+function formatearDuracion(minutos?: number): string | null {
+  if (!minutos || minutos <= 0) return null;
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
+}
+
+function precioDesde(salidas?: SalidaApi[]): number | null {
+  if (!salidas || salidas.length === 0) return null;
+  const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
+  if (precios.length === 0) return null;
+  return Math.min(...precios);
+}
+
+function tituloTransporte(t: TransporteApi): string {
+  const tr = traduccionDe(t);
+  return tr?.titulo || `${t.origenNombre} → ${t.destinoNombre}`;
+}
 
 export default function TransportePage() {
+  const { data, isLoading, isError } = useTransportes();
+  const transportes = data?.datos ?? [];
+
   return (
     <PageShell>
       {/* Hero */}
@@ -30,16 +54,12 @@ export default function TransportePage() {
         por el sur del Perú.
       </h1>
       <p style={{ maxWidth: 560, margin: "0 0 40px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-        Nuestro producto principal: rutas diarias entre Cusco, Arequipa, el Valle del Colca, Puno y Machu Picchu, con
+        Nuestro producto principal: rutas entre Cusco, Arequipa, el Valle del Colca, Puno y Machu Picchu, con
         flota propia, horarios confiables y atención en español e inglés.
       </p>
 
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 500", minWidth: 0 }}>
-        <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video de flota" />
-      </div>
-
       {/* Rutas */}
-      <section style={{ marginTop: 110 }}>
+      <section style={{ marginTop: 40 }}>
         <h2
           style={{
             margin: "0 0 8px",
@@ -52,55 +72,50 @@ export default function TransportePage() {
           Rutas y <em className="serif">horarios</em>
         </h2>
         <p style={{ margin: "0 0 36px", fontSize: 14.5, color: "var(--muted)", maxWidth: 520 }}>
-          Salidas diarias, todo el año. Precios por persona en soles (PEN); confirma disponibilidad al reservar.
+          Precios por persona en soles (PEN); confirma disponibilidad al reservar.
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {transportRoutes.map((r) => (
-            <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} />
-          ))}
-        </div>
-      </section>
+        {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>Cargando rutas…</p>}
+        {isError && (
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>No se pudieron cargar las rutas. Intenta de nuevo más tarde.</p>
+        )}
+        {!isLoading && !isError && transportes.length === 0 && (
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>Aún no hay rutas disponibles.</p>
+        )}
 
-      {/* Flota */}
-      <section style={{ marginTop: 140 }}>
-        <h2
-          style={{
-            margin: "0 auto 48px",
-            maxWidth: 620,
-            textAlign: "center",
-            fontSize: "clamp(28px, 2.4vw, 40px)",
-            lineHeight: 1.18,
-            letterSpacing: "-0.02em",
-            fontWeight: 400,
-            textWrap: "pretty",
-          }}
-        >
-          Nuestra <em className="serif">flota</em>: moderna, monitoreada y pensada para la altura.
-        </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-          {fleet.map((v) => (
-            <figure key={v.name} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14 }}>
-              <div style={{ position: "relative", width: "100%", height: 220 }}>
-                <ImageSlot radius={10} src={v.image} placeholder={v.name} />
-              </div>
-              <figcaption style={{ marginTop: 14, lineHeight: 1.5 }}>
-                <strong style={{ fontSize: 15 }}>{v.name}</strong>
-                <div style={{ fontSize: 13, color: "var(--muted)", margin: "4px 0 8px" }}>{v.capacity}</div>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.7 }}>
-                  {v.features.split(", ").map((f) => (
-                    <li key={f}>✓ {f.charAt(0).toUpperCase() + f.slice(1)}</li>
-                  ))}
-                </ul>
-              </figcaption>
-            </figure>
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+          {transportes.map((t) => {
+            const tr = traduccionDe(t);
+            const titulo = tituloTransporte(t);
+            const dur = formatearDuracion(t.duracionMinutos);
+            const precio = precioDesde(t.salidas);
+            return (
+              <Link
+                key={t.slug}
+                href={`/transporte/${t.slug}`}
+                style={{ background: "var(--card)", padding: 16, borderRadius: 14, display: "block" }}
+              >
+                <div style={{ position: "relative", width: "100%", height: 200 }}>
+                  <ImageSlot radius={10} src={t.imagenes?.[0]?.url} placeholder={titulo} />
+                </div>
+                <div style={{ marginTop: 14, fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>{titulo}</div>
+                {tr?.resumen && (
+                  <p style={{ margin: "6px 0 0", fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
+                    {tr.resumen}
+                  </p>
+                )}
+                <div style={{ marginTop: 10, fontSize: 13, color: "var(--muted)" }}>
+                  {[dur, precio != null ? `Desde S/ ${precio}` : null].filter(Boolean).join(" · ")}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
       {/* Cómo reservar */}
-      <section style={{ marginTop: 140, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
-        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16 }}>
+      <section style={{ marginTop: 140 }}>
+        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16, maxWidth: 620 }}>
           <h2 style={{ margin: "0 0 24px", fontSize: "clamp(24px, 2vw, 34px)", lineHeight: 1.25, letterSpacing: "-0.015em", fontWeight: 400 }}>
             Reservar es <em className="serif">simple</em>.
           </h2>
@@ -122,19 +137,6 @@ export default function TransportePage() {
             <Link href="/contacto" style={{ background: "var(--bg)", padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
               Formulario de contacto
             </Link>
-          </div>
-        </div>
-        <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16 }}>
-          <h2 style={{ margin: "0 0 24px", fontSize: "clamp(24px, 2vw, 34px)", lineHeight: 1.25, letterSpacing: "-0.015em", fontWeight: 400 }}>
-            Preguntas <em className="serif">frecuentes</em>
-          </h2>
-          <div>
-            {transportFaq.map((f) => (
-              <details key={f.q} style={{ borderBottom: "1px solid var(--line)", padding: "12px 0" }}>
-                <summary style={{ cursor: "pointer", fontSize: 14.5, fontWeight: 600 }}>{f.q}</summary>
-                <p style={{ margin: "10px 0 4px", fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>{f.a}</p>
-              </details>
-            ))}
           </div>
         </div>
       </section>

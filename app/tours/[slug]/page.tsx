@@ -6,10 +6,10 @@ import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
-import { useTransporte } from "@/hooks/use-catalogo";
-import type { TransporteApi, TraduccionApi, SalidaApi, ParadaApi } from "@/lib/api/tipos";
+import { useTour } from "@/hooks/use-catalogo";
+import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
 
-function traduccionDe(item: TransporteApi | undefined): TraduccionApi | undefined {
+function traduccionDe(item: TourApi | undefined): TraduccionApi | undefined {
   if (!item) return undefined;
   const arr = item.traducciones as TraduccionApi[] | undefined;
   return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
@@ -22,13 +22,6 @@ function formatearDuracion(minutos?: number): string | null {
   return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
 }
 
-function formatearOffset(minutos?: number): string | null {
-  if (!minutos || minutos <= 0) return null;
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
-  return "+" + [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ");
-}
-
 function precioDesde(salidas?: SalidaApi[]): number | null {
   if (!salidas || salidas.length === 0) return null;
   const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
@@ -36,11 +29,11 @@ function precioDesde(salidas?: SalidaApi[]): number | null {
   return Math.min(...precios);
 }
 
-export default function RoutePage() {
+export default function TourPage() {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
   const { idioma } = useIdioma();
-  const { data: transporte, isLoading, isError } = useTransporte(slug, idioma);
+  const { data: tour, isLoading, isError } = useTour(slug, idioma);
 
   if (isLoading) {
     return (
@@ -54,42 +47,37 @@ export default function RoutePage() {
     return (
       <PageShell>
         <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>
-          No se pudo cargar la ruta. Intenta de nuevo más tarde.
+          No se pudo cargar el tour. Intenta de nuevo más tarde.
         </p>
       </PageShell>
     );
   }
 
-  if (!transporte) {
+  if (!tour) {
     notFound();
   }
 
-  const tr = traduccionDe(transporte);
-  const heading = tr?.titulo || `${transporte.origenNombre} → ${transporte.destinoNombre}`;
+  const tr = traduccionDe(tour);
+  const destino = tour.destinoNombre as string | undefined;
+  const heading = tr?.titulo || tour.nombre || destino || "Tour";
   const intro = tr?.resumen || tr?.descripcion || "";
-  const dur = formatearDuracion(
-    transporte.duracionMinutos ??
-      (typeof transporte.duracionMinutosEstimada === "number"
-        ? transporte.duracionMinutosEstimada
-        : undefined),
-  );
-  const precio = precioDesde(transporte.salidas);
-  const paradas = [...(transporte.paradas ?? [])].sort((a: ParadaApi, b: ParadaApi) => a.orden - b.orden);
+  const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
+  const precio = precioDesde(tour.salidas);
+  const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
 
   const fichas = [
     dur ? { label: "Duración", value: dur } : null,
-    { label: "Origen", value: transporte.origenNombre },
-    { label: "Destino", value: transporte.destinoNombre },
+    destino ? { label: "Destino", value: destino } : null,
     precio != null ? { label: "Precio", value: `Desde S/ ${precio} p/p` } : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
     <PageShell>
       <nav style={{ margin: "40px 0 0", fontSize: 13, color: "var(--muted)" }}>
-        <Link href="/transporte" style={{ color: "var(--muted)" }}>
-          Transporte
+        <Link href="/tours" style={{ color: "var(--muted)" }}>
+          Tours
         </Link>{" "}
-        / {transporte.origenNombre} — {transporte.destinoNombre}
+        / {heading}
       </nav>
 
       <h1
@@ -111,7 +99,7 @@ export default function RoutePage() {
       )}
 
       <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 480" }}>
-        <ImageSlot radius={10} src={transporte.imagenes?.[0]?.url} placeholder={heading} />
+        <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={heading} />
       </div>
 
       {/* Ficha resumen */}
@@ -137,33 +125,18 @@ export default function RoutePage() {
       <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
         <div>
           <h2 style={{ margin: "0 0 28px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-            Itinerario de <em className="serif">ruta</em>
+            Itinerario del <em className="serif">tour</em>
           </h2>
-          {paradas.length === 0 ? (
+          {itinerarios.length === 0 ? (
             <p style={{ fontSize: 14, color: "var(--muted)" }}>El itinerario detallado se confirma al reservar.</p>
           ) : (
             <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
-              {paradas.map((s) => {
-                const offset = formatearOffset(s.minutos);
-                return (
-                  <li
-                    key={s.id}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "64px 1fr",
-                      gap: 16,
-                      borderTop: "1px solid var(--line)",
-                      padding: "14px 0",
-                    }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--muted)" }}>{offset ?? ""}</span>
-                    <span style={{ lineHeight: 1.4 }}>
-                      <strong style={{ fontSize: 14.5 }}>{s.nombre}</strong>
-                      {s.descripcion && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{s.descripcion}</div>}
-                    </span>
-                  </li>
-                );
-              })}
+              {itinerarios.map((it) => (
+                <li key={it.id} style={{ borderTop: "1px solid var(--line)", padding: "14px 0", lineHeight: 1.4 }}>
+                  <strong style={{ fontSize: 14.5 }}>{it.titulo}</strong>
+                  {it.descripcion && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{it.descripcion}</div>}
+                </li>
+              ))}
             </ol>
           )}
         </div>
@@ -187,7 +160,7 @@ export default function RoutePage() {
             )}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
               <a
-                href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar la ruta ${transporte.origenNombre} - ${transporte.destinoNombre}`)}`}
+                href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${heading}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
