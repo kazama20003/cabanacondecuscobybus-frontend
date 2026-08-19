@@ -27,8 +27,10 @@ export const servicioCatalogo = {
       query: filtros,
     }),
 
-  transporte: (slug: string) =>
-    solicitar<TransporteApi>(endpoints.catalogo.transporte(slug)),
+  transporte: (slug: string, idioma?: string) =>
+    solicitar<TransporteApi>(endpoints.catalogo.transporte(slug), {
+      query: { idioma },
+    }),
 
   buscarTransportes: (filtros: { origen?: string; destino?: string; fecha?: string }) =>
     solicitar<TransporteApi[]>(endpoints.catalogo.buscarTransportes, { query: filtros }),
@@ -36,7 +38,8 @@ export const servicioCatalogo = {
   tours: (filtros?: ParametrosPagina & { destino?: string }) =>
     solicitar<Paginado<TourApi>>(endpoints.catalogo.tours, { query: filtros }),
 
-  tour: (slug: string) => solicitar<TourApi>(endpoints.catalogo.tour(slug)),
+  tour: (slug: string, idioma?: string) =>
+    solicitar<TourApi>(endpoints.catalogo.tour(slug), { query: { idioma } }),
 
   crearTransporte: (datos: CrearTransporteEntrada) =>
     solicitar<TransporteApi>(endpoints.catalogo.crearTransporte, {
