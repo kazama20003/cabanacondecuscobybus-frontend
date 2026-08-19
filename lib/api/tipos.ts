@@ -237,6 +237,7 @@ export interface ActualizarSalidaEntrada {
   estado?: EstadoSalida;
   vehiculoId?: string;
   capacidad?: number;
+  minimoPasajeros?: number;
   precioPen?: number;
   precioUsd?: number;
   fechaHoraSalida?: string;
