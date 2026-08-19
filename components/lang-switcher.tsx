@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useIdioma, type LangCode } from "@/components/lang-provider";
 
 /* Banderas SVG (los emoji de bandera no se ven en Windows) */
 function FlagPE({ size = 16 }: { size?: number }) {
@@ -36,10 +37,8 @@ const LANGS = [
   { code: "de", label: "Deutsch", short: "DE", Flag: FlagUS },
 ] as const;
 
-export type LangCode = (typeof LANGS)[number]["code"];
-
-/* Selector de idioma con banderas. Persiste en localStorage (inca-lang);
-   la traducción real de contenidos se conecta después. */
+/* Selector de idioma con banderas. Escribe el idioma global (IdiomaProvider),
+   que persiste en localStorage (inca-lang) y consumen los hooks del catálogo. */
 export default function LangSwitcher({
   direction = "down",
   align = "right",
@@ -48,14 +47,9 @@ export default function LangSwitcher({
   direction?: "down" | "up";
   align?: "left" | "right";
 }) {
-  const [lang, setLang] = useState<LangCode>("es");
+  const { idioma: lang, setIdioma } = useIdioma();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("inca-lang") as LangCode | null;
-    if (saved && LANGS.some((l) => l.code === saved)) setLang(saved);
-  }, []);
 
   // cierra al hacer clic fuera
   useEffect(() => {
@@ -68,8 +62,7 @@ export default function LangSwitcher({
   }, [open]);
 
   const pick = (code: LangCode) => {
-    setLang(code);
-    localStorage.setItem("inca-lang", code);
+    setIdioma(code);
     setOpen(false);
   };
 
