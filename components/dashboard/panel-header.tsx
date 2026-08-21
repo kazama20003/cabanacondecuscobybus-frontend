@@ -1,35 +1,63 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BotonTema } from "@/components/dashboard/boton-tema";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-const titulos: Record<string, string> = {
-  "/dashboard": "Resumen",
-  "/dashboard/transportes/nuevo": "Nueva ruta",
-  "/dashboard/transportes": "Transportes",
-  "/dashboard/tours/nuevo": "Nuevo tour",
-  "/dashboard/tours": "Tours",
-  "/dashboard/salidas/nueva": "Nueva salida",
-  "/dashboard/salidas": "Salidas programadas",
-  "/dashboard/imagenes": "Imágenes",
-  "/dashboard/reservas": "Reservas",
-  "/dashboard/pagos": "Pagos",
-  "/dashboard/usuarios": "Usuarios",
-  "/dashboard/promociones/nueva": "Nueva promoción",
-  "/dashboard/promociones": "Promociones",
+/** Etiqueta legible por cada segmento conocido de la ruta. */
+const ETIQUETAS: Record<string, string> = {
+  dashboard: "Resumen",
+  transportes: "Transportes",
+  tours: "Tours",
+  salidas: "Salidas",
+  promociones: "Promociones",
+  imagenes: "Imágenes",
+  reservas: "Reservas",
+  pagos: "Pagos",
+  usuarios: "Usuarios",
+  nuevo: "Nuevo",
+  nueva: "Nueva",
+  editar: "Editar",
+  itinerario: "Itinerario",
+  traducciones: "Traducciones",
+  paradas: "Paradas",
 };
+
+interface Miga {
+  etiqueta: string;
+  href: string;
+  /** Solo los segmentos conocidos tienen una página propia navegable. */
+  navegable: boolean;
+}
+
+function construirMigas(pathname: string): Miga[] {
+  const segmentos = pathname.split("/").filter(Boolean);
+  const migas: Miga[] = [];
+  let acumulado = "";
+  for (const segmento of segmentos) {
+    acumulado += `/${segmento}`;
+    const conocido = segmento in ETIQUETAS;
+    const etiqueta = conocido
+      ? ETIQUETAS[segmento]
+      : decodeURIComponent(segmento).replace(/-/g, " ");
+    migas.push({ etiqueta, href: acumulado, navegable: conocido });
+  }
+  return migas;
+}
 
 export function PanelHeader() {
   const pathname = usePathname();
-  const titulo =
-    titulos[pathname] ??
-    (pathname.endsWith("/paradas")
-      ? "Paradas de la ruta"
-      : Object.entries(titulos).find(([ruta]) =>
-          pathname.startsWith(`${ruta}/`),
-        )?.[1] ?? "Panel de administración");
+  const migas = construirMigas(pathname);
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -39,7 +67,36 @@ export function PanelHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">{titulo}</h1>
+        <Breadcrumb>
+          <BreadcrumbList>
+            {migas.map((miga, indice) => {
+              const esUltima = indice === migas.length - 1;
+              const enlazar = !esUltima && miga.navegable;
+              return (
+                <div key={miga.href} className="contents">
+                  <BreadcrumbItem>
+                    {enlazar ? (
+                      <BreadcrumbLink asChild className="capitalize">
+                        <Link href={miga.href}>{miga.etiqueta}</Link>
+                      </BreadcrumbLink>
+                    ) : (
+                      <BreadcrumbPage
+                        className={
+                          esUltima
+                            ? "font-medium capitalize"
+                            : "capitalize text-muted-foreground"
+                        }
+                      >
+                        {miga.etiqueta}
+                      </BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
+                  {!esUltima && <BreadcrumbSeparator />}
+                </div>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
           <BotonTema />
         </div>

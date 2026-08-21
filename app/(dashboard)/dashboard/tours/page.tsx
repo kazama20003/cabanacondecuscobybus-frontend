@@ -19,9 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { LanguagesIcon, ListOrderedIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { LanguagesIcon, ListOrderedIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
+import ImageSlot from "@/components/image-slot";
 import { useEliminarTour, useTours } from "@/hooks/use-catalogo";
 
 export default function PaginaTours() {
@@ -70,6 +71,7 @@ export default function PaginaTours() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">Imagen</TableHead>
                   <TableHead>Tour</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Salidas</TableHead>
@@ -80,6 +82,24 @@ export default function PaginaTours() {
               <TableBody>
                 {tours.map((tour) => (
                   <TableRow key={tour.id}>
+                    <TableCell>
+                      <div className="relative h-11 w-11">
+                        <ImageSlot
+                          radius={8}
+                          src={
+                            tour.imagenes?.[0]?.tipo === "VIDEO"
+                              ? undefined
+                              : tour.imagenes?.[0]?.url
+                          }
+                          video={
+                            tour.imagenes?.[0]?.tipo === "VIDEO"
+                              ? tour.imagenes?.[0]?.url
+                              : undefined
+                          }
+                          placeholder="—"
+                        />
+                      </div>
+                    </TableCell>
                     <TableCell className="font-medium">
                       {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}
                     </TableCell>
@@ -92,6 +112,12 @@ export default function PaginaTours() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/dashboard/tours/${tour.slug}/editar`}>
+                            <PencilIcon />
+                            Editar
+                          </Link>
+                        </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/dashboard/tours/${tour.slug}/itinerario`}>
                             <ListOrderedIcon />

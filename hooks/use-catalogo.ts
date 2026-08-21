@@ -9,6 +9,8 @@ import {
 import { claves, servicioCatalogo } from "@/lib/api";
 import type {
   ActualizarSalidaEntrada,
+  ActualizarTourEntrada,
+  ActualizarTransporteEntrada,
   ContenidoEntrada,
   CrearSalidaEntrada,
   CrearTourEntrada,
@@ -68,6 +70,26 @@ export function useCrearTour() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (datos: CrearTourEntrada) => servicioCatalogo.crearTour(datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+export function useActualizarTransporte() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; datos: ActualizarTransporteEntrada }) =>
+      servicioCatalogo.actualizarTransporte(params.id, params.datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+export function useActualizarTour() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; datos: ActualizarTourEntrada }) =>
+      servicioCatalogo.actualizarTour(params.id, params.datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
   });
