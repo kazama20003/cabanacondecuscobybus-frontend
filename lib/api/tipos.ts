@@ -142,6 +142,8 @@ export interface ContenidoEntrada {
   resumen: string;
   descripcion: string;
   queLlevar?: string;
+  incluye?: string;
+  noIncluye?: string;
 }
 
 export interface TraduccionApi {
@@ -151,6 +153,8 @@ export interface TraduccionApi {
   resumen: string;
   descripcion: string;
   queLlevar?: string | null;
+  incluye?: string | null;
+  noIncluye?: string | null;
   estado: "BORRADOR" | "PUBLICADA";
 }
 
@@ -179,6 +183,12 @@ export interface CrearTourEntrada {
   medios?: MedioEntrada[];
   contenido?: ContenidoEntrada;
 }
+
+export type ActualizarTransporteEntrada = Partial<
+  Omit<CrearTransporteEntrada, "paradas">
+>;
+
+export type ActualizarTourEntrada = Partial<CrearTourEntrada>;
 
 export interface CrearSalidaEntrada {
   fechaHoraSalida: string;
@@ -254,6 +264,8 @@ export interface PromocionApi {
   descripcion: string | null;
   tipo: TipoPromocion;
   objetivo: ObjetivoPromocion;
+  transporteId?: string | null;
+  tourId?: string | null;
   codigo: string | null;
   porcentajeDescuento: number | null;
   montoDescuento: string | number | null;
@@ -271,6 +283,8 @@ export interface CrearPromocionEntrada {
   descripcion?: string;
   tipo: TipoPromocion;
   objetivo?: ObjetivoPromocion;
+  transporteId?: string | null;
+  tourId?: string | null;
   codigo?: string;
   porcentajeDescuento?: number;
   montoDescuento?: number;

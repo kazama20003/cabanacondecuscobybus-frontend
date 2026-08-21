@@ -20,6 +20,8 @@ export const endpoints = {
     tour: (slug: string) => `/tours/${slug}`,
     crearTransporte: "/administracion/transportes",
     crearTour: "/administracion/tours",
+    actualizarTransporte: (id: string) => `/administracion/transportes/${id}`,
+    actualizarTour: (id: string) => `/administracion/tours/${id}`,
     eliminarTransporte: (id: string) => `/administracion/transportes/${id}`,
     eliminarTour: (id: string) => `/administracion/tours/${id}`,
     definirParadas: (id: string) => `/administracion/transportes/${id}/paradas`,

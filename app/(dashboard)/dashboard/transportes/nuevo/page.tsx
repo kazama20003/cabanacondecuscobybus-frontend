@@ -18,6 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
+import {
+  CampoLista,
+  aListaItems,
+  deListaItems,
+} from "@/components/dashboard/campo-lista";
 import { useCrearTransporte } from "@/hooks/use-catalogo";
 import type { MedioEntrada } from "@/lib/api";
 
@@ -68,9 +73,12 @@ export default function PaginaNuevaRuta() {
     titulo: "",
     resumen: "",
     descripcion: "",
+    incluye: "",
+    noIncluye: "",
   });
   const [paradas, setParadas] = useState<FilaParada[]>([]);
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
+  const [errorMedios, setErrorMedios] = useState<string | null>(null);
   const crear = useCrearTransporte();
 
   const tituloRuta = [campos.origenNombre, campos.destinoNombre]
@@ -97,6 +105,11 @@ export default function PaginaNuevaRuta() {
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
+    if (medios.length === 0) {
+      setErrorMedios("Sube al menos una imagen o un video principal.");
+      return;
+    }
+    setErrorMedios(null);
     crear.mutate(
       {
         slug: slugificar(`${campos.origenNombre}-${campos.destinoNombre}`),
@@ -220,6 +233,27 @@ export default function PaginaNuevaRuta() {
               <Label htmlFor="descripcion">Descripción completa</Label>
               <Textarea id="descripcion" required rows={5} placeholder="Describe la experiencia: el recorrido, los paisajes, qué incluye, recomendaciones…" value={contenido.descripcion} onChange={(e) => setContenido((c) => ({ ...c, descripcion: e.target.value }))} />
             </div>
+            <CampoLista
+              etiqueta="Qué incluye"
+              descripcion="Un ítem por fila. Se muestra como lista con check en la página de la ruta."
+              placeholder="Ej.: Transporte turístico ida y vuelta"
+              marca="✓"
+              marcaColor="#16a34a"
+              items={aListaItems(contenido.incluye)}
+              onCambiar={(items) =>
+                setContenido((c) => ({ ...c, incluye: deListaItems(items) ?? "" }))
+              }
+            />
+            <CampoLista
+              etiqueta="Qué NO incluye"
+              descripcion="Deja claro lo que el turista paga aparte: entradas, almuerzo, propinas, etc."
+              placeholder="Ej.: Tarifa de ingreso a atractivos"
+              marca="✕"
+              items={aListaItems(contenido.noIncluye)}
+              onCambiar={(items) =>
+                setContenido((c) => ({ ...c, noIncluye: deListaItems(items) ?? "" }))
+              }
+            />
           </CardContent>
         </Card>
 
@@ -372,15 +406,17 @@ export default function PaginaNuevaRuta() {
             <CardHeader>
               <CardTitle>4 · Fotos y videos</CardTitle>
               <CardDescription>
-                Lo que verá el turista en la página de la ruta. Opcional.
+                Lo que verá el turista en la página de la ruta. Obligatorio: al
+                menos una imagen o un video principal.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="grid gap-2">
               <CampoMedios
                 categoria="transportes"
                 medios={medios}
-                onCambiar={setMedios}
+                onCambiar={(m) => { setMedios(m); if (m.length) setErrorMedios(null); }}
               />
+              {errorMedios && <p className="text-destructive text-sm">{errorMedios}</p>}
             </CardContent>
           </Card>
         </div>

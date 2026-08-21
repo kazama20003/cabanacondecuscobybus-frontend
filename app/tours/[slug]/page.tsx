@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
+import IncluyeNoIncluye from "@/components/incluye-no-incluye";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useTour } from "@/hooks/use-catalogo";
@@ -120,6 +121,9 @@ export default function TourPage() {
           ))}
         </section>
       )}
+
+      {/* Qué incluye / no incluye */}
+      <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
 
       {/* Itinerario + reserva */}
       <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
