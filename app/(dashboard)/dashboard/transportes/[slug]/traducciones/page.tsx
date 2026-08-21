@@ -18,6 +18,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  CampoLista,
+  aListaItems,
+  deListaItems,
+} from "@/components/dashboard/campo-lista";
+import {
   useEditarTraduccion,
   useTraducciones,
   useTransporte,
@@ -48,6 +53,8 @@ function FormularioIdioma({
     titulo: traduccion.titulo,
     resumen: traduccion.resumen,
     descripcion: traduccion.descripcion,
+    incluye: traduccion.incluye ?? "",
+    noIncluye: traduccion.noIncluye ?? "",
   });
   const [guardado, setGuardado] = useState(false);
   const editar = useEditarTraduccion();
@@ -57,6 +64,8 @@ function FormularioIdioma({
       titulo: traduccion.titulo,
       resumen: traduccion.resumen,
       descripcion: traduccion.descripcion,
+      incluye: traduccion.incluye ?? "",
+      noIncluye: traduccion.noIncluye ?? "",
     });
   }, [traduccion]);
 
@@ -68,7 +77,14 @@ function FormularioIdioma({
         tipo: "transportes",
         id: transporteId,
         idioma: traduccion.idioma,
-        datos: { ...campos, estado: "PUBLICADA" },
+        datos: {
+          titulo: campos.titulo,
+          resumen: campos.resumen,
+          descripcion: campos.descripcion,
+          incluye: campos.incluye || undefined,
+          noIncluye: campos.noIncluye || undefined,
+          estado: "PUBLICADA",
+        },
       },
       { onSuccess: () => setGuardado(true) },
     );
@@ -103,6 +119,23 @@ function FormularioIdioma({
           }
         />
       </div>
+      <CampoLista
+        etiqueta="Qué incluye"
+        marca="✓"
+        marcaColor="#16a34a"
+        items={aListaItems(campos.incluye)}
+        onCambiar={(items) =>
+          setCampos((c) => ({ ...c, incluye: deListaItems(items) ?? "" }))
+        }
+      />
+      <CampoLista
+        etiqueta="Qué NO incluye"
+        marca="✕"
+        items={aListaItems(campos.noIncluye)}
+        onCambiar={(items) =>
+          setCampos((c) => ({ ...c, noIncluye: deListaItems(items) ?? "" }))
+        }
+      />
 
       {editar.isError && (
         <p className="text-destructive text-sm">{editar.error.message}</p>
@@ -201,7 +234,7 @@ export default function PaginaTraducciones({
                       tipo: "transportes",
                       id: transporte.id,
                        idioma,
-                      datos: { titulo: espanol.titulo, resumen: espanol.resumen, descripcion: espanol.descripcion, estado: "BORRADOR" },
+                      datos: { titulo: espanol.titulo, resumen: espanol.resumen, descripcion: espanol.descripcion, incluye: espanol.incluye ?? undefined, noIncluye: espanol.noIncluye ?? undefined, estado: "BORRADOR" },
                     });
                   }}
                 >

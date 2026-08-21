@@ -2,6 +2,8 @@ import { solicitar } from "../cliente";
 import { endpoints } from "../config";
 import type {
   ActualizarSalidaEntrada,
+  ActualizarTourEntrada,
+  ActualizarTransporteEntrada,
   ContenidoEntrada,
   CrearSalidaEntrada,
   ItinerarioApi,
@@ -50,6 +52,18 @@ export const servicioCatalogo = {
   crearTour: (datos: CrearTourEntrada) =>
     solicitar<TourApi>(endpoints.catalogo.crearTour, {
       metodo: "POST",
+      cuerpo: datos,
+    }),
+
+  actualizarTransporte: (id: string, datos: ActualizarTransporteEntrada) =>
+    solicitar<TransporteApi>(endpoints.catalogo.actualizarTransporte(id), {
+      metodo: "PATCH",
+      cuerpo: datos,
+    }),
+
+  actualizarTour: (id: string, datos: ActualizarTourEntrada) =>
+    solicitar<TourApi>(endpoints.catalogo.actualizarTour(id), {
+      metodo: "PATCH",
       cuerpo: datos,
     }),
 
