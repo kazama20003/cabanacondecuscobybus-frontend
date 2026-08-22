@@ -5,10 +5,11 @@ import { notFound, useParams } from "next/navigation";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
+import AddToCart from "@/components/add-to-cart";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
-import { useTour } from "@/hooks/use-catalogo";
+import { useTour, useSalidasTour } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
 
 function traduccionDe(item: TourApi | undefined): TraduccionApi | undefined {
@@ -37,6 +38,7 @@ export default function TourPage() {
   const { idioma } = useIdioma();
   const t = useT();
   const { data: tour, isLoading, isError } = useTour(slug, idioma);
+  const { salidas } = useSalidasTour(slug);
 
   if (isLoading) {
     return (
@@ -164,7 +166,16 @@ export default function TourPage() {
                 <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>{t("common.desde")} S/ {precio}</div>
               </>
             )}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
+            <div style={{ marginBottom: 20 }}>
+              <AddToCart
+                tipoServicio="TOUR"
+                slug={slug}
+                titulo={heading}
+                imagen={tour.imagenes?.[0]?.url}
+                salidas={salidas}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600, borderTop: "1px solid var(--line)", paddingTop: 18 }}>
               <a
                 href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${heading}`)}`}
                 target="_blank"

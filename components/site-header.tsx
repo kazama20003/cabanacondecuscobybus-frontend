@@ -1,11 +1,13 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect -- lectura de tema desde localStorage al montar */
 
 import { CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
+import { Bus, Car, MapPin, Compass, Users, Phone, LogIn, ShoppingCart } from "lucide-react";
 import { LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
+import { useCarrito } from "@/components/cart-provider";
 import { useT } from "@/lib/i18n";
 
 const navPill: CSSProperties = {
@@ -27,6 +29,7 @@ export default function SiteHeader() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const pathname = usePathname();
   const t = useT();
+  const { totalLineas } = useCarrito();
 
   useEffect(() => {
     const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
@@ -105,6 +108,35 @@ export default function SiteHeader() {
         <Link href="/contacto" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
           <Phone size={15} strokeWidth={2} />
           {t("header.contacto")}
+        </Link>
+        <Link
+          href="/carrito"
+          aria-label={t("carrito.titulo")}
+          style={{ ...navPill, padding: "7px 10px", position: "relative", display: "flex", alignItems: "center" }}
+        >
+          <ShoppingCart size={16} strokeWidth={2} />
+          {totalLineas > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: -6,
+                right: -6,
+                minWidth: 17,
+                height: 17,
+                padding: "0 4px",
+                borderRadius: 9,
+                background: "var(--btn-bg)",
+                color: "var(--btn-fg)",
+                fontSize: 10.5,
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {totalLineas}
+            </span>
+          )}
         </Link>
         <a
           href="/login"
