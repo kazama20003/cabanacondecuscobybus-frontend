@@ -3,11 +3,13 @@
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import { transfers, CONTACT } from "@/lib/data";
+import { CONTACT } from "@/lib/data";
+import { useTransfers } from "@/lib/data-i18n";
 import { useT } from "@/lib/i18n";
 
 export default function TrasladosContenido() {
   const t = useT();
+  const transfers = useTransfers();
   return (
     <PageShell>
       <h1
