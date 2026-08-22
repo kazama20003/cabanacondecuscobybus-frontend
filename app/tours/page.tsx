@@ -4,6 +4,7 @@ import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
+import { useT } from "@/lib/i18n";
 import { useTours } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
@@ -32,6 +33,7 @@ function tituloTour(t: TourApi): string {
 }
 
 export default function ToursPage() {
+  const t = useT();
   const { data, isLoading, isError } = useTours();
   const tours = data?.datos ?? [];
 
@@ -47,43 +49,42 @@ export default function ToursPage() {
           textWrap: "pretty",
         }}
       >
-        Tours con <em className="serif">guías</em> que
+        {t("tours.heroT1")}
         <br />
-        aman su tierra.
+        {t("tours.heroT2")}
       </h1>
       <p style={{ maxWidth: 560, margin: "0 0 56px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-        De la ciudadela de Machu Picchu al vuelo del cóndor en el Colca. Grupos pequeños, salidas diarias y
-        guías oficiales en español e inglés.
+        {t("tours.intro")}
       </p>
 
-      {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>Cargando tours…</p>}
+      {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.cargandoTours")}</p>}
       {isError && (
-        <p style={{ color: "var(--muted)", fontSize: 14 }}>No se pudieron cargar los tours. Intenta de nuevo más tarde.</p>
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.errorTours")}</p>
       )}
       {!isLoading && !isError && tours.length === 0 && (
-        <p style={{ color: "var(--muted)", fontSize: 14 }}>Aún no hay tours disponibles.</p>
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinTours")}</p>
       )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-        {tours.map((t) => {
-          const tr = traduccionDe(t);
-          const titulo = tituloTour(t);
-          const dur = formatearDuracion(t.duracionMinutos as number | undefined);
-          const precio = precioDesde(t.salidas);
+        {tours.map((tour) => {
+          const tr = traduccionDe(tour);
+          const titulo = tituloTour(tour);
+          const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
+          const precio = precioDesde(tour.salidas);
           return (
-            <figure key={t.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
-              <Link href={`/tours/${t.slug}`} style={{ display: "block" }}>
+            <figure key={tour.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
+              <Link href={`/tours/${tour.slug}`} style={{ display: "block" }}>
                 <div style={{ position: "relative", width: "100%", height: 220 }}>
-                  <ImageSlot radius={10} src={t.imagenes?.[0]?.url} placeholder={titulo} />
+                  <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={titulo} />
                 </div>
               </Link>
               <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                {(t.destinoNombre || dur) && (
+                {(tour.destinoNombre || dur) && (
                   <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                    {[t.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ")}
+                    {[tour.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ")}
                   </div>
                 )}
-                <Link href={`/tours/${t.slug}`} style={{ color: "inherit" }}>
+                <Link href={`/tours/${tour.slug}`} style={{ color: "inherit" }}>
                   <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{titulo}</strong>
                 </Link>
                 {tr?.resumen && (
@@ -93,7 +94,7 @@ export default function ToursPage() {
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
                   {precio != null ? (
-                    <strong style={{ fontSize: 15 }}>Desde S/ {precio}</strong>
+                    <strong style={{ fontSize: 15 }}>{t("common.desde")} S/ {precio}</strong>
                   ) : (
                     <span />
                   )}
@@ -103,7 +104,7 @@ export default function ToursPage() {
                     rel="noopener noreferrer"
                     style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
                   >
-                    Reservar
+                    {t("common.reservar")}
                   </a>
                 </div>
               </figcaption>
@@ -114,16 +115,16 @@ export default function ToursPage() {
 
       <section style={{ marginTop: 120, textAlign: "center" }}>
         <h2 style={{ margin: "0 auto 20px", maxWidth: 560, fontSize: "clamp(24px, 2vw, 34px)", fontWeight: 400, letterSpacing: "-0.015em", textWrap: "pretty" }}>
-          ¿Buscas algo <em className="serif">a tu medida</em>?
+          {t("tours.medidaTitulo")}
         </h2>
         <p style={{ maxWidth: 480, margin: "0 auto 28px", fontSize: 15, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>
-          Armamos itinerarios privados combinando transporte, tours y traslados según tus fechas y presupuesto.
+          {t("tours.medidaTexto")}
         </p>
         <Link
           href="/contacto"
           style={{ display: "inline-block", fontSize: 14, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 18px", borderRadius: 8 }}
         >
-          Pedir itinerario personalizado
+          {t("tours.medidaCta")}
         </Link>
       </section>
     </PageShell>

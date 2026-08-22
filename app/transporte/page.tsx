@@ -4,6 +4,7 @@ import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
+import { useT } from "@/lib/i18n";
 import { useTransportes } from "@/hooks/use-catalogo";
 import type { TransporteApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
@@ -33,6 +34,7 @@ function tituloTransporte(t: TransporteApi): string {
 }
 
 export default function TransportePage() {
+  const t = useT();
   const { data, isLoading, isError } = useTransportes();
   const transportes = data?.datos ?? [];
 
@@ -49,13 +51,12 @@ export default function TransportePage() {
           textWrap: "pretty",
         }}
       >
-        Transporte <em className="serif">turístico</em>
+        {t("transporte.heroT1")}
         <br />
-        por el sur del Perú.
+        {t("transporte.heroT2")}
       </h1>
       <p style={{ maxWidth: 560, margin: "0 0 40px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-        Nuestro producto principal: rutas entre Cusco, Arequipa, el Valle del Colca, Puno y Machu Picchu, con
-        flota propia, horarios confiables y atención en español e inglés.
+        {t("transporte.intro")}
       </p>
 
       {/* Rutas */}
@@ -69,34 +70,34 @@ export default function TransportePage() {
             fontWeight: 400,
           }}
         >
-          Rutas y <em className="serif">horarios</em>
+          {t("transporte.rutasHorarios")}
         </h2>
         <p style={{ margin: "0 0 36px", fontSize: 14.5, color: "var(--muted)", maxWidth: 520 }}>
-          Precios por persona en soles (PEN); confirma disponibilidad al reservar.
+          {t("transporte.preciosNota")}
         </p>
 
-        {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>Cargando rutas…</p>}
+        {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.cargandoRutas")}</p>}
         {isError && (
-          <p style={{ color: "var(--muted)", fontSize: 14 }}>No se pudieron cargar las rutas. Intenta de nuevo más tarde.</p>
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.errorRutas")}</p>
         )}
         {!isLoading && !isError && transportes.length === 0 && (
-          <p style={{ color: "var(--muted)", fontSize: 14 }}>Aún no hay rutas disponibles.</p>
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-          {transportes.map((t) => {
-            const tr = traduccionDe(t);
-            const titulo = tituloTransporte(t);
-            const dur = formatearDuracion(t.duracionMinutos);
-            const precio = precioDesde(t.salidas);
+          {transportes.map((tp) => {
+            const tr = traduccionDe(tp);
+            const titulo = tituloTransporte(tp);
+            const dur = formatearDuracion(tp.duracionMinutos);
+            const precio = precioDesde(tp.salidas);
             return (
               <Link
-                key={t.slug}
-                href={`/transporte/${t.slug}`}
+                key={tp.slug}
+                href={`/transporte/${tp.slug}`}
                 style={{ background: "var(--card)", padding: 16, borderRadius: 14, display: "block" }}
               >
                 <div style={{ position: "relative", width: "100%", height: 200 }}>
-                  <ImageSlot radius={10} src={t.imagenes?.[0]?.url} placeholder={titulo} />
+                  <ImageSlot radius={10} src={tp.imagenes?.[0]?.url} placeholder={titulo} />
                 </div>
                 <div style={{ marginTop: 14, fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>{titulo}</div>
                 {tr?.resumen && (
@@ -105,7 +106,7 @@ export default function TransportePage() {
                   </p>
                 )}
                 <div style={{ marginTop: 10, fontSize: 13, color: "var(--muted)" }}>
-                  {[dur, precio != null ? `Desde S/ ${precio}` : null].filter(Boolean).join(" · ")}
+                  {[dur, precio != null ? `${t("common.desde")} S/ ${precio}` : null].filter(Boolean).join(" · ")}
                 </div>
               </Link>
             );
@@ -117,13 +118,13 @@ export default function TransportePage() {
       <section style={{ marginTop: 140 }}>
         <div style={{ background: "var(--card)", padding: "48px 44px", borderRadius: 16, maxWidth: 620 }}>
           <h2 style={{ margin: "0 0 24px", fontSize: "clamp(24px, 2vw, 34px)", lineHeight: 1.25, letterSpacing: "-0.015em", fontWeight: 400 }}>
-            Reservar es <em className="serif">simple</em>.
+            {t("transporte.reservarSimple")}
           </h2>
           <ol style={{ margin: 0, paddingLeft: 20, fontSize: 15, lineHeight: 2, color: "var(--muted)" }}>
-            <li>Elige tu ruta y horario.</li>
-            <li>Escríbenos por WhatsApp o desde la página de contacto.</li>
-            <li>Confirma con un adelanto del 50%.</li>
-            <li>Recibe tu ticket digital y aborda.</li>
+            <li>{t("transporte.paso1")}</li>
+            <li>{t("transporte.paso2")}</li>
+            <li>{t("transporte.paso3")}</li>
+            <li>{t("transporte.paso4")}</li>
           </ol>
           <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
             <a
@@ -132,10 +133,10 @@ export default function TransportePage() {
               rel="noopener noreferrer"
               style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
             >
-              Reservar por WhatsApp
+              {t("common.reservarWhatsapp")}
             </a>
             <Link href="/contacto" style={{ background: "var(--bg)", padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
-              Formulario de contacto
+              {t("transporte.formularioContacto")}
             </Link>
           </div>
         </div>
