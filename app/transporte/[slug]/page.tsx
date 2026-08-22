@@ -193,7 +193,7 @@ export default function RoutePage() {
             )}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
               <a
-                href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar la ruta ${transporte.origenNombre} - ${transporte.destinoNombre}`)}`}
+                href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.rutaReservar")}${transporte.origenNombre} - ${transporte.destinoNombre}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}

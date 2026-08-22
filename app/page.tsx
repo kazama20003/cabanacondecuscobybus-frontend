@@ -339,12 +339,12 @@ export default function Home() {
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 26 }}>
           {[
-            { name: "María Fernanda R.", role: "Viajó Cusco → Arequipa", badge: "MR" },
-            { name: "Lucas B.", role: "Tour Cañón del Colca 2D", badge: "LB" },
-          ].map((t, i) => (
+            { name: "María Fernanda R.", role: t("home.testiRole1"), badge: "MR" },
+            { name: "Lucas B.", role: t("home.testiRole2"), badge: "LB" },
+          ].map((testi, i) => (
             <figure key={i} style={{ margin: 0 }}>
               <div style={{ width: "100%", height: 520, position: "relative" }}>
-                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`Video testimonial ${i + 1}`} />
+                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`${t("home.videoTesti")} ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <span
@@ -376,11 +376,11 @@ export default function Home() {
                     fontWeight: 700,
                   }}
                 >
-                  {t.badge}
+                  {testi.badge}
                 </span>
                 <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
-                  <strong style={{ fontSize: 14 }}>{t.name}</strong>
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{t.role}</span>
+                  <strong style={{ fontSize: 14 }}>{testi.name}</strong>
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{testi.role}</span>
                 </span>
               </figcaption>
             </figure>
@@ -456,32 +456,23 @@ export default function Home() {
             textWrap: "pretty",
           }}
         >
-          <p style={{ margin: "0 0 1em" }}>
-            Inca Travel Peru© es una agencia de turismo especializada en <em className="serif">transporte turístico</em>,{" "}
-            <em className="serif">tours</em> y <em className="serif">traslados</em> por el sur del Perú.
-          </p>
-          <p style={{ margin: "0 0 1em" }}>
-            Flota propia, guías locales y salidas diarias entre Cusco, Arequipa, el Valle del Colca, Puno y{" "}
-            <em className="serif">Machu Picchu</em>.
-          </p>
-          <p style={{ margin: 0 }}>
-            Pequeños por elección y viajeros de corazón: eliminamos intermediarios para que tu viaje sea más directo,
-            más seguro y a mejor precio.
-          </p>
+          <p style={{ margin: "0 0 1em" }}>{t("home.aboutP1")}</p>
+          <p style={{ margin: "0 0 1em" }}>{t("home.aboutP2")}</p>
+          <p style={{ margin: 0 }}>{t("home.aboutP3")}</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ position: "relative", width: "100%", height: 480 }}>
-            <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="Foto de la oficina" />
+            <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder={t("home.officePhoto")} />
             <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
               <strong>Cusco</strong>
               <br />
-              <span style={{ opacity: 0.85 }}>Oficina principal</span>
+              <span style={{ opacity: 0.85 }}>{t("home.oficinaPrincipal")}</span>
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
             {[
-              { name: "Transporte turístico", role: "6 rutas · salidas diarias", href: "/transporte" },
-              { name: "Traslados privados", role: "Aeropuerto · hoteles · 24/7", href: "/traslados" },
+              { name: t("home.transporteTuristico"), role: t("home.cardTransRole"), href: "/transporte" },
+              { name: t("footer.trasladosPrivados"), role: t("home.cardTrasRole"), href: "/traslados" },
             ].map((f) => (
               <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
                 <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>
