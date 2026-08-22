@@ -5,10 +5,11 @@ import { notFound, useParams } from "next/navigation";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
+import AddToCart from "@/components/add-to-cart";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
-import { useTransporte } from "@/hooks/use-catalogo";
+import { useTransporte, useSalidasTransporte } from "@/hooks/use-catalogo";
 import type { TransporteApi, TraduccionApi, SalidaApi, ParadaApi } from "@/lib/api/tipos";
 
 function traduccionDe(item: TransporteApi | undefined): TraduccionApi | undefined {
@@ -44,6 +45,7 @@ export default function RoutePage() {
   const { idioma } = useIdioma();
   const t = useT();
   const { data: transporte, isLoading, isError } = useTransporte(slug, idioma);
+  const { salidas } = useSalidasTransporte(slug);
 
   if (isLoading) {
     return (
@@ -191,7 +193,16 @@ export default function RoutePage() {
                 <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>{t("common.desde")} S/ {precio}</div>
               </>
             )}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
+            <div style={{ marginBottom: 20 }}>
+              <AddToCart
+                tipoServicio="TRANSPORTE"
+                slug={slug}
+                titulo={heading}
+                imagen={transporte.imagenes?.[0]?.url}
+                salidas={salidas}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600, borderTop: "1px solid var(--line)", paddingTop: 18 }}>
               <a
                 href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.rutaReservar")}${transporte.origenNombre} - ${transporte.destinoNombre}`)}`}
                 target="_blank"

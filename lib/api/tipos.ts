@@ -314,6 +314,17 @@ export interface CrearReservaEntrada {
   paisResidencia?: string;
   moneda: Moneda;
   pasajeros: PasajeroEntrada[];
+  codigoPromocion?: string;
+}
+
+/* Respuesta de POST /reservas/:codigo/iniciar-pago-adelanto */
+export interface PagoAdelantoApi {
+  pagoId: string;
+  monto: number | string;
+  moneda: Moneda;
+  estado: string;
+  formToken: string;
+  llavePublica: string;
 }
 
 export interface ReservaApi {

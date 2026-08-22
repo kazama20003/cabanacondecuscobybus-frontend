@@ -54,6 +54,24 @@ export function useTour(slug: string, idioma?: string) {
   });
 }
 
+/**
+ * Las salidas solo vienen en los endpoints de listado (no en el detalle por
+ * slug). Estos hooks traen el listado y devuelven las salidas del servicio
+ * pedido, para poder elegir una salida en la vista de detalle y agregarla al
+ * carrito.
+ */
+export function useSalidasTransporte(slug: string) {
+  const consulta = useTransportes({ pagina: 1, porPagina: 100 });
+  const item = consulta.data?.datos?.find((t) => t.slug === slug);
+  return { ...consulta, salidas: item?.salidas ?? [] };
+}
+
+export function useSalidasTour(slug: string) {
+  const consulta = useTours({ pagina: 1, porPagina: 100 });
+  const item = consulta.data?.datos?.find((t) => t.slug === slug);
+  return { ...consulta, salidas: item?.salidas ?? [] };
+}
+
 /* --- Mutaciones de administración --- */
 
 export function useCrearTransporte() {

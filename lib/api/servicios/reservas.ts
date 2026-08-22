@@ -3,6 +3,7 @@ import { endpoints } from "../config";
 import type {
   ComprobanteSaldoEntrada,
   CrearReservaEntrada,
+  PagoAdelantoApi,
   ReservaApi,
 } from "../tipos";
 
@@ -18,7 +19,7 @@ export const servicioReservas = {
     }),
 
   iniciarPagoAdelanto: (codigo: string) =>
-    solicitar<unknown>(endpoints.reservas.iniciarPagoAdelanto(codigo), {
+    solicitar<PagoAdelantoApi>(endpoints.reservas.iniciarPagoAdelanto(codigo), {
       metodo: "POST",
     }),
 
