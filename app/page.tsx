@@ -11,10 +11,9 @@ import {
   IMG_SAN_LAZARO,
   IMG_TEMPLO,
   transportRoutes,
-  tours,
-  destinations,
   type TransportRoute,
 } from "@/lib/data";
+import { useToursSeed, useDestinations } from "@/lib/data-i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTours, useTransportes } from "@/hooks/use-catalogo";
@@ -87,6 +86,8 @@ export default function Home() {
   const asideScrollRef = useRef<HTMLDivElement>(null);
   const t = useT();
   const { idioma } = useIdioma();
+  const tours = useToursSeed();
+  const destinations = useDestinations();
   const { data: transportesApi } = useTransportes({ pagina: 1, porPagina: 6 });
   const { data: toursApi } = useTours({ pagina: 1, porPagina: 12 });
 
