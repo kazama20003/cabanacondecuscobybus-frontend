@@ -6,22 +6,14 @@ import { useRouter } from "next/navigation";
 import { useMiPerfil, useCerrarSesion } from "@/hooks/use-auth";
 import { useMisReservas } from "@/hooks/use-reservas";
 import { tokenStorage } from "@/lib/api";
-
-const nombreEstado: Record<string, string> = {
-  PENDIENTE_PAGO: "Pendiente de pago",
-  ADELANTO_PAGADO: "Adelanto pagado",
-  SALDO_PENDIENTE: "Saldo pendiente",
-  PAGO_TOTAL_PAGADO: "Pagada",
-  CONFIRMADA: "Confirmada",
-  REPROGRAMADA: "Reprogramada",
-  CANCELADA: "Cancelada",
-  COMPLETADA: "Completada",
-  VENCIDA: "Vencida",
-};
+import { useT, LOCALES } from "@/lib/i18n";
+import { useIdioma } from "@/components/lang-provider";
 
 /* Perfil del turista: sus datos y sus reservas, con el estilo del sitio público. */
 export default function PaginaCuenta() {
   const router = useRouter();
+  const t = useT();
+  const { idioma } = useIdioma();
   const { data: perfil, isLoading, isError } = useMiPerfil();
   const hayToken = typeof window !== "undefined" && !!tokenStorage.obtener();
   const { data: reservas, isLoading: cargandoReservas } = useMisReservas(hayToken);
@@ -34,7 +26,7 @@ export default function PaginaCuenta() {
   if (!hayToken || isLoading || !perfil) {
     return (
       <main style={{ maxWidth: 880, margin: "0 auto", padding: "80px 20px" }}>
-        <p style={{ color: "var(--muted)" }}>Cargando tu cuenta…</p>
+        <p style={{ color: "var(--muted)" }}>{t("cuenta.loading")}</p>
       </main>
     );
   }
@@ -42,7 +34,7 @@ export default function PaginaCuenta() {
   return (
     <main style={{ maxWidth: 880, margin: "0 auto", padding: "56px 20px 80px" }}>
       <p style={{ margin: "0 0 8px", fontSize: 13.5 }}>
-        <Link href="/" style={{ color: "var(--muted)" }}>← Volver al inicio</Link>
+        <Link href="/" style={{ color: "var(--muted)" }}>{t("auth.backHome")}</Link>
       </p>
       <h1
         style={{
@@ -53,7 +45,7 @@ export default function PaginaCuenta() {
           fontWeight: 400,
         }}
       >
-        Hola, <em className="serif">{perfil.nombres}</em>.
+        {t("cuenta.helloPre")}<em className="serif">{perfil.nombres}</em>.
       </h1>
       <p style={{ margin: "0 0 32px", fontSize: 15, color: "var(--muted)" }}>
         {perfil.correo}
@@ -69,21 +61,20 @@ export default function PaginaCuenta() {
         }}
       >
         <h2 style={{ margin: "0 0 16px", fontSize: 20, fontWeight: 600 }}>
-          Mis reservas
+          {t("cuenta.misReservas")}
         </h2>
 
         {cargandoReservas && (
-          <p style={{ color: "var(--muted)", fontSize: 14 }}>Cargando reservas…</p>
+          <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("cuenta.loadingReservas")}</p>
         )}
 
         {reservas && reservas.length === 0 && (
           <div style={{ padding: "24px 0" }}>
             <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 14.5 }}>
-              Aún no tienes reservas. Explora nuestras rutas y tours para tu
-              próximo viaje.
+              {t("cuenta.sinReservas")}
             </p>
             <Link href="/transporte" style={{ fontWeight: 600, fontSize: 14.5 }}>
-              Ver rutas de transporte →
+              {t("cuenta.verRutas")}
             </Link>
           </div>
         )}
@@ -97,7 +88,7 @@ export default function PaginaCuenta() {
             | undefined;
           const nombre = salidaT?.transporte
             ? `${salidaT.transporte.origenNombre} → ${salidaT.transporte.destinoNombre}`
-            : (salidaTo?.tour?.destinoNombre ?? "Servicio");
+            : (salidaTo?.tour?.destinoNombre ?? t("cuenta.servicio"));
           const fecha = salidaT?.fechaHoraSalida ?? salidaTo?.fechaHoraSalida;
           return (
             <div
@@ -117,9 +108,9 @@ export default function PaginaCuenta() {
                 <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--muted)" }}>
                   {reserva.codigo}
                   {fecha
-                    ? ` · ${new Date(fecha).toLocaleString("es-PE", { dateStyle: "medium", timeStyle: "short" })}`
+                    ? ` · ${new Date(fecha).toLocaleString(LOCALES[idioma], { dateStyle: "medium", timeStyle: "short" })}`
                     : ""}
-                  {` · ${reserva.cantidadPasajeros ?? 1} pasajero(s)`}
+                  {` · ${reserva.cantidadPasajeros ?? 1} ${t("cuenta.pasajerosSuf")}`}
                 </p>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -127,7 +118,7 @@ export default function PaginaCuenta() {
                   {reserva.moneda === "USD" ? "US$" : "S/"} {String(reserva.montoTotal)}
                 </p>
                 <p style={{ margin: "4px 0 0", fontSize: 12.5, color: "var(--muted)" }}>
-                  {nombreEstado[String(reserva.estado)] ?? String(reserva.estado)}
+                  {t(`cuenta.estado.${String(reserva.estado)}`)}
                 </p>
               </div>
             </div>
@@ -151,7 +142,7 @@ export default function PaginaCuenta() {
           color: "var(--fg)",
         }}
       >
-        Cerrar sesión
+        {t("cuenta.cerrarSesion")}
       </button>
     </main>
   );
