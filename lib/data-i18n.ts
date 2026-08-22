@@ -15,9 +15,11 @@ import {
   transfers as transfersBase,
   destinations as destinationsBase,
   tours as toursBase,
+  transportRoutes as transportRoutesBase,
   type Transfer,
   type Destination,
   type Tour,
+  type TransportRoute,
 } from "./data";
 import { useIdioma, type LangCode } from "@/components/lang-provider";
 
@@ -29,6 +31,10 @@ type DestinationTx = Pick<Destination, "desc" | "highlights">;
 type TourTx = Pick<
   Tour,
   "name" | "duration" | "type" | "departure" | "difficulty" | "desc" | "includes"
+>;
+type TransportRouteTx = Pick<
+  TransportRoute,
+  "duration" | "frequency" | "vehicle" | "description" | "highlights" | "stops"
 >;
 
 /* ============================ TRASLADOS ============================ */
@@ -782,6 +788,659 @@ const TOURS_TX: Partial<Record<LangCode, TourTx[]>> = {
   ],
 };
 
+/* ====================== TRANSPORTE (fallback) ====================== */
+
+const TRANSPORTROUTES_TX: Partial<Record<LangCode, TransportRouteTx[]>> = {
+  en: [
+    {
+      duration: "10 h approx.",
+      frequency: "Daily departures",
+      vehicle: "Double-decker tourist bus · semi-cama seats 140°",
+      description: "Our flagship route connects the imperial capital with the White City across the altiplano. A direct trip with technical stops, modern buses and a bilingual crew.",
+      highlights: ["Semi-cama seats reclining to 140°", "On-board WiFi and USB ports", "Snack and drink included", "On-board toilet and air conditioning"],
+      stops: [
+        { name: "Cusco terminal", time: "07:30", note: "Boarding 30 min before" },
+        { name: "Sicuani", time: "09:45", note: "Technical stop" },
+        { name: "Juliaca", time: "12:30" },
+        { name: "Arequipa terminal", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 h 30 min",
+      frequency: "Daily departures",
+      vehicle: "Tourist sprinter · 19 seats",
+      description: "Route into the heart of the Colca Valley, one of the deepest canyons in the world. Ideal for connecting with condor watching at Cruz del Cóndor.",
+      highlights: ["Pick-up from your hotel in Arequipa", "Stop at the volcanoes viewpoint at 4,910 m", "Professional driver and on-board oxygen", "Connection to Cruz del Cóndor"],
+      stops: [
+        { name: "Arequipa (hotel pick-up)", time: "08:00" },
+        { name: "Volcanoes viewpoint (Patapampa, 4,910 m)", time: "10:00", note: "Photo stop" },
+        { name: "Chivay", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 h 15 min",
+      frequency: "Daily departures",
+      vehicle: "Tourist van · 15 seats",
+      description: "The most scenic stretch of the Colca: from Chivay to Cabanaconde with a stop at Cruz del Cóndor during the condors' flight hours. Perfect for trekkers heading to the oasis.",
+      highlights: ["40-min stop at Cruz del Cóndor", "Starting point of the trek to the Sangalle oasis", "Stops at traditional villages in the valley"],
+      stops: [
+        { name: "Chivay", time: "06:00" },
+        { name: "Yanque", time: "06:25" },
+        { name: "Cruz del Cóndor", time: "07:30", note: "40-min stop for condor watching" },
+        { name: "Cabanaconde", time: "08:15" },
+      ],
+    },
+    {
+      duration: "7 h approx.",
+      frequency: "Daily departures",
+      vehicle: "Tourist bus with guide · Route of the Sun",
+      description: "More than a transfer: a tourist bus along the Route of the Sun with guided stops at Andahuaylillas, Raqchi and the La Raya pass, lunch included, all the way to the shores of Titicaca.",
+      highlights: ["Route of the Sun with guided visits included", "Buffet lunch in Sicuani", "Bilingual guide Spanish / English"],
+      stops: [
+        { name: "Cusco terminal", time: "07:00" },
+        { name: "Andahuaylillas (Sistine Chapel of America)", time: "08:00", note: "Guided visit" },
+        { name: "Raqchi (Temple of Wiracocha)", time: "09:30", note: "Guided visit" },
+        { name: "La Raya (4,335 m)", time: "11:00", note: "Photo stop" },
+        { name: "Puno", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 h 30 min",
+      frequency: "Daily departures",
+      vehicle: "Tourist minivan · 19 seats",
+      description: "The budget alternative to reach Machu Picchu: minivan to Hidroeléctrica and a 2 h 30 walk alongside the railway to Aguas Calientes. Hotel pick-up included.",
+      highlights: ["The cheapest way to reach Machu Picchu", "Pick-up from your hotel in Cusco", "Return available the same day or the next"],
+      stops: [
+        { name: "Cusco (hotel pick-up)", time: "06:30" },
+        { name: "Ollantaytambo", time: "08:30", note: "Breakfast stop" },
+        { name: "Abra Málaga (4,316 m)", time: "09:45" },
+        { name: "Santa María", time: "11:30" },
+        { name: "Hidroeléctrica", time: "13:00", note: "Walk or train to Aguas Calientes" },
+      ],
+    },
+    {
+      duration: "5 h 30 min",
+      frequency: "Daily departures",
+      vehicle: "Tourist bus · reclining seats",
+      description: "Direct connection between Arequipa and Lake Titicaca crossing the Salinas and Aguada Blanca reserve, home to vicuñas and high-Andean flamingos.",
+      highlights: ["Crossing the vicuña reserve", "Direct connection to Lake Titicaca tours", "Central terminal in Puno"],
+      stops: [
+        { name: "Arequipa terminal", time: "06:00" },
+        { name: "Salinas and Aguada Blanca reserve", time: "07:30", note: "Vicuña watching" },
+        { name: "Juliaca", time: "10:30" },
+        { name: "Puno", time: "11:30" },
+      ],
+    },
+  ],
+  fr: [
+    {
+      duration: "10 h env.",
+      frequency: "Départs quotidiens",
+      vehicle: "Bus touristique à deux étages · sièges semi-cama 140°",
+      description: "Notre itinéraire phare relie la capitale impériale à la Ville blanche en traversant l'altiplano. Voyage direct avec arrêts techniques, bus modernes et équipage bilingue.",
+      highlights: ["Sièges semi-cama inclinables à 140°", "WiFi à bord et ports USB", "Snack et boisson inclus", "Toilettes à bord et climatisation"],
+      stops: [
+        { name: "Terminal de Cusco", time: "07:30", note: "Embarquement 30 min avant" },
+        { name: "Sicuani", time: "09:45", note: "Arrêt technique" },
+        { name: "Juliaca", time: "12:30" },
+        { name: "Terminal d'Arequipa", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 h 30 min",
+      frequency: "Départs quotidiens",
+      vehicle: "Sprinter touristique · 19 places",
+      description: "Itinéraire vers le cœur de la vallée de Colca, l'un des canyons les plus profonds du monde. Idéal pour rejoindre l'observation des condors à la Cruz del Cóndor.",
+      highlights: ["Prise en charge à ton hôtel à Arequipa", "Arrêt au belvédère des volcans à 4 910 m", "Chauffeur professionnel et oxygène à bord", "Correspondance avec la Cruz del Cóndor"],
+      stops: [
+        { name: "Arequipa (prise en charge à l'hôtel)", time: "08:00" },
+        { name: "Belvédère des volcans (Patapampa, 4 910 m)", time: "10:00", note: "Arrêt photo" },
+        { name: "Chivay", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 h 15 min",
+      frequency: "Départs quotidiens",
+      vehicle: "Van touristique · 15 places",
+      description: "Le tronçon le plus spectaculaire du Colca : de Chivay à Cabanaconde avec un arrêt à la Cruz del Cóndor aux heures de vol des condors. Parfait pour les trekkeurs vers l'oasis.",
+      highlights: ["Arrêt de 40 min à la Cruz del Cóndor", "Point de départ du trek vers l'oasis de Sangalle", "Arrêts dans les villages traditionnels de la vallée"],
+      stops: [
+        { name: "Chivay", time: "06:00" },
+        { name: "Yanque", time: "06:25" },
+        { name: "Cruz del Cóndor", time: "07:30", note: "Arrêt de 40 min pour l'observation" },
+        { name: "Cabanaconde", time: "08:15" },
+      ],
+    },
+    {
+      duration: "7 h env.",
+      frequency: "Départs quotidiens",
+      vehicle: "Bus touristique avec guide · route du soleil",
+      description: "Plus qu'un transfert : un bus touristique sur la Route du Soleil avec des arrêts guidés à Andahuaylillas, Raqchi et le col de La Raya, déjeuner inclus, jusqu'aux rives du Titicaca.",
+      highlights: ["Route du Soleil avec visites guidées incluses", "Déjeuner buffet à Sicuani", "Guide bilingue espagnol / anglais"],
+      stops: [
+        { name: "Terminal de Cusco", time: "07:00" },
+        { name: "Andahuaylillas (Chapelle Sixtine d'Amérique)", time: "08:00", note: "Visite guidée" },
+        { name: "Raqchi (Temple de Wiracocha)", time: "09:30", note: "Visite guidée" },
+        { name: "La Raya (4 335 m)", time: "11:00", note: "Arrêt photo" },
+        { name: "Puno", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 h 30 min",
+      frequency: "Départs quotidiens",
+      vehicle: "Minivan touristique · 19 places",
+      description: "L'alternative économique pour rejoindre le Machu Picchu : minivan jusqu'à Hidroeléctrica puis 2 h 30 de marche le long de la voie ferrée jusqu'à Aguas Calientes. Prise en charge à l'hôtel incluse.",
+      highlights: ["Le moyen le plus économique d'atteindre le Machu Picchu", "Prise en charge à ton hôtel à Cusco", "Retour disponible le jour même ou le lendemain"],
+      stops: [
+        { name: "Cusco (prise en charge à l'hôtel)", time: "06:30" },
+        { name: "Ollantaytambo", time: "08:30", note: "Arrêt petit-déjeuner" },
+        { name: "Abra Málaga (4 316 m)", time: "09:45" },
+        { name: "Santa María", time: "11:30" },
+        { name: "Hidroeléctrica", time: "13:00", note: "Marche ou train jusqu'à Aguas Calientes" },
+      ],
+    },
+    {
+      duration: "5 h 30 min",
+      frequency: "Départs quotidiens",
+      vehicle: "Bus touristique · sièges inclinables",
+      description: "Liaison directe entre Arequipa et le lac Titicaca en traversant la réserve de Salinas et Aguada Blanca, refuge de vigognes et de flamants des hautes Andes.",
+      highlights: ["Traversée de la réserve de vigognes", "Correspondance directe avec les tours du lac Titicaca", "Terminal central à Puno"],
+      stops: [
+        { name: "Terminal d'Arequipa", time: "06:00" },
+        { name: "Réserve de Salinas et Aguada Blanca", time: "07:30", note: "Observation de vigognes" },
+        { name: "Juliaca", time: "10:30" },
+        { name: "Puno", time: "11:30" },
+      ],
+    },
+  ],
+  it: [
+    {
+      duration: "10 h circa",
+      frequency: "Partenze giornaliere",
+      vehicle: "Bus turistico a due piani · sedili semi-cama 140°",
+      description: "Il nostro itinerario di punta collega la capitale imperiale con la Città Bianca attraversando l'altipiano. Viaggio diretto con soste tecniche, bus moderni ed equipaggio bilingue.",
+      highlights: ["Sedili semi-cama reclinabili a 140°", "WiFi a bordo e porte USB", "Snack e bevanda inclusi", "Bagno a bordo e aria condizionata"],
+      stops: [
+        { name: "Terminal di Cusco", time: "07:30", note: "Imbarco 30 min prima" },
+        { name: "Sicuani", time: "09:45", note: "Sosta tecnica" },
+        { name: "Juliaca", time: "12:30" },
+        { name: "Terminal di Arequipa", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 h 30 min",
+      frequency: "Partenze giornaliere",
+      vehicle: "Sprinter turistico · 19 posti",
+      description: "Itinerario nel cuore della Valle del Colca, uno dei canyon più profondi del mondo. Ideale per collegarsi all'avvistamento dei condor alla Cruz del Cóndor.",
+      highlights: ["Prelievo dal tuo hotel ad Arequipa", "Sosta al belvedere dei vulcani a 4 910 m", "Autista professionale e ossigeno a bordo", "Collegamento con la Cruz del Cóndor"],
+      stops: [
+        { name: "Arequipa (prelievo in hotel)", time: "08:00" },
+        { name: "Belvedere dei vulcani (Patapampa, 4 910 m)", time: "10:00", note: "Sosta fotografica" },
+        { name: "Chivay", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 h 15 min",
+      frequency: "Partenze giornaliere",
+      vehicle: "Van turistico · 15 posti",
+      description: "Il tratto più scenografico del Colca: da Chivay a Cabanaconde con sosta alla Cruz del Cóndor nell'orario di volo dei condor. Perfetto per i trekker diretti all'oasi.",
+      highlights: ["Sosta di 40 min alla Cruz del Cóndor", "Punto di partenza del trek all'oasi di Sangalle", "Soste nei villaggi tradizionali della valle"],
+      stops: [
+        { name: "Chivay", time: "06:00" },
+        { name: "Yanque", time: "06:25" },
+        { name: "Cruz del Cóndor", time: "07:30", note: "Sosta di 40 min per l'avvistamento" },
+        { name: "Cabanaconde", time: "08:15" },
+      ],
+    },
+    {
+      duration: "7 h circa",
+      frequency: "Partenze giornaliere",
+      vehicle: "Bus turistico con guida · rotta del sole",
+      description: "Più di un transfer: un bus turistico lungo la Rotta del Sole con soste guidate ad Andahuaylillas, Raqchi e il passo La Raya, pranzo incluso, fino alle rive del Titicaca.",
+      highlights: ["Rotta del Sole con visite guidate incluse", "Pranzo a buffet a Sicuani", "Guida bilingue spagnolo / inglese"],
+      stops: [
+        { name: "Terminal di Cusco", time: "07:00" },
+        { name: "Andahuaylillas (Cappella Sistina d'America)", time: "08:00", note: "Visita guidata" },
+        { name: "Raqchi (Tempio di Wiracocha)", time: "09:30", note: "Visita guidata" },
+        { name: "La Raya (4 335 m)", time: "11:00", note: "Sosta fotografica" },
+        { name: "Puno", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 h 30 min",
+      frequency: "Partenze giornaliere",
+      vehicle: "Minivan turistico · 19 posti",
+      description: "L'alternativa economica per raggiungere Machu Picchu: minivan fino a Hidroeléctrica e camminata di 2 h 30 lungo la ferrovia fino ad Aguas Calientes. Prelievo in hotel incluso.",
+      highlights: ["Il modo più economico per raggiungere Machu Picchu", "Prelievo dal tuo hotel a Cusco", "Ritorno disponibile lo stesso giorno o il successivo"],
+      stops: [
+        { name: "Cusco (prelievo in hotel)", time: "06:30" },
+        { name: "Ollantaytambo", time: "08:30", note: "Sosta per la colazione" },
+        { name: "Abra Málaga (4 316 m)", time: "09:45" },
+        { name: "Santa María", time: "11:30" },
+        { name: "Hidroeléctrica", time: "13:00", note: "Camminata o treno per Aguas Calientes" },
+      ],
+    },
+    {
+      duration: "5 h 30 min",
+      frequency: "Partenze giornaliere",
+      vehicle: "Bus turistico · sedili reclinabili",
+      description: "Collegamento diretto tra Arequipa e il lago Titicaca attraversando la riserva di Salinas e Aguada Blanca, casa di vigogne e fenicotteri delle alte Ande.",
+      highlights: ["Attraversamento della riserva di vigogne", "Collegamento diretto con i tour del lago Titicaca", "Terminal centrale a Puno"],
+      stops: [
+        { name: "Terminal di Arequipa", time: "06:00" },
+        { name: "Riserva di Salinas e Aguada Blanca", time: "07:30", note: "Avvistamento di vigogne" },
+        { name: "Juliaca", time: "10:30" },
+        { name: "Puno", time: "11:30" },
+      ],
+    },
+  ],
+  pt: [
+    {
+      duration: "10 h aprox.",
+      frequency: "Saídas diárias",
+      vehicle: "Ônibus turístico de 2 andares · poltronas semileito 140°",
+      description: "Nossa rota principal conecta a capital imperial à Cidade Branca atravessando o altiplano. Viagem direta com paradas técnicas, ônibus modernos e tripulação bilíngue.",
+      highlights: ["Poltronas semileito reclináveis a 140°", "WiFi a bordo e portas USB", "Lanche e bebida incluídos", "Banheiro a bordo e ar-condicionado"],
+      stops: [
+        { name: "Terminal de Cusco", time: "07:30", note: "Embarque 30 min antes" },
+        { name: "Sicuani", time: "09:45", note: "Parada técnica" },
+        { name: "Juliaca", time: "12:30" },
+        { name: "Terminal de Arequipa", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 h 30 min",
+      frequency: "Saídas diárias",
+      vehicle: "Sprinter turística · 19 lugares",
+      description: "Rota até o coração do Vale do Colca, um dos cânions mais profundos do mundo. Ideal para conectar com a observação de condores na Cruz del Cóndor.",
+      highlights: ["Retirada no seu hotel em Arequipa", "Parada no mirante dos vulcões a 4 910 m", "Motorista profissional e oxigênio a bordo", "Conexão com a Cruz del Cóndor"],
+      stops: [
+        { name: "Arequipa (retirada no hotel)", time: "08:00" },
+        { name: "Mirante dos vulcões (Patapampa, 4 910 m)", time: "10:00", note: "Parada para fotos" },
+        { name: "Chivay", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 h 15 min",
+      frequency: "Saídas diárias",
+      vehicle: "Van turística · 15 lugares",
+      description: "O trecho mais cênico do Colca: de Chivay a Cabanaconde com parada na Cruz del Cóndor no horário de voo dos condores. Perfeito para trekkers rumo ao oásis.",
+      highlights: ["Parada de 40 min na Cruz del Cóndor", "Ponto de partida do trek ao oásis de Sangalle", "Paradas em vilarejos tradicionais do vale"],
+      stops: [
+        { name: "Chivay", time: "06:00" },
+        { name: "Yanque", time: "06:25" },
+        { name: "Cruz del Cóndor", time: "07:30", note: "Parada de 40 min para observação" },
+        { name: "Cabanaconde", time: "08:15" },
+      ],
+    },
+    {
+      duration: "7 h aprox.",
+      frequency: "Saídas diárias",
+      vehicle: "Ônibus turístico com guia · rota do sol",
+      description: "Mais que um traslado: um ônibus turístico pela Rota do Sol com paradas guiadas em Andahuaylillas, Raqchi e o passo La Raya, almoço incluído, até as margens do Titicaca.",
+      highlights: ["Rota do Sol com visitas guiadas incluídas", "Almoço buffet em Sicuani", "Guia bilíngue espanhol / inglês"],
+      stops: [
+        { name: "Terminal de Cusco", time: "07:00" },
+        { name: "Andahuaylillas (Capela Sistina da América)", time: "08:00", note: "Visita guiada" },
+        { name: "Raqchi (Templo de Wiracocha)", time: "09:30", note: "Visita guiada" },
+        { name: "La Raya (4 335 m)", time: "11:00", note: "Parada para fotos" },
+        { name: "Puno", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 h 30 min",
+      frequency: "Saídas diárias",
+      vehicle: "Minivan turística · 19 lugares",
+      description: "A alternativa econômica para chegar a Machu Picchu: minivan até Hidroeléctrica e caminhada de 2 h 30 ao longo da ferrovia até Aguas Calientes. Retirada no hotel incluída.",
+      highlights: ["A forma mais econômica de chegar a Machu Picchu", "Retirada no seu hotel em Cusco", "Retorno disponível no mesmo dia ou no seguinte"],
+      stops: [
+        { name: "Cusco (retirada no hotel)", time: "06:30" },
+        { name: "Ollantaytambo", time: "08:30", note: "Parada para café da manhã" },
+        { name: "Abra Málaga (4 316 m)", time: "09:45" },
+        { name: "Santa María", time: "11:30" },
+        { name: "Hidroeléctrica", time: "13:00", note: "Caminhada ou trem até Aguas Calientes" },
+      ],
+    },
+    {
+      duration: "5 h 30 min",
+      frequency: "Saídas diárias",
+      vehicle: "Ônibus turístico · poltronas reclináveis",
+      description: "Conexão direta entre Arequipa e o lago Titicaca atravessando a reserva de Salinas e Aguada Blanca, lar de vicunhas e flamingos altoandinos.",
+      highlights: ["Travessia pela reserva de vicunhas", "Conexão direta com tours ao lago Titicaca", "Terminal central em Puno"],
+      stops: [
+        { name: "Terminal de Arequipa", time: "06:00" },
+        { name: "Reserva de Salinas e Aguada Blanca", time: "07:30", note: "Observação de vicunhas" },
+        { name: "Juliaca", time: "10:30" },
+        { name: "Puno", time: "11:30" },
+      ],
+    },
+  ],
+  zh: [
+    {
+      duration: "约 10 小时",
+      frequency: "每日发车",
+      vehicle: "双层旅游巴士 · 140° 半躺座椅",
+      description: "我们的招牌线路穿越高原，将帝国之都与白城相连。直达行程，含技术停靠，现代化巴士与双语乘务。",
+      highlights: ["可倾斜至 140° 的半躺座椅", "车内 WiFi 与 USB 接口", "含小食和饮料", "车内卫生间与空调"],
+      stops: [
+        { name: "库斯科车站", time: "07:30", note: "提前 30 分钟登车" },
+        { name: "西库阿尼", time: "09:45", note: "技术停靠" },
+        { name: "胡利亚卡", time: "12:30" },
+        { name: "阿雷基帕车站", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 小时 30 分钟",
+      frequency: "每日发车",
+      vehicle: "旅游 sprinter · 19 座",
+      description: "通往科尔卡山谷腹地的线路，这里是世界上最深的峡谷之一。可衔接在神鹰十字架观赏神鹰。",
+      highlights: ["在阿雷基帕的酒店接客", "在海拔 4 910 米的火山观景台停靠", "专业司机与车载氧气", "衔接神鹰十字架"],
+      stops: [
+        { name: "阿雷基帕（酒店接客）", time: "08:00" },
+        { name: "火山观景台（帕塔潘帕，4 910 米）", time: "10:00", note: "停车拍照" },
+        { name: "奇瓦伊", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 小时 15 分钟",
+      frequency: "每日发车",
+      vehicle: "旅游面包车 · 15 座",
+      description: "科尔卡最壮丽的一段：从奇瓦伊到卡巴纳孔德，在神鹰飞行时段于神鹰十字架停靠。前往绿洲的徒步者的理想之选。",
+      highlights: ["在神鹰十字架停靠 40 分钟", "前往桑加列绿洲徒步的起点", "在山谷传统村落停靠"],
+      stops: [
+        { name: "奇瓦伊", time: "06:00" },
+        { name: "扬克", time: "06:25" },
+        { name: "神鹰十字架", time: "07:30", note: "停靠 40 分钟观赏" },
+        { name: "卡巴纳孔德", time: "08:15" },
+      ],
+    },
+    {
+      duration: "约 7 小时",
+      frequency: "每日发车",
+      vehicle: "带向导的旅游巴士 · 太阳之路",
+      description: "不仅是接送：沿太阳之路的旅游巴士，在安达瓦伊利亚斯、拉克奇和拉拉亚山口有导览停靠，含午餐，直到的的喀喀湖畔。",
+      highlights: ["太阳之路，含导览参观", "西库阿尼自助午餐", "西班牙语／英语双语向导"],
+      stops: [
+        { name: "库斯科车站", time: "07:00" },
+        { name: "安达瓦伊利亚斯（美洲的西斯廷礼拜堂）", time: "08:00", note: "导览参观" },
+        { name: "拉克奇（维拉科查神庙）", time: "09:30", note: "导览参观" },
+        { name: "拉拉亚（4 335 米）", time: "11:00", note: "停车拍照" },
+        { name: "普诺", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 小时 30 分钟",
+      frequency: "每日发车",
+      vehicle: "旅游 minivan · 19 座",
+      description: "前往马丘比丘的经济之选：乘 minivan 到水电站，再沿铁路步行 2 小时 30 分到阿瓜斯卡连特斯。含酒店接客。",
+      highlights: ["前往马丘比丘最经济的方式", "在库斯科的酒店接客", "可当天或次日返程"],
+      stops: [
+        { name: "库斯科（酒店接客）", time: "06:30" },
+        { name: "奥扬泰坦博", time: "08:30", note: "早餐停靠" },
+        { name: "马拉加山口（4 316 米）", time: "09:45" },
+        { name: "圣玛丽亚", time: "11:30" },
+        { name: "水电站", time: "13:00", note: "步行或乘火车前往阿瓜斯卡连特斯" },
+      ],
+    },
+    {
+      duration: "5 小时 30 分钟",
+      frequency: "每日发车",
+      vehicle: "旅游巴士 · 可调节座椅",
+      description: "阿雷基帕与的的喀喀湖之间的直达线路，穿越萨利纳斯和阿瓜达布兰卡保护区，那里是骆马和高原火烈鸟的家园。",
+      highlights: ["穿越骆马保护区", "直接衔接的的喀喀湖之旅", "普诺市中心车站"],
+      stops: [
+        { name: "阿雷基帕车站", time: "06:00" },
+        { name: "萨利纳斯和阿瓜达布兰卡保护区", time: "07:30", note: "观赏骆马" },
+        { name: "胡利亚卡", time: "10:30" },
+        { name: "普诺", time: "11:30" },
+      ],
+    },
+  ],
+  ja: [
+    {
+      duration: "約10時間",
+      frequency: "毎日出発",
+      vehicle: "2階建て観光バス · セミカマシート140°",
+      description: "旗艦ルートは、高原を越えて帝国の都と白い街を結びます。技術停車を挟む直行便、最新のバス、バイリンガル乗務員。",
+      highlights: ["140°までリクライニングするセミカマシート", "車内WiFiとUSBポート", "軽食とドリンク付き", "車内トイレとエアコン"],
+      stops: [
+        { name: "クスコターミナル", time: "07:30", note: "30分前に乗車" },
+        { name: "シクアニ", time: "09:45", note: "技術停車" },
+        { name: "フリアカ", time: "12:30" },
+        { name: "アレキパターミナル", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3時間30分",
+      frequency: "毎日出発",
+      vehicle: "観光スプリンター · 19席",
+      description: "世界有数の深さを誇るコルカ渓谷の中心へ向かうルート。コンドルの十字架でのコンドル観察への接続に最適。",
+      highlights: ["アレキパのホテルお迎え", "標高4,910mの火山展望台で停車", "プロのドライバーと車内酸素", "コンドルの十字架への接続"],
+      stops: [
+        { name: "アレキパ（ホテルお迎え）", time: "08:00" },
+        { name: "火山展望台（パタパンパ、4,910m）", time: "10:00", note: "写真ストップ" },
+        { name: "チバイ", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2時間15分",
+      frequency: "毎日出発",
+      vehicle: "観光バン · 15席",
+      description: "コルカで最も景観の良い区間：チバイからカバナコンデへ、コンドルの飛翔時間帯にコンドルの十字架で停車。オアシスを目指すトレッカーに最適。",
+      highlights: ["コンドルの十字架で40分停車", "サンガリェのオアシスへのトレック出発点", "渓谷の伝統的な村々で停車"],
+      stops: [
+        { name: "チバイ", time: "06:00" },
+        { name: "ヤンケ", time: "06:25" },
+        { name: "コンドルの十字架", time: "07:30", note: "観察のため40分停車" },
+        { name: "カバナコンデ", time: "08:15" },
+      ],
+    },
+    {
+      duration: "約7時間",
+      frequency: "毎日出発",
+      vehicle: "ガイド付き観光バス · 太陽の道",
+      description: "単なる移動ではありません。太陽の道を行く観光バスで、アンダワイリリャス、ラクチ、ラ・ラヤ峠でのガイド付き停車、昼食付き、チチカカ湖畔まで。",
+      highlights: ["ガイド付き見学込みの太陽の道", "シクアニでのビュッフェ昼食", "スペイン語／英語のバイリンガルガイド"],
+      stops: [
+        { name: "クスコターミナル", time: "07:00" },
+        { name: "アンダワイリリャス（アメリカのシスティーナ礼拝堂）", time: "08:00", note: "ガイド付き見学" },
+        { name: "ラクチ（ウィラコチャ神殿）", time: "09:30", note: "ガイド付き見学" },
+        { name: "ラ・ラヤ（4,335m）", time: "11:00", note: "写真ストップ" },
+        { name: "プーノ", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6時間30分",
+      frequency: "毎日出発",
+      vehicle: "観光ミニバン · 19席",
+      description: "マチュピチュへ行く格安の選択肢：ミニバンで水力発電所まで、線路沿いに2時間30分歩いてアグアス・カリエンテスへ。ホテルお迎え込み。",
+      highlights: ["マチュピチュへの最も安い行き方", "クスコのホテルお迎え", "当日または翌日の復路が可能"],
+      stops: [
+        { name: "クスコ（ホテルお迎え）", time: "06:30" },
+        { name: "オリャンタイタンボ", time: "08:30", note: "朝食停車" },
+        { name: "マラガ峠（4,316m）", time: "09:45" },
+        { name: "サンタ・マリア", time: "11:30" },
+        { name: "水力発電所", time: "13:00", note: "徒歩または列車でアグアス・カリエンテスへ" },
+      ],
+    },
+    {
+      duration: "5時間30分",
+      frequency: "毎日出発",
+      vehicle: "観光バス · リクライニングシート",
+      description: "アレキパとチチカカ湖を結ぶ直行便。サリナス・イ・アグアダ・ブランカ保護区を横断し、ビクーニャや高地アンデスのフラミンゴの生息地を通ります。",
+      highlights: ["ビクーニャ保護区の横断", "チチカカ湖ツアーへの直接接続", "プーノの中心部ターミナル"],
+      stops: [
+        { name: "アレキパターミナル", time: "06:00" },
+        { name: "サリナス・イ・アグアダ・ブランカ保護区", time: "07:30", note: "ビクーニャ観察" },
+        { name: "フリアカ", time: "10:30" },
+        { name: "プーノ", time: "11:30" },
+      ],
+    },
+  ],
+  ru: [
+    {
+      duration: "около 10 ч",
+      frequency: "Ежедневные отправления",
+      vehicle: "Двухэтажный туристический автобус · сиденья полулёжа 140°",
+      description: "Наш флагманский маршрут соединяет имперскую столицу с Белым городом через альтиплано. Прямая поездка с техническими остановками, современные автобусы и двуязычный экипаж.",
+      highlights: ["Сиденья полулёжа с наклоном 140°", "WiFi на борту и USB-порты", "Снек и напиток включены", "Туалет на борту и кондиционер"],
+      stops: [
+        { name: "Терминал Куско", time: "07:30", note: "Посадка за 30 мин" },
+        { name: "Сикуани", time: "09:45", note: "Техническая остановка" },
+        { name: "Хульяка", time: "12:30" },
+        { name: "Терминал Арекипы", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 ч 30 мин",
+      frequency: "Ежедневные отправления",
+      vehicle: "Туристический спринтер · 19 мест",
+      description: "Маршрут в сердце долины Колка, одного из глубочайших каньонов мира. Идеален для стыковки с наблюдением за кондорами у Крус-дель-Кондор.",
+      highlights: ["Забор из твоего отеля в Арекипе", "Остановка на смотровой вулканов на 4 910 м", "Профессиональный водитель и кислород на борту", "Стыковка с Крус-дель-Кондор"],
+      stops: [
+        { name: "Арекипа (забор из отеля)", time: "08:00" },
+        { name: "Смотровая вулканов (Патапампа, 4 910 м)", time: "10:00", note: "Остановка для фото" },
+        { name: "Чивай", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 ч 15 мин",
+      frequency: "Ежедневные отправления",
+      vehicle: "Туристический вэн · 15 мест",
+      description: "Самый живописный участок Колки: от Чивая до Кабанаконде с остановкой у Крус-дель-Кондор в часы полёта кондоров. Отлично для треккеров, идущих к оазису.",
+      highlights: ["Остановка 40 мин у Крус-дель-Кондор", "Точка старта трека к оазису Сангалье", "Остановки в традиционных деревнях долины"],
+      stops: [
+        { name: "Чивай", time: "06:00" },
+        { name: "Янке", time: "06:25" },
+        { name: "Крус-дель-Кондор", time: "07:30", note: "Остановка 40 мин для наблюдения" },
+        { name: "Кабанаконде", time: "08:15" },
+      ],
+    },
+    {
+      duration: "около 7 ч",
+      frequency: "Ежедневные отправления",
+      vehicle: "Туристический автобус с гидом · Дорога Солнца",
+      description: "Больше чем трансфер: туристический автобус по Дороге Солнца с экскурсионными остановками в Андауайлильясе, Ракчи и на перевале Ла-Райя, обед включён, до берегов Титикаки.",
+      highlights: ["Дорога Солнца с экскурсиями включена", "Обед-буфет в Сикуани", "Двуязычный гид испанский / английский"],
+      stops: [
+        { name: "Терминал Куско", time: "07:00" },
+        { name: "Андауайлильяс (Сикстинская капелла Америки)", time: "08:00", note: "Экскурсия с гидом" },
+        { name: "Ракчи (Храм Виракочи)", time: "09:30", note: "Экскурсия с гидом" },
+        { name: "Ла-Райя (4 335 м)", time: "11:00", note: "Остановка для фото" },
+        { name: "Пуно", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 ч 30 мин",
+      frequency: "Ежедневные отправления",
+      vehicle: "Туристический минивэн · 19 мест",
+      description: "Бюджетный вариант добраться до Мачу-Пикчу: минивэн до Идроэлектрики и пешая прогулка 2 ч 30 вдоль железной дороги до Агуас-Кальентес. Забор из отеля включён.",
+      highlights: ["Самый дешёвый способ добраться до Мачу-Пикчу", "Забор из твоего отеля в Куско", "Возврат доступен в тот же или на следующий день"],
+      stops: [
+        { name: "Куско (забор из отеля)", time: "06:30" },
+        { name: "Ольянтайтамбо", time: "08:30", note: "Остановка на завтрак" },
+        { name: "Перевал Малага (4 316 м)", time: "09:45" },
+        { name: "Санта-Мария", time: "11:30" },
+        { name: "Идроэлектрика", time: "13:00", note: "Пешком или на поезде до Агуас-Кальентес" },
+      ],
+    },
+    {
+      duration: "5 ч 30 мин",
+      frequency: "Ежедневные отправления",
+      vehicle: "Туристический автобус · раскладные сиденья",
+      description: "Прямое сообщение между Арекипой и озером Титикака через заповедник Салинас-и-Агуада-Бланка, дом викуний и высокогорных андских фламинго.",
+      highlights: ["Проезд через заповедник викуний", "Прямая стыковка с турами на озеро Титикака", "Центральный терминал в Пуно"],
+      stops: [
+        { name: "Терминал Арекипы", time: "06:00" },
+        { name: "Заповедник Салинас-и-Агуада-Бланка", time: "07:30", note: "Наблюдение за викуньями" },
+        { name: "Хульяка", time: "10:30" },
+        { name: "Пуно", time: "11:30" },
+      ],
+    },
+  ],
+  de: [
+    {
+      duration: "ca. 10 Std.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Doppeldecker-Reisebus · Semi-Cama-Sitze 140°",
+      description: "Unsere Vorzeigeroute verbindet die imperiale Hauptstadt mit der Weißen Stadt über das Altiplano. Direkte Fahrt mit technischen Stopps, modernen Bussen und zweisprachiger Crew.",
+      highlights: ["Semi-Cama-Sitze bis 140° verstellbar", "WLAN an Bord und USB-Anschlüsse", "Snack und Getränk inklusive", "Bordtoilette und Klimaanlage"],
+      stops: [
+        { name: "Terminal Cusco", time: "07:30", note: "Einstieg 30 Min. vorher" },
+        { name: "Sicuani", time: "09:45", note: "Technischer Halt" },
+        { name: "Juliaca", time: "12:30" },
+        { name: "Terminal Arequipa", time: "17:30" },
+      ],
+    },
+    {
+      duration: "3 Std. 30 Min.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Touristischer Sprinter · 19 Sitze",
+      description: "Route ins Herz des Colca-Tals, eines der tiefsten Canyons der Welt. Ideal für den Anschluss an die Kondorbeobachtung an der Cruz del Cóndor.",
+      highlights: ["Abholung von deinem Hotel in Arequipa", "Halt am Vulkan-Aussichtspunkt auf 4.910 m", "Professioneller Fahrer und Sauerstoff an Bord", "Anschluss an die Cruz del Cóndor"],
+      stops: [
+        { name: "Arequipa (Hotelabholung)", time: "08:00" },
+        { name: "Vulkan-Aussichtspunkt (Patapampa, 4.910 m)", time: "10:00", note: "Fotostopp" },
+        { name: "Chivay", time: "11:30" },
+      ],
+    },
+    {
+      duration: "2 Std. 15 Min.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Touristischer Van · 15 Sitze",
+      description: "Der landschaftlich schönste Abschnitt des Colca: von Chivay nach Cabanaconde mit Halt an der Cruz del Cóndor während der Flugzeiten der Kondore. Perfekt für Trekker Richtung Oase.",
+      highlights: ["40-min-Halt an der Cruz del Cóndor", "Ausgangspunkt des Treks zur Oase Sangalle", "Halte in traditionellen Dörfern des Tals"],
+      stops: [
+        { name: "Chivay", time: "06:00" },
+        { name: "Yanque", time: "06:25" },
+        { name: "Cruz del Cóndor", time: "07:30", note: "40-min-Halt zur Beobachtung" },
+        { name: "Cabanaconde", time: "08:15" },
+      ],
+    },
+    {
+      duration: "ca. 7 Std.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Reisebus mit Guide · Route der Sonne",
+      description: "Mehr als ein Transfer: ein Reisebus auf der Route der Sonne mit geführten Stopps in Andahuaylillas, Raqchi und am Pass La Raya, Mittagessen inklusive, bis an die Ufer des Titicaca.",
+      highlights: ["Route der Sonne mit geführten Besichtigungen inklusive", "Buffet-Mittagessen in Sicuani", "Zweisprachiger Guide Spanisch / Englisch"],
+      stops: [
+        { name: "Terminal Cusco", time: "07:00" },
+        { name: "Andahuaylillas (Sixtinische Kapelle Amerikas)", time: "08:00", note: "Geführte Besichtigung" },
+        { name: "Raqchi (Tempel des Wiracocha)", time: "09:30", note: "Geführte Besichtigung" },
+        { name: "La Raya (4.335 m)", time: "11:00", note: "Fotostopp" },
+        { name: "Puno", time: "14:00" },
+      ],
+    },
+    {
+      duration: "6 Std. 30 Min.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Touristischer Minivan · 19 Sitze",
+      description: "Die günstige Alternative nach Machu Picchu: Minivan bis Hidroeléctrica und 2 Std. 30 Fußmarsch entlang der Bahnstrecke bis Aguas Calientes. Hotelabholung inklusive.",
+      highlights: ["Der günstigste Weg nach Machu Picchu", "Abholung von deinem Hotel in Cusco", "Rückfahrt am selben oder am nächsten Tag verfügbar"],
+      stops: [
+        { name: "Cusco (Hotelabholung)", time: "06:30" },
+        { name: "Ollantaytambo", time: "08:30", note: "Frühstückspause" },
+        { name: "Abra Málaga (4.316 m)", time: "09:45" },
+        { name: "Santa María", time: "11:30" },
+        { name: "Hidroeléctrica", time: "13:00", note: "Fußmarsch oder Zug nach Aguas Calientes" },
+      ],
+    },
+    {
+      duration: "5 Std. 30 Min.",
+      frequency: "Tägliche Abfahrten",
+      vehicle: "Reisebus · verstellbare Sitze",
+      description: "Direktverbindung zwischen Arequipa und dem Titicacasee durch das Reservat Salinas y Aguada Blanca, Heimat von Vikunjas und hochandinen Flamingos.",
+      highlights: ["Durchquerung des Vikunja-Reservats", "Direkter Anschluss an Touren zum Titicacasee", "Zentrales Terminal in Puno"],
+      stops: [
+        { name: "Terminal Arequipa", time: "06:00" },
+        { name: "Reservat Salinas y Aguada Blanca", time: "07:30", note: "Vikunja-Beobachtung" },
+        { name: "Juliaca", time: "10:30" },
+        { name: "Puno", time: "11:30" },
+      ],
+    },
+  ],
+};
+
 /* ============================ Hooks ============================ */
 
 export function useTransfers(): Transfer[] {
@@ -800,4 +1459,10 @@ export function useToursSeed(): Tour[] {
   const { idioma } = useIdioma();
   const tx = TOURS_TX[idioma];
   return toursBase.map((t, i) => (tx?.[i] ? { ...t, ...tx[i] } : t));
+}
+
+export function useTransportRoutes(): TransportRoute[] {
+  const { idioma } = useIdioma();
+  const tx = TRANSPORTROUTES_TX[idioma];
+  return transportRoutesBase.map((r, i) => (tx?.[i] ? { ...r, ...tx[i] } : r));
 }
