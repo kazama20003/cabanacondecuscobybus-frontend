@@ -67,7 +67,7 @@ export default function TrasladosContenido() {
                   <span style={{ fontSize: 12, color: "var(--muted)" }}>{tr.duration}</span>
                 </span>
                 <a
-                  href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero reservar el traslado ${tr.name}`)}`}
+                  href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.trasladoNamed")}${tr.name}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
@@ -89,7 +89,7 @@ export default function TrasladosContenido() {
         </p>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
           <a
-            href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hola, quiero reservar un traslado")}`}
+            href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(t("wa.trasladoGeneric"))}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}

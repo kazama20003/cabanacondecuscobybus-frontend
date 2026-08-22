@@ -99,7 +99,7 @@ export default function ToursPage() {
                     <span />
                   )}
                   <a
-                    href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${titulo}`)}`}
+                    href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${titulo}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
