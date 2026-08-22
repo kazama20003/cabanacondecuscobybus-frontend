@@ -5,13 +5,16 @@ import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
 import { useT } from "@/lib/i18n";
+import { useIdioma } from "@/components/lang-provider";
 import { useTransportes } from "@/hooks/use-catalogo";
 import type { TransporteApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
-function traduccionDe(item: TransporteApi | undefined): TraduccionApi | undefined {
+/** El listado trae todas las traducciones publicadas; elige la del idioma activo, con respaldo en español. */
+function traduccionDe(item: TransporteApi | undefined, idioma: string): TraduccionApi | undefined {
   if (!item) return undefined;
   const arr = item.traducciones as TraduccionApi[] | undefined;
-  return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
+  if (!Array.isArray(arr) || arr.length === 0) return undefined;
+  return arr.find((x) => x.idioma === idioma) ?? arr.find((x) => x.idioma === "es") ?? arr[0];
 }
 
 function formatearDuracion(minutos?: number): string | null {
@@ -28,13 +31,14 @@ function precioDesde(salidas?: SalidaApi[]): number | null {
   return Math.min(...precios);
 }
 
-function tituloTransporte(t: TransporteApi): string {
-  const tr = traduccionDe(t);
+function tituloTransporte(t: TransporteApi, idioma: string): string {
+  const tr = traduccionDe(t, idioma);
   return tr?.titulo || `${t.origenNombre} → ${t.destinoNombre}`;
 }
 
 export default function TransportePage() {
   const t = useT();
+  const { idioma } = useIdioma();
   const { data, isLoading, isError } = useTransportes();
   const transportes = data?.datos ?? [];
 
@@ -86,8 +90,8 @@ export default function TransportePage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
           {transportes.map((tp) => {
-            const tr = traduccionDe(tp);
-            const titulo = tituloTransporte(tp);
+            const tr = traduccionDe(tp, idioma);
+            const titulo = tituloTransporte(tp, idioma);
             const dur = formatearDuracion(tp.duracionMinutos);
             const precio = precioDesde(tp.salidas);
             return (
