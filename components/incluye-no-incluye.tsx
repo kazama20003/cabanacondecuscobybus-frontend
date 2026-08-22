@@ -1,5 +1,9 @@
+"use client";
+
 /* Presentación de "qué incluye / no incluye" un tour o ruta.
    Cada texto es multilínea: una línea = un ítem. */
+
+import { useT } from "@/lib/i18n";
 
 function aItems(texto?: string | null): string[] {
   if (!texto) return [];
@@ -75,6 +79,7 @@ export default function IncluyeNoIncluye({
   incluye?: string | null;
   noIncluye?: string | null;
 }) {
+  const t = useT();
   const itemsIncluye = aItems(incluye);
   const itemsNoIncluye = aItems(noIncluye);
   if (itemsIncluye.length === 0 && itemsNoIncluye.length === 0) return null;
@@ -89,7 +94,7 @@ export default function IncluyeNoIncluye({
           letterSpacing: "-0.02em",
         }}
       >
-        Qué <em className="serif">incluye</em>
+        {t("incluye.titulo")}
       </h2>
       <div
         style={{
@@ -99,10 +104,10 @@ export default function IncluyeNoIncluye({
         }}
       >
         {itemsIncluye.length > 0 && (
-          <Lista titulo="Incluido" items={itemsIncluye} variante="incluye" />
+          <Lista titulo={t("incluye.incluido")} items={itemsIncluye} variante="incluye" />
         )}
         {itemsNoIncluye.length > 0 && (
-          <Lista titulo="No incluido" items={itemsNoIncluye} variante="noIncluye" />
+          <Lista titulo={t("incluye.noIncluido")} items={itemsNoIncluye} variante="noIncluye" />
         )}
       </div>
     </section>

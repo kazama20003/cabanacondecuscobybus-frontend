@@ -7,6 +7,7 @@ import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
+import { useT } from "@/lib/i18n";
 import { useTransporte } from "@/hooks/use-catalogo";
 import type { TransporteApi, TraduccionApi, SalidaApi, ParadaApi } from "@/lib/api/tipos";
 
@@ -41,12 +42,13 @@ export default function RoutePage() {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
   const { idioma } = useIdioma();
+  const t = useT();
   const { data: transporte, isLoading, isError } = useTransporte(slug, idioma);
 
   if (isLoading) {
     return (
       <PageShell>
-        <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>Cargando…</p>
+        <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>{t("lista.cargando")}</p>
       </PageShell>
     );
   }
@@ -55,7 +57,7 @@ export default function RoutePage() {
     return (
       <PageShell>
         <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>
-          No se pudo cargar la ruta. Intenta de nuevo más tarde.
+          {t("lista.errorRuta")}
         </p>
       </PageShell>
     );
@@ -78,17 +80,17 @@ export default function RoutePage() {
   const paradas = [...(transporte.paradas ?? [])].sort((a: ParadaApi, b: ParadaApi) => a.orden - b.orden);
 
   const fichas = [
-    dur ? { label: "Duración", value: dur } : null,
-    { label: "Origen", value: transporte.origenNombre },
-    { label: "Destino", value: transporte.destinoNombre },
-    precio != null ? { label: "Precio", value: `Desde S/ ${precio} p/p` } : null,
+    dur ? { label: t("ficha.duracion"), value: dur } : null,
+    { label: t("ficha.origen"), value: transporte.origenNombre },
+    { label: t("ficha.destino"), value: transporte.destinoNombre },
+    precio != null ? { label: t("ficha.precio"), value: `${t("common.desde")} S/ ${precio} ${t("detalle.pp")}` } : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
     <PageShell>
       <nav style={{ margin: "40px 0 0", fontSize: 13, color: "var(--muted)" }}>
         <Link href="/transporte" style={{ color: "var(--muted)" }}>
-          Transporte
+          {t("nav.transporte")}
         </Link>{" "}
         / {transporte.origenNombre} — {transporte.destinoNombre}
       </nav>
@@ -141,10 +143,10 @@ export default function RoutePage() {
       <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
         <div>
           <h2 style={{ margin: "0 0 28px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-            Itinerario de <em className="serif">ruta</em>
+            {t("detalle.itinerarioRuta")}
           </h2>
           {paradas.length === 0 ? (
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>El itinerario detallado se confirma al reservar.</p>
+            <p style={{ fontSize: 14, color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p>
           ) : (
             <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {paradas.map((s) => {
@@ -175,7 +177,7 @@ export default function RoutePage() {
           {tr?.queLlevar && (
             <>
               <h2 style={{ margin: "0 0 20px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-                Qué <em className="serif">llevar</em>
+                {t("detalle.queLlevar")}
               </h2>
               <p style={{ margin: "0 0 36px", fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>
                 {tr.queLlevar}
@@ -185,8 +187,8 @@ export default function RoutePage() {
           <div style={{ background: "var(--card)", padding: "28px 26px" }}>
             {precio != null && (
               <>
-                <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>Precio por persona</div>
-                <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>Desde S/ {precio}</div>
+                <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{t("detalle.precioPersona")}</div>
+                <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>{t("common.desde")} S/ {precio}</div>
               </>
             )}
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
@@ -196,10 +198,10 @@ export default function RoutePage() {
                 rel="noopener noreferrer"
                 style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
               >
-                Reservar por WhatsApp
+                {t("common.reservarWhatsapp")}
               </a>
               <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
-                Consultar
+                {t("detalle.consultar")}
               </Link>
             </div>
           </div>
