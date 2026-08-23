@@ -2,6 +2,7 @@
 
 import { CSSProperties, useState } from "react";
 import { CONTACT, transportRoutes, tours } from "@/lib/data";
+import { useT } from "@/lib/i18n";
 
 const field: CSSProperties = {
   width: "100%",
@@ -26,6 +27,7 @@ const label: CSSProperties = {
  * Cuando exista API de reservas, reemplazar handleSubmit por un POST.
  */
 export default function ContactForm() {
+  const t = useT();
   const [name, setName] = useState("");
   const [service, setService] = useState("");
   const [date, setDate] = useState("");
@@ -50,60 +52,60 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div>
         <label htmlFor="cf-name" style={label}>
-          Nombre
+          {t("form.nombre")}
         </label>
-        <input id="cf-name" style={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" required />
+        <input id="cf-name" style={field} value={name} onChange={(e) => setName(e.target.value)} placeholder={t("form.nombrePh")} required />
       </div>
       <div>
         <label htmlFor="cf-service" style={label}>
-          ¿Qué necesitas?
+          {t("form.queNecesitas")}
         </label>
         <select id="cf-service" style={field} value={service} onChange={(e) => setService(e.target.value)} required>
-          <option value="">Elige un servicio…</option>
-          <optgroup label="Transporte">
+          <option value="">{t("form.elige")}</option>
+          <optgroup label={t("nav.transporte")}>
             {transportRoutes.map((r) => (
               <option key={r.slug} value={`Transporte ${r.from} - ${r.to}`}>
-                Transporte {r.from} → {r.to}
+                {r.from} → {r.to}
               </option>
             ))}
           </optgroup>
-          <optgroup label="Tours">
-            {tours.map((t) => (
-              <option key={t.slug} value={`Tour ${t.name}`}>
-                {t.name}
+          <optgroup label={t("nav.tours")}>
+            {tours.map((tour) => (
+              <option key={tour.slug} value={`Tour ${tour.name}`}>
+                {tour.name}
               </option>
             ))}
           </optgroup>
-          <optgroup label="Otros">
-            <option value="Traslado privado">Traslado privado</option>
-            <option value="Itinerario personalizado">Itinerario personalizado</option>
+          <optgroup label={t("form.grupoOtros")}>
+            <option value="Traslado privado">{t("form.trasladoPrivado")}</option>
+            <option value="Itinerario personalizado">{t("form.itinerarioPersonalizado")}</option>
           </optgroup>
         </select>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
           <label htmlFor="cf-date" style={label}>
-            Fecha de viaje
+            {t("form.fecha")}
           </label>
           <input id="cf-date" type="date" style={field} value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <div>
           <label htmlFor="cf-people" style={label}>
-            Pasajeros
+            {t("form.pasajeros")}
           </label>
           <input id="cf-people" type="number" min={1} max={50} style={field} value={people} onChange={(e) => setPeople(e.target.value)} />
         </div>
       </div>
       <div>
         <label htmlFor="cf-message" style={label}>
-          Mensaje
+          {t("form.mensaje")}
         </label>
         <textarea
           id="cf-message"
           style={{ ...field, minHeight: 100, resize: "vertical" }}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Cuéntanos tu plan de viaje…"
+          placeholder={t("form.mensajePh")}
         />
       </div>
       <button
@@ -120,10 +122,10 @@ export default function ContactForm() {
           fontFamily: "inherit",
         }}
       >
-        Enviar por WhatsApp
+        {t("form.enviar")}
       </button>
       <p style={{ margin: 0, fontSize: 12.5, color: "var(--muted)" }}>
-        Al enviar se abrirá WhatsApp con tu mensaje listo. Respondemos en menos de 1 hora en horario de atención.
+        {t("form.nota")}
       </p>
     </form>
   );

@@ -9,6 +9,8 @@ import {
 import { claves, servicioCatalogo } from "@/lib/api";
 import type {
   ActualizarSalidaEntrada,
+  ActualizarTourEntrada,
+  ActualizarTransporteEntrada,
   ContenidoEntrada,
   CrearSalidaEntrada,
   CrearTourEntrada,
@@ -28,10 +30,10 @@ export function useTransportes(
   });
 }
 
-export function useTransporte(slug: string) {
+export function useTransporte(slug: string, idioma?: string) {
   return useQuery({
-    queryKey: claves.catalogo.transporte(slug),
-    queryFn: () => servicioCatalogo.transporte(slug),
+    queryKey: [...claves.catalogo.transporte(slug), idioma ?? "es"],
+    queryFn: () => servicioCatalogo.transporte(slug, idioma),
     enabled: !!slug,
   });
 }
@@ -44,10 +46,10 @@ export function useTours(filtros?: ParametrosPagina & { destino?: string }) {
   });
 }
 
-export function useTour(slug: string) {
+export function useTour(slug: string, idioma?: string) {
   return useQuery({
-    queryKey: claves.catalogo.tour(slug),
-    queryFn: () => servicioCatalogo.tour(slug),
+    queryKey: [...claves.catalogo.tour(slug), idioma ?? "es"],
+    queryFn: () => servicioCatalogo.tour(slug, idioma),
     enabled: !!slug,
   });
 }
@@ -68,6 +70,26 @@ export function useCrearTour() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (datos: CrearTourEntrada) => servicioCatalogo.crearTour(datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+export function useActualizarTransporte() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; datos: ActualizarTransporteEntrada }) =>
+      servicioCatalogo.actualizarTransporte(params.id, params.datos),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+export function useActualizarTour() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; datos: ActualizarTourEntrada }) =>
+      servicioCatalogo.actualizarTour(params.id, params.datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
   });

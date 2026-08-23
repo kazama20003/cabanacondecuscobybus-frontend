@@ -1,6 +1,9 @@
+"use client";
+
 import { CSSProperties } from "react";
 import Link from "next/link";
 import { CONTACT, transportRoutes, tours, destinations } from "@/lib/data";
+import { useT } from "@/lib/i18n";
 
 const glyphBox: CSSProperties = {
   borderRadius: 6,
@@ -42,30 +45,31 @@ function FooterLink({ glyph, label, href }: { glyph?: string; label: string; hre
 }
 
 export default function SiteFooter() {
+  const t = useT();
   return (
     <footer style={{ marginTop: 160 }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 40 }}>
-        <FooterColumn title="Transporte">
+        <FooterColumn title={t("nav.transporte")}>
           {transportRoutes.map((r) => (
             <FooterLink key={r.slug} glyph="⇄" label={`${r.from} — ${r.to}`} href={`/transporte/${r.slug}`} />
           ))}
         </FooterColumn>
-        <FooterColumn title="Tours">
-          {tours.slice(0, 6).map((t) => (
-            <FooterLink key={t.slug} glyph="▲" label={t.name} href="/tours" />
+        <FooterColumn title={t("nav.tours")}>
+          {tours.slice(0, 6).map((tour) => (
+            <FooterLink key={tour.slug} glyph="▲" label={tour.name} href="/tours" />
           ))}
-          <FooterLink glyph="↗" label="Ver todos los tours" href="/tours" />
+          <FooterLink glyph="↗" label={t("footer.verTodosTours")} href="/tours" />
         </FooterColumn>
-        <FooterColumn title="Destinos">
+        <FooterColumn title={t("nav.destinos")}>
           {destinations.map((d) => (
             <FooterLink key={d.slug} glyph="◉" label={d.name} href="/destinos" />
           ))}
         </FooterColumn>
-        <FooterColumn title="Empresa">
-          <FooterLink glyph="◈" label="Nosotros" href="/nosotros" />
-          <FooterLink glyph="✆" label="Contacto" href="/contacto" />
-          <FooterLink glyph="⊕" label="Traslados privados" href="/traslados" />
-          <FooterLink glyph="≡" label="Transporte turístico" href="/transporte" />
+        <FooterColumn title={t("footer.empresa")}>
+          <FooterLink glyph="◈" label={t("nav.nosotros")} href="/nosotros" />
+          <FooterLink glyph="✆" label={t("header.contacto")} href="/contacto" />
+          <FooterLink glyph="⊕" label={t("footer.trasladosPrivados")} href="/traslados" />
+          <FooterLink glyph="≡" label={t("home.transporteTuristico")} href="/transporte" />
         </FooterColumn>
       </div>
 
@@ -104,7 +108,7 @@ export default function SiteFooter() {
               textWrap: "pretty",
             }}
           >
-            ¿Listo para tu próximo viaje por el sur del Perú?
+            {t("footer.cta")}
           </h2>
           <div style={{ display: "flex", alignItems: "center", gap: 44, fontSize: 14, fontWeight: 600, flexWrap: "wrap" }}>
             <a
@@ -113,7 +117,7 @@ export default function SiteFooter() {
               rel="noopener noreferrer"
               style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "8px 13px", borderRadius: 8 }}
             >
-              Reservar por WhatsApp
+              {t("common.reservarWhatsapp")}
             </a>
             <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
             <a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>{CONTACT.phone}</a>
