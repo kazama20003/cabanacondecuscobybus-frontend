@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Paginacion } from "@/components/dashboard/paginacion";
+import ImageSlot from "@/components/image-slot";
 import {
   useActualizarPromocion,
   useEliminarPromocion,
@@ -90,6 +91,7 @@ export default function PaginaPromociones() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">Imagen</TableHead>
                   <TableHead>Promoción</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>Cupón</TableHead>
@@ -103,6 +105,15 @@ export default function PaginaPromociones() {
               <TableBody>
                 {promociones.map((p) => (
                   <TableRow key={p.id}>
+                    <TableCell>
+                      <div className="relative h-11 w-11">
+                        <ImageSlot
+                          radius={8}
+                          src={p.imagenUrl ?? undefined}
+                          placeholder="—"
+                        />
+                      </div>
+                    </TableCell>
                     <TableCell className="font-medium">
                       {p.titulo}
                       {vigente(p.fechaInicio, p.fechaFin) && p.activo && (

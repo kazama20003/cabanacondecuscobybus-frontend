@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Bus, Car, MapPin, Compass, Users, Phone, LogIn } from "lucide-react";
 import { LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
+import { useT } from "@/lib/i18n";
 
 const navPill: CSSProperties = {
   background: "var(--pill-bg)",
@@ -15,16 +16,17 @@ const navPill: CSSProperties = {
 };
 
 const NAV = [
-  { label: "Transporte", href: "/transporte", Icon: Bus },
-  { label: "Traslados", href: "/traslados", Icon: Car },
-  { label: "Tours", href: "/tours", Icon: MapPin },
-  { label: "Destinos", href: "/destinos", Icon: Compass },
-  { label: "Nosotros", href: "/nosotros", Icon: Users },
+  { clave: "nav.transporte", href: "/transporte", Icon: Bus },
+  { clave: "nav.traslados", href: "/traslados", Icon: Car },
+  { clave: "nav.tours", href: "/tours", Icon: MapPin },
+  { clave: "nav.destinos", href: "/destinos", Icon: Compass },
+  { clave: "nav.nosotros", href: "/nosotros", Icon: Users },
 ];
 
 export default function SiteHeader() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const pathname = usePathname();
+  const t = useT();
 
   useEffect(() => {
     const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
@@ -78,11 +80,11 @@ export default function SiteHeader() {
           />
         </Link>
         <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", flexWrap: "wrap" }}>
-          {NAV.map(({ label, href, Icon }) => {
+          {NAV.map(({ clave, href, Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link
-                key={label}
+                key={clave}
                 href={href}
                 style={{
                   ...navPill,
@@ -93,7 +95,7 @@ export default function SiteHeader() {
                 }}
               >
                 <Icon size={15} strokeWidth={2} />
-                {label}
+                {t(clave)}
               </Link>
             );
           })}
@@ -102,7 +104,7 @@ export default function SiteHeader() {
       <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
         <Link href="/contacto" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
           <Phone size={15} strokeWidth={2} />
-          Contacto
+          {t("header.contacto")}
         </Link>
         <a
           href="/login"
@@ -117,13 +119,13 @@ export default function SiteHeader() {
           }}
         >
           <LogIn size={15} strokeWidth={2} />
-          Iniciar sesión
+          {t("header.login")}
         </a>
         <LangSwitcher />
         <button
           onClick={toggleTheme}
-          title="Cambiar tema"
-          aria-label="Cambiar tema"
+          title={t("header.tema")}
+          aria-label={t("header.tema")}
           style={{
             height: 30,
             width: 30,

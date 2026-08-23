@@ -2,6 +2,8 @@ import { solicitar } from "../cliente";
 import { endpoints } from "../config";
 import type {
   ActualizarSalidaEntrada,
+  ActualizarTourEntrada,
+  ActualizarTransporteEntrada,
   ContenidoEntrada,
   CrearSalidaEntrada,
   ItinerarioApi,
@@ -27,8 +29,10 @@ export const servicioCatalogo = {
       query: filtros,
     }),
 
-  transporte: (slug: string) =>
-    solicitar<TransporteApi>(endpoints.catalogo.transporte(slug)),
+  transporte: (slug: string, idioma?: string) =>
+    solicitar<TransporteApi>(endpoints.catalogo.transporte(slug), {
+      query: { idioma },
+    }),
 
   buscarTransportes: (filtros: { origen?: string; destino?: string; fecha?: string }) =>
     solicitar<TransporteApi[]>(endpoints.catalogo.buscarTransportes, { query: filtros }),
@@ -36,7 +40,8 @@ export const servicioCatalogo = {
   tours: (filtros?: ParametrosPagina & { destino?: string }) =>
     solicitar<Paginado<TourApi>>(endpoints.catalogo.tours, { query: filtros }),
 
-  tour: (slug: string) => solicitar<TourApi>(endpoints.catalogo.tour(slug)),
+  tour: (slug: string, idioma?: string) =>
+    solicitar<TourApi>(endpoints.catalogo.tour(slug), { query: { idioma } }),
 
   crearTransporte: (datos: CrearTransporteEntrada) =>
     solicitar<TransporteApi>(endpoints.catalogo.crearTransporte, {
@@ -47,6 +52,18 @@ export const servicioCatalogo = {
   crearTour: (datos: CrearTourEntrada) =>
     solicitar<TourApi>(endpoints.catalogo.crearTour, {
       metodo: "POST",
+      cuerpo: datos,
+    }),
+
+  actualizarTransporte: (id: string, datos: ActualizarTransporteEntrada) =>
+    solicitar<TransporteApi>(endpoints.catalogo.actualizarTransporte(id), {
+      metodo: "PATCH",
+      cuerpo: datos,
+    }),
+
+  actualizarTour: (id: string, datos: ActualizarTourEntrada) =>
+    solicitar<TourApi>(endpoints.catalogo.actualizarTour(id), {
+      metodo: "PATCH",
       cuerpo: datos,
     }),
 
