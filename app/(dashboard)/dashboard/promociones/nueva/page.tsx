@@ -24,6 +24,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useCrearPromocion } from "@/hooks/use-promociones";
+import { useTours, useTransportes } from "@/hooks/use-catalogo";
 import type { MedioEntrada, ObjetivoPromocion, TipoPromocion } from "@/lib/api";
 
 const TIPOS: { valor: TipoPromocion; nombre: string }[] = [
@@ -41,6 +42,8 @@ export default function PaginaNuevaPromocion() {
     descripcion: "",
     tipo: "DESCUENTO" as TipoPromocion,
     objetivo: "TODOS" as ObjetivoPromocion,
+    transporteId: "",
+    tourId: "",
     codigo: "",
     modoDescuento: "PORCENTAJE" as "PORCENTAJE" | "MONTO",
     porcentajeDescuento: "",
@@ -50,6 +53,10 @@ export default function PaginaNuevaPromocion() {
     limiteUsos: "",
   });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
+  const { data: transportesData } = useTransportes({ pagina: 1, porPagina: 100 });
+  const { data: toursData } = useTours({ pagina: 1, porPagina: 100 });
+  const transportes = transportesData?.datos ?? [];
+  const tours = toursData?.datos ?? [];
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +66,14 @@ export default function PaginaNuevaPromocion() {
         descripcion: campos.descripcion || undefined,
         tipo: campos.tipo,
         objetivo: campos.objetivo,
+        transporteId:
+          campos.objetivo === "TRANSPORTES" && campos.transporteId
+            ? campos.transporteId
+            : undefined,
+        tourId:
+          campos.objetivo === "TOURS" && campos.tourId
+            ? campos.tourId
+            : undefined,
         codigo: campos.codigo || undefined,
         porcentajeDescuento:
           campos.modoDescuento === "PORCENTAJE" && campos.porcentajeDescuento
@@ -121,16 +136,62 @@ export default function PaginaNuevaPromocion() {
               </div>
               <div className="grid gap-2">
                 <Label>Aplica a</Label>
-                <Select value={campos.objetivo} onValueChange={(objetivo) => setCampos((c) => ({ ...c, objetivo: objetivo as ObjetivoPromocion }))}>
+                <Select value={campos.objetivo} onValueChange={(objetivo) => setCampos((c) => ({ ...c, objetivo: objetivo as ObjetivoPromocion, transporteId: "", tourId: "" }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="TODOS">Todo (transportes y tours)</SelectItem>
-                    <SelectItem value="TRANSPORTES">Solo transportes</SelectItem>
-                    <SelectItem value="TOURS">Solo tours</SelectItem>
+                    <SelectItem value="TRANSPORTES">Transportes</SelectItem>
+                    <SelectItem value="TOURS">Tours</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
+            {campos.objetivo === "TRANSPORTES" && (
+              <div className="grid gap-2">
+                <Label>Ruta de transporte específica (opcional)</Label>
+                <Select
+                  value={campos.transporteId || "TODAS"}
+                  onValueChange={(v) => setCampos((c) => ({ ...c, transporteId: v === "TODAS" ? "" : v }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TODAS">Todas las rutas de transporte</SelectItem>
+                    {transportes.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.origenNombre} → {t.destinoNombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-muted-foreground text-xs">
+                  Deja "Todas" para aplicar a cualquier transporte, o elige una ruta para limitar la oferta.
+                </p>
+              </div>
+            )}
+
+            {campos.objetivo === "TOURS" && (
+              <div className="grid gap-2">
+                <Label>Tour específico (opcional)</Label>
+                <Select
+                  value={campos.tourId || "TODOS_TOURS"}
+                  onValueChange={(v) => setCampos((c) => ({ ...c, tourId: v === "TODOS_TOURS" ? "" : v }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TODOS_TOURS">Todos los tours</SelectItem>
+                    {tours.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {String(t.nombre ?? t.destinoNombre ?? t.slug)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-muted-foreground text-xs">
+                  Deja "Todos" para aplicar a cualquier tour, o elige uno para limitar la oferta.
+                </p>
+              </div>
+            )}
             <CampoMedios categoria="promociones" medios={medios} onCambiar={setMedios} soloImagenes maximo={1} />
             <div className="grid gap-2">
               <Label htmlFor="cuponPromo">Cupón (opcional)</Label>

@@ -19,9 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { LanguagesIcon, MapPinIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { LanguagesIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
+import ImageSlot from "@/components/image-slot";
 import { useEliminarTransporte, useTransportes } from "@/hooks/use-catalogo";
 
 export default function PaginaTransportes() {
@@ -72,6 +73,7 @@ export default function PaginaTransportes() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">Imagen</TableHead>
                   <TableHead>Ruta</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Salidas</TableHead>
@@ -82,6 +84,24 @@ export default function PaginaTransportes() {
               <TableBody>
                 {transportes.map((t) => (
                   <TableRow key={t.id}>
+                    <TableCell>
+                      <div className="relative h-11 w-11">
+                        <ImageSlot
+                          radius={8}
+                          src={
+                            t.imagenes?.[0]?.tipo === "VIDEO"
+                              ? undefined
+                              : t.imagenes?.[0]?.url
+                          }
+                          video={
+                            t.imagenes?.[0]?.tipo === "VIDEO"
+                              ? t.imagenes?.[0]?.url
+                              : undefined
+                          }
+                          placeholder="—"
+                        />
+                      </div>
+                    </TableCell>
                     <TableCell className="font-medium">
                       {t.origenNombre} → {t.destinoNombre}
                     </TableCell>
@@ -94,6 +114,12 @@ export default function PaginaTransportes() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/dashboard/transportes/${t.slug}/editar`}>
+                            <PencilIcon />
+                            Editar
+                          </Link>
+                        </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/dashboard/transportes/${t.slug}/paradas`}>
                             <MapPinIcon />

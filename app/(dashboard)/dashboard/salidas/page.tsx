@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -42,6 +43,13 @@ const ESTADOS: { valor: EstadoSalida; nombre: string }[] = [
   { valor: "FINALIZADA", nombre: "Finalizada" },
   { valor: "CANCELADA", nombre: "Cancelada" },
 ];
+
+/** Convierte un ISO a valor para <input type="datetime-local"> en hora local. */
+function aInputLocal(iso: string): string {
+  const d = new Date(iso);
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
 
 const colorEstado: Record<EstadoSalida, "default" | "secondary" | "destructive" | "outline"> = {
   BORRADOR: "outline",
@@ -134,17 +142,46 @@ export default function PaginaSalidas() {
                     <TableRow key={s.id}>
                       <TableCell className="font-medium">{nombre}</TableCell>
                       <TableCell>
-                        {new Date(s.fechaHoraSalida).toLocaleString("es-PE", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
+                        <Input
+                          type="datetime-local"
+                          defaultValue={aInputLocal(s.fechaHoraSalida)}
+                          disabled={actualizar.isPending}
+                          className="h-8 w-48"
+                          onBlur={(e) => {
+                            const valor = e.target.value;
+                            if (!valor) return;
+                            const iso = new Date(valor).toISOString();
+                            if (iso === s.fechaHoraSalida) return;
+                            actualizar.mutate({
+                              tipo: tipo === "TOUR" ? "tour" : "transporte",
+                              id: s.id,
+                              cambios: { fechaHoraSalida: iso },
+                            });
+                          }}
+                        />
                       </TableCell>
                       <TableCell>
                         <span className={llena ? "text-destructive font-semibold" : ""}>
                           {s.ocupados}/{s.capacidad}
                         </span>
-                        <span className="text-muted-foreground ml-1 text-xs">
-                          (mín. {s.minimoPasajeros})
+                        <span className="text-muted-foreground ml-2 inline-flex items-center gap-1 text-xs">
+                          mín.
+                          <Input
+                            type="number"
+                            min={1}
+                            defaultValue={s.minimoPasajeros}
+                            disabled={actualizar.isPending}
+                            className="h-6 w-16 text-xs"
+                            onBlur={(e) => {
+                              const n = Number(e.target.value);
+                              if (n < 1 || n === s.minimoPasajeros) return;
+                              actualizar.mutate({
+                                tipo: tipo === "TOUR" ? "tour" : "transporte",
+                                id: s.id,
+                                cambios: { minimoPasajeros: n },
+                              });
+                            }}
+                          />
                         </span>
                       </TableCell>
                       <TableCell>S/ {s.precioPen}</TableCell>
