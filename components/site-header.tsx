@@ -4,7 +4,7 @@
 import { CSSProperties, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, Car, MapPin, Compass, Users, Phone, LogIn, ShoppingCart } from "lucide-react";
+import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart } from "lucide-react";
 import { LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
 import { useCarrito } from "@/components/cart-provider";
@@ -19,8 +19,8 @@ const navPill: CSSProperties = {
 
 const NAV = [
   { clave: "nav.transporte", href: "/transporte", Icon: Bus },
-  { clave: "nav.traslados", href: "/traslados", Icon: Car },
   { clave: "nav.tours", href: "/tours", Icon: MapPin },
+  { clave: "nav.eventos", href: "/eventos", Icon: CalendarDays },
   { clave: "nav.destinos", href: "/destinos", Icon: Compass },
   { clave: "nav.nosotros", href: "/nosotros", Icon: Users },
 ];

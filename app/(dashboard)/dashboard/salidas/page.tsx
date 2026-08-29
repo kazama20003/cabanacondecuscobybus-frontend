@@ -31,8 +31,16 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Paginacion } from "@/components/dashboard/paginacion";
-import { useActualizarSalida, useSalidasAdmin } from "@/hooks/use-catalogo";
+import {
+  useActualizarPlantilla,
+  useActualizarSalida,
+  useEliminarPlantilla,
+  usePlantillasSalida,
+  useSalidasAdmin,
+} from "@/hooks/use-catalogo";
 import type { EstadoSalida } from "@/lib/api";
+
+const NOMBRES_DIAS = ["", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
 const ESTADOS: { valor: EstadoSalida; nombre: string }[] = [
   { valor: "BORRADOR", nombre: "Borrador" },
@@ -226,6 +234,114 @@ export default function PaginaSalidas() {
           )}
         </CardContent>
       </Card>
+
+      <TarjetaPlantillas tipo={tipo} />
     </div>
+  );
+}
+
+function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
+  const { data: plantillas, isLoading } = usePlantillasSalida(tipo);
+  const actualizar = useActualizarPlantilla();
+  const eliminar = useEliminarPlantilla();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Horarios recurrentes</CardTitle>
+        <CardDescription>
+          Servicios que salen ciertos días de la semana: las salidas se generan
+          solas dentro de su vigencia. Apaga un horario para dejar de generar.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {isLoading && <Skeleton className="h-24 w-full" />}
+        {(actualizar.isError || eliminar.isError) && (
+          <p className="text-destructive text-sm">
+            {actualizar.error?.message ?? eliminar.error?.message}
+          </p>
+        )}
+        {plantillas && plantillas.length === 0 && (
+          <p className="text-muted-foreground py-4 text-center text-sm">
+            No hay horarios recurrentes. Créalos desde “Nueva salida → Horario
+            recurrente”.
+          </p>
+        )}
+        {plantillas && plantillas.length > 0 && (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Servicio</TableHead>
+                <TableHead>Días</TableHead>
+                <TableHead>Hora</TableHead>
+                <TableHead>Vigencia</TableHead>
+                <TableHead>Precio S/</TableHead>
+                <TableHead>Salidas</TableHead>
+                <TableHead>Activo</TableHead>
+                <TableHead className="w-24" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {plantillas.map((p) => {
+                const nombre = p.transporte
+                  ? `${p.transporte.origenNombre} → ${p.transporte.destinoNombre}`
+                  : (p.tour?.destinoNombre ?? "—");
+                const generadas =
+                  (p._count?.salidasTransporte ?? 0) +
+                  (p._count?.salidasTour ?? 0);
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-medium">{nombre}</TableCell>
+                    <TableCell>
+                      {p.diasSemana.map((d) => NOMBRES_DIAS[d]).join(", ")}
+                    </TableCell>
+                    <TableCell>{p.horaSalida}</TableCell>
+                    <TableCell className="text-xs">
+                      {p.fechaDesde.slice(0, 10)}
+                      {" → "}
+                      {p.fechaHasta ? p.fechaHasta.slice(0, 10) : "indefinida"}
+                    </TableCell>
+                    <TableCell>S/ {p.precioPen}</TableCell>
+                    <TableCell>{generadas}</TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant={p.activo ? "default" : "outline"}
+                        disabled={actualizar.isPending}
+                        onClick={() =>
+                          actualizar.mutate({
+                            id: p.id,
+                            cambios: { activo: !p.activo },
+                          })
+                        }
+                      >
+                        {p.activo ? "Activo" : "Pausado"}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        disabled={eliminar.isPending}
+                        onClick={() => {
+                          if (
+                            confirm(
+                              "¿Eliminar este horario? Se borran sus salidas futuras sin reservas.",
+                            )
+                          )
+                            eliminar.mutate(p.id);
+                        }}
+                      >
+                        Eliminar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }

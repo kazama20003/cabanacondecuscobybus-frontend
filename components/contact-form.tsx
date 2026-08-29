@@ -77,7 +77,6 @@ export default function ContactForm() {
             ))}
           </optgroup>
           <optgroup label={t("form.grupoOtros")}>
-            <option value="Traslado privado">{t("form.trasladoPrivado")}</option>
             <option value="Itinerario personalizado">{t("form.itinerarioPersonalizado")}</option>
           </optgroup>
         </select>

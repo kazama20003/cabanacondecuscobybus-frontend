@@ -8,7 +8,9 @@ import {
 } from "@tanstack/react-query";
 import { claves, servicioCatalogo } from "@/lib/api";
 import type {
+  ActualizarPlantillaEntrada,
   ActualizarSalidaEntrada,
+  CrearPlantillaEntrada,
   ActualizarTourEntrada,
   ActualizarTransporteEntrada,
   ContenidoEntrada,
@@ -38,7 +40,9 @@ export function useTransporte(slug: string, idioma?: string) {
   });
 }
 
-export function useTours(filtros?: ParametrosPagina & { destino?: string }) {
+export function useTours(
+  filtros?: ParametrosPagina & { destino?: string; esEvento?: boolean },
+) {
   return useQuery({
     queryKey: [...claves.catalogo.tours(filtros?.destino), filtros ?? {}],
     queryFn: () => servicioCatalogo.tours(filtros),
@@ -220,5 +224,52 @@ export function useCrearSalida() {
         : servicioCatalogo.crearSalidaTour(params.servicioId, params.datos),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: claves.catalogo.todas }),
+  });
+}
+
+/* --- Plantillas de salida recurrente --- */
+
+function invalidarSalidas(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ["plantillas-salida"] });
+  queryClient.invalidateQueries({ queryKey: ["salidas-admin"] });
+  queryClient.invalidateQueries({ queryKey: claves.catalogo.todas });
+}
+
+export function usePlantillasSalida(tipo?: "TRANSPORTE" | "TOUR") {
+  return useQuery({
+    queryKey: ["plantillas-salida", tipo ?? "TODAS"],
+    queryFn: () => servicioCatalogo.plantillasSalida(tipo),
+  });
+}
+
+export function useCrearPlantilla() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: {
+      tipo: "TRANSPORTE" | "TOUR";
+      servicioId: string;
+      datos: CrearPlantillaEntrada;
+    }) =>
+      params.tipo === "TRANSPORTE"
+        ? servicioCatalogo.crearPlantillaTransporte(params.servicioId, params.datos)
+        : servicioCatalogo.crearPlantillaTour(params.servicioId, params.datos),
+    onSuccess: () => invalidarSalidas(queryClient),
+  });
+}
+
+export function useActualizarPlantilla() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; cambios: ActualizarPlantillaEntrada }) =>
+      servicioCatalogo.actualizarPlantilla(params.id, params.cambios),
+    onSuccess: () => invalidarSalidas(queryClient),
+  });
+}
+
+export function useEliminarPlantilla() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => servicioCatalogo.eliminarPlantilla(id),
+    onSuccess: () => invalidarSalidas(queryClient),
   });
 }

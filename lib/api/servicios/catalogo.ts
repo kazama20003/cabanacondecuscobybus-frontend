@@ -1,7 +1,10 @@
 import { solicitar } from "../cliente";
 import { endpoints } from "../config";
 import type {
+  ActualizarPlantillaEntrada,
   ActualizarSalidaEntrada,
+  CrearPlantillaEntrada,
+  PlantillaSalidaApi,
   ActualizarTourEntrada,
   ActualizarTransporteEntrada,
   ContenidoEntrada,
@@ -37,7 +40,7 @@ export const servicioCatalogo = {
   buscarTransportes: (filtros: { origen?: string; destino?: string; fecha?: string }) =>
     solicitar<TransporteApi[]>(endpoints.catalogo.buscarTransportes, { query: filtros }),
 
-  tours: (filtros?: ParametrosPagina & { destino?: string }) =>
+  tours: (filtros?: ParametrosPagina & { destino?: string; esEvento?: boolean }) =>
     solicitar<Paginado<TourApi>>(endpoints.catalogo.tours, { query: filtros }),
 
   tour: (slug: string, idioma?: string) =>
@@ -124,5 +127,33 @@ export const servicioCatalogo = {
     solicitar<SalidaApi>(endpoints.catalogo.crearSalidaTour(tourId), {
       metodo: "POST",
       cuerpo: datos,
+    }),
+
+  plantillasSalida: (tipo?: "TRANSPORTE" | "TOUR") =>
+    solicitar<PlantillaSalidaApi[]>(endpoints.catalogo.plantillasSalida, {
+      query: tipo ? { tipo } : undefined,
+    }),
+
+  crearPlantillaTransporte: (transporteId: string, datos: CrearPlantillaEntrada) =>
+    solicitar<PlantillaSalidaApi>(
+      endpoints.catalogo.crearPlantillaTransporte(transporteId),
+      { metodo: "POST", cuerpo: datos },
+    ),
+
+  crearPlantillaTour: (tourId: string, datos: CrearPlantillaEntrada) =>
+    solicitar<PlantillaSalidaApi>(endpoints.catalogo.crearPlantillaTour(tourId), {
+      metodo: "POST",
+      cuerpo: datos,
+    }),
+
+  actualizarPlantilla: (id: string, cambios: ActualizarPlantillaEntrada) =>
+    solicitar<PlantillaSalidaApi>(endpoints.catalogo.plantillaSalida(id), {
+      metodo: "PATCH",
+      cuerpo: cambios,
+    }),
+
+  eliminarPlantilla: (id: string) =>
+    solicitar<{ eliminada: boolean }>(endpoints.catalogo.plantillaSalida(id), {
+      metodo: "DELETE",
     }),
 };
