@@ -4,7 +4,7 @@ import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
-import { useT } from "@/lib/i18n";
+import { useT, LOCALES } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useTours } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
@@ -16,13 +16,6 @@ function traduccionDe(item: TourApi, idioma: string): TraduccionApi | undefined 
   return arr.find((x) => x.idioma === idioma) ?? arr.find((x) => x.idioma === "es") ?? arr[0];
 }
 
-function formatearDuracion(minutos?: number): string | null {
-  if (!minutos || minutos <= 0) return null;
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
-  return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
-}
-
 function precioDesde(salidas?: SalidaApi[]): number | null {
   if (!salidas || salidas.length === 0) return null;
   const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
@@ -30,16 +23,33 @@ function precioDesde(salidas?: SalidaApi[]): number | null {
   return Math.min(...precios);
 }
 
-function tituloTour(t: TourApi, idioma: string): string {
+function tituloEvento(t: TourApi, idioma: string): string {
   const tr = traduccionDe(t, idioma);
-  return tr?.titulo || t.nombre || (t.destinoNombre as string | undefined) || "Tour";
+  return tr?.titulo || t.nombre || (t.destinoNombre as string | undefined) || "Evento";
 }
 
-export default function ToursPage() {
+/** Rango de temporada legible (ej. "24 jun – 24 jun"). Null si no hay fechas. */
+function temporadaTexto(t: TourApi, locale: string): string | null {
+  const fmt = (iso?: string | null) => {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return null;
+    // Fecha guardada como @db.Date (UTC medianoche); formatear en UTC evita
+    // que en zonas negativas (Lima UTC-5) se muestre el día anterior.
+    return d.toLocaleDateString(locale, { day: "numeric", month: "short", timeZone: "UTC" });
+  };
+  const inicio = fmt(t.temporadaInicio);
+  const fin = fmt(t.temporadaFin);
+  if (inicio && fin) return inicio === fin ? inicio : `${inicio} – ${fin}`;
+  return inicio || fin || null;
+}
+
+export default function EventosPage() {
   const t = useT();
   const { idioma } = useIdioma();
-  const { data, isLoading, isError } = useTours({ esEvento: false });
-  const tours = data?.datos ?? [];
+  const { data, isLoading, isError } = useTours({ esEvento: true });
+  const eventos = data?.datos ?? [];
+  const locale = LOCALES[idioma] ?? "es-PE";
 
   return (
     <PageShell>
@@ -53,42 +63,60 @@ export default function ToursPage() {
           textWrap: "pretty",
         }}
       >
-        {t("tours.heroT1")}
+        {t("eventos.heroT1")}
         <br />
-        {t("tours.heroT2")}
+        {t("eventos.heroT2")}
       </h1>
       <p style={{ maxWidth: 560, margin: "0 0 56px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-        {t("tours.intro")}
+        {t("eventos.intro")}
       </p>
 
-      {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.cargandoTours")}</p>}
+      {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.cargandoEventos")}</p>}
       {isError && (
-        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.errorTours")}</p>
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.errorEventos")}</p>
       )}
-      {!isLoading && !isError && tours.length === 0 && (
-        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinTours")}</p>
+      {!isLoading && !isError && eventos.length === 0 && (
+        <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinEventos")}</p>
       )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-        {tours.map((tour) => {
-          const tr = traduccionDe(tour, idioma);
-          const titulo = tituloTour(tour, idioma);
-          const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
-          const precio = precioDesde(tour.salidas);
+        {eventos.map((evento) => {
+          const tr = traduccionDe(evento, idioma);
+          const titulo = tituloEvento(evento, idioma);
+          const temporada = temporadaTexto(evento, locale);
+          const precio = precioDesde(evento.salidas);
           return (
-            <figure key={tour.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
-              <Link href={`/tours/${tour.slug}`} style={{ display: "block" }}>
+            <figure key={evento.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
+              <Link href={`/tours/${evento.slug}`} style={{ display: "block" }}>
                 <div style={{ position: "relative", width: "100%", height: 220 }}>
-                  <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={titulo} />
+                  <ImageSlot radius={10} src={evento.imagenes?.[0]?.url} placeholder={titulo} />
+                  {temporada && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 10,
+                        left: 10,
+                        background: "var(--pill-bg)",
+                        color: "var(--pill-fg)",
+                        borderRadius: 999,
+                        padding: "5px 12px",
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        boxShadow: "0 2px 10px rgba(0,0,0,.18)",
+                      }}
+                    >
+                      {temporada}
+                    </span>
+                  )}
                 </div>
               </Link>
               <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                {(tour.destinoNombre || dur) && (
+                {(evento.destinoNombre || temporada) && (
                   <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                    {[tour.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ")}
+                    {[evento.destinoNombre as string | undefined, temporada ? `${t("eventos.temporada")}: ${temporada}` : null].filter(Boolean).join(" · ")}
                   </div>
                 )}
-                <Link href={`/tours/${tour.slug}`} style={{ color: "inherit" }}>
+                <Link href={`/tours/${evento.slug}`} style={{ color: "inherit" }}>
                   <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{titulo}</strong>
                 </Link>
                 {tr?.resumen && (
@@ -116,21 +144,6 @@ export default function ToursPage() {
           );
         })}
       </div>
-
-      <section style={{ marginTop: 120, textAlign: "center" }}>
-        <h2 style={{ margin: "0 auto 20px", maxWidth: 560, fontSize: "clamp(24px, 2vw, 34px)", fontWeight: 400, letterSpacing: "-0.015em", textWrap: "pretty" }}>
-          {t("tours.medidaTitulo")}
-        </h2>
-        <p style={{ maxWidth: 480, margin: "0 auto 28px", fontSize: 15, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>
-          {t("tours.medidaTexto")}
-        </p>
-        <Link
-          href="/contacto"
-          style={{ display: "inline-block", fontSize: 14, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 18px", borderRadius: 8 }}
-        >
-          {t("tours.medidaCta")}
-        </Link>
-      </section>
     </PageShell>
   );
 }

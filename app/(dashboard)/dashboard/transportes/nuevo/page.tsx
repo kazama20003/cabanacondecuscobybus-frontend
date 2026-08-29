@@ -3,15 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  ArrowLeftIcon,
+  FileTextIcon,
+  ImageIcon,
+  MapPinIcon,
+  PlusIcon,
+  RouteIcon,
+  Trash2Icon,
+} from "lucide-react";
+import { TituloSeccion } from "@/components/dashboard/titulo-seccion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,15 +88,20 @@ export default function PaginaNuevaRuta() {
     .filter(Boolean)
     .join(" → ");
 
+  /** Título publicable (y SEO): con preposición, no con flecha — coincide con
+   *  cómo busca la gente ("transporte de cusco a arequipa"). */
+  const tituloSeoDe = (origen: string, destino: string) =>
+    origen && destino
+      ? `Transporte de ${origen} a ${destino}`
+      : origen || destino;
+
   const cambiarLugar = (clave: "origenNombre" | "destinoNombre", valor: string) => {
     const siguiente = { ...campos, [clave]: valor };
     setCampos(siguiente);
     if (tituloAutomatico) {
       setContenido((actual) => ({
         ...actual,
-        titulo: [siguiente.origenNombre, siguiente.destinoNombre]
-          .filter(Boolean)
-          .join(" → "),
+        titulo: tituloSeoDe(siguiente.origenNombre, siguiente.destinoNombre),
       }));
     }
   };
@@ -136,7 +144,9 @@ export default function PaginaNuevaRuta() {
         medios: medios.length ? medios : undefined,
         contenido: {
           ...contenido,
-          titulo: contenido.titulo.trim() || tituloRuta,
+          titulo:
+            contenido.titulo.trim() ||
+            tituloSeoDe(campos.origenNombre, campos.destinoNombre),
         },
       },
       { onSuccess: () => router.push("/dashboard/transportes") },
@@ -180,12 +190,12 @@ export default function PaginaNuevaRuta() {
         <div className="grid gap-6 xl:col-span-2">
         <Card>
           <CardHeader>
-            <CardTitle>1 · Información para el turista</CardTitle>
-            <CardDescription>
-              Escribe todo en español. Al guardar, se traduce automáticamente
-              al inglés y podrás revisar o corregir la traducción después desde
-              el botón "Traducciones" de la lista.
-            </CardDescription>
+            <TituloSeccion
+              paso="1"
+              titulo="Información para el turista"
+              icono={<FileTextIcon />}
+              descripcion='Escribe todo en español. Al guardar, se traduce automáticamente al inglés y podrás corregirla después desde el botón "Traducciones" de la lista.'
+            />
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="rounded-xl border bg-muted/30 px-4 py-3">
@@ -259,12 +269,12 @@ export default function PaginaNuevaRuta() {
 
           <Card>
           <CardHeader>
-            <CardTitle>2 · Paradas turísticas</CardTitle>
-            <CardDescription>
-              Puntos donde el bus se detiene (miradores, fotos, desayuno). El
-              orden de la lista es el orden del recorrido. Opcional — también
-              puedes agregarlas después.
-            </CardDescription>
+            <TituloSeccion
+              paso="2"
+              titulo="Paradas turísticas"
+              icono={<MapPinIcon />}
+              descripcion="Puntos donde el bus se detiene (miradores, fotos, desayuno). El orden de la lista es el orden del recorrido. Opcional — también puedes agregarlas después."
+            />
           </CardHeader>
           <CardContent className="grid gap-4">
             {paradas.length === 0 && (
@@ -353,14 +363,15 @@ export default function PaginaNuevaRuta() {
         </div>
 
         {/* Columna lateral */}
-        <div className="grid gap-6">
+        <div className="grid gap-6 xl:sticky xl:top-20">
           <Card>
             <CardHeader>
-              <CardTitle>3 · Recorrido</CardTitle>
-              <CardDescription>
-                Pega las coordenadas tal cual las copias de Google Maps. El
-                slug se genera solo.
-              </CardDescription>
+              <TituloSeccion
+                paso="3"
+                titulo="Recorrido"
+                icono={<RouteIcon />}
+                descripcion="Pega las coordenadas tal cual las copias de Google Maps. El slug se genera solo."
+              />
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
@@ -404,11 +415,12 @@ export default function PaginaNuevaRuta() {
 
           <Card>
             <CardHeader>
-              <CardTitle>4 · Fotos y videos</CardTitle>
-              <CardDescription>
-                Lo que verá el turista en la página de la ruta. Obligatorio: al
-                menos una imagen o un video principal.
-              </CardDescription>
+              <TituloSeccion
+                paso="4"
+                titulo="Fotos y videos"
+                icono={<ImageIcon />}
+                descripcion="Lo que verá el turista en la página de la ruta. Obligatorio: al menos una imagen o un video principal."
+              />
             </CardHeader>
             <CardContent className="grid gap-2">
               <CampoMedios

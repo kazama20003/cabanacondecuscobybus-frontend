@@ -12,7 +12,7 @@ import {
   IMG_TEMPLO,
   type TransportRoute,
 } from "@/lib/data";
-import { useToursSeed, useDestinations, useTransportRoutes } from "@/lib/data-i18n";
+import { useToursSeed, useDestinations } from "@/lib/data-i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTours, useTransportes } from "@/hooks/use-catalogo";
@@ -87,14 +87,14 @@ export default function Home() {
   const { idioma } = useIdioma();
   const tours = useToursSeed();
   const destinations = useDestinations();
-  const transportRoutes = useTransportRoutes();
-  const { data: transportesApi } = useTransportes({ pagina: 1, porPagina: 6 });
-  const { data: toursApi } = useTours({ pagina: 1, porPagina: 12 });
+  const { data: transportesApi, isLoading: cargandoRutas } = useTransportes({ pagina: 1, porPagina: 6 });
+  const { data: toursApi } = useTours({ pagina: 1, porPagina: 12, esEvento: false });
 
-  // API con respaldo en los datos de ejemplo mientras carga o si está vacía.
+  // Solo rutas reales de la API; si no hay, se muestra el mensaje de vacío.
   const rutas: TransportRoute[] = transportesApi?.datos?.length
     ? transportesApi.datos.map((tp) => aRuta(tp, idioma))
-    : transportRoutes;
+    : [];
+  const sinRutas = !cargandoRutas && rutas.length === 0;
   const toursLista = toursApi?.datos?.length
     ? (toursApi.datos as TourApi[]).map((tour) => {
         const tr = elegirTr(tour.traducciones as TraduccionApi[] | undefined, idioma);
@@ -144,6 +144,8 @@ export default function Home() {
       if (canScrollInner) {
         e.preventDefault();
         e.stopPropagation();
+        // el auto-scroll pudo mover scrollTop fuera del lerp: resincroniza
+        if (!animating) target = el.scrollTop;
         target = Math.max(0, Math.min(max, target + e.deltaY));
         if (!animating) {
           animating = true;
@@ -157,6 +159,48 @@ export default function Home() {
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       el.removeEventListener("wheel", onWheel);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Auto-scroll del aside: baja solo de forma continua; se pausa con hover
+  // (mientras el cursor esté encima) y al llegar al fondo espera y vuelve arriba.
+  useEffect(() => {
+    const el = asideScrollRef.current;
+    if (!el) return;
+    let raf = 0;
+    let hovering = false;
+    let pausaHasta = 0;
+    let volviendo = false;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (hovering || now < pausaHasta) return;
+      const max = el.scrollHeight - el.clientHeight;
+      if (max <= 0) return;
+      if (volviendo) {
+        // regreso suave al inicio
+        el.scrollTop += (0 - el.scrollTop) * 0.06;
+        if (el.scrollTop <= 1) {
+          el.scrollTop = 0;
+          volviendo = false;
+          pausaHasta = now + 1800;
+        }
+      } else {
+        el.scrollTop += 0.45;
+        if (el.scrollTop >= max - 0.5) {
+          pausaHasta = now + 1800;
+          volviendo = true;
+        }
+      }
+    };
+    const onEnter = () => { hovering = true; };
+    const onLeave = () => { hovering = false; pausaHasta = performance.now() + 600; };
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -208,12 +252,15 @@ export default function Home() {
                 {t("home.verTodas")}
               </Link>
             </div>
+            {sinRutas && (
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
+            )}
             {rutas.slice(0, 3).map((ruta, i) => (
               <div
                 key={ruta.slug}
                 style={{
                   paddingTop: i === 0 ? 0 : 20,
-                  borderTop: i === 0 ? "none" : "1px solid var(--line)",
+                  borderTop: i === 0 ? "none" : "1px solid var(--aside-divider)",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -317,6 +364,9 @@ export default function Home() {
           </Link>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {sinRutas && (
+            <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
+          )}
           {rutas.slice(0, 4).map((r) => (
             <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} compact />
           ))}
@@ -473,7 +523,7 @@ export default function Home() {
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
             {[
               { name: t("home.transporteTuristico"), role: t("home.cardTransRole"), href: "/transporte" },
-              { name: t("footer.trasladosPrivados"), role: t("home.cardTrasRole"), href: "/traslados" },
+              { name: t("nav.tours"), role: t("home.cardTransRole"), href: "/tours" },
             ].map((f) => (
               <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
                 <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>

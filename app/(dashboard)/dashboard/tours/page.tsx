@@ -101,7 +101,10 @@ export default function PaginaTours() {
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">
-                      {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}
+                      <span className="inline-flex items-center gap-2">
+                        {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}
+                        {tour.esEvento && <Badge variant="outline">Evento</Badge>}
+                      </span>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{tour.slug}</TableCell>
                     <TableCell>{tour.salidas?.length ?? 0}</TableCell>
