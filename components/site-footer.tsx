@@ -70,7 +70,6 @@ export default function SiteFooter() {
         <FooterColumn title={t("footer.empresa")}>
           <FooterLink glyph="◈" label={t("nav.nosotros")} href="/nosotros" />
           <FooterLink glyph="✆" label={t("header.contacto")} href="/contacto" />
-          <FooterLink glyph="⊕" label={t("footer.trasladosPrivados")} href="/traslados" />
           <FooterLink glyph="≡" label={t("home.transporteTuristico")} href="/transporte" />
         </FooterColumn>
       </div>

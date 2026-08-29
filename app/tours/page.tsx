@@ -38,7 +38,7 @@ function tituloTour(t: TourApi, idioma: string): string {
 export default function ToursPage() {
   const t = useT();
   const { idioma } = useIdioma();
-  const { data, isLoading, isError } = useTours();
+  const { data, isLoading, isError } = useTours({ esEvento: false });
   const tours = data?.datos ?? [];
 
   return (
