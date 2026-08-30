@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import { useEliminarTransporte, useTransportes } from "@/hooks/use-catalogo";
+import { toast } from "sonner";
 
 export default function PaginaTransportes() {
   const [pagina, setPagina] = useState(1);
@@ -131,9 +132,24 @@ export default function PaginaTransportes() {
                           size="sm"
                           className="text-destructive"
                           disabled={eliminar.isPending || (t.salidas?.length ?? 0) > 0}
-                          onClick={() => {
-                            if (window.confirm("Se eliminará la ruta y todos sus medios de Cloudinary. ¿Continuar?")) eliminar.mutate(t.id);
-                          }}
+                          onClick={() =>
+                            toast.warning("¿Eliminar esta ruta?", {
+                              description:
+                                "También se eliminarán todos sus medios de Cloudinary.",
+                              duration: Infinity,
+                              cancel: { label: "Cancelar", onClick: () => {} },
+                              action: {
+                                label: "Eliminar",
+                                onClick: () => {
+                                  void toast.promise(eliminar.mutateAsync(t.id), {
+                                    loading: "Eliminando ruta...",
+                                    success: "Ruta eliminada.",
+                                    error: "No se pudo eliminar la ruta.",
+                                  });
+                                },
+                              },
+                            })
+                          }
                         >
                           <Trash2Icon /> Eliminar
                         </Button>
