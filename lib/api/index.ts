@@ -6,6 +6,7 @@ export { ApiError, avatarStorage, solicitar, tokenStorage } from "./cliente";
 export { claves } from "./query-keys";
 export * from "./tipos";
 export { servicioArchivos } from "./servicios/archivos";
+export { servicioAuditoria } from "./servicios/auditoria";
 export { servicioAutenticacion } from "./servicios/autenticacion";
 export { servicioCatalogo } from "./servicios/catalogo";
 export { servicioPromociones } from "./servicios/promociones";

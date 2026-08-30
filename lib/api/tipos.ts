@@ -129,6 +129,9 @@ export interface TourApi {
   id: string;
   slug: string;
   nombre?: string;
+  esEvento?: boolean;
+  temporadaInicio?: string | null;
+  temporadaFin?: string | null;
   imagenes?: ImagenApi[];
   salidas?: SalidaApi[];
   itinerarios?: ItinerarioApi[];
@@ -180,6 +183,9 @@ export interface CrearTourEntrada {
   destinoLatitud: number;
   destinoLongitud: number;
   duracionMinutos: number;
+  esEvento?: boolean;
+  temporadaInicio?: string | null;
+  temporadaFin?: string | null;
   medios?: MedioEntrada[];
   contenido?: ContenidoEntrada;
 }
@@ -196,6 +202,72 @@ export interface CrearSalidaEntrada {
   minimoPasajeros?: number;
   precioPen: number;
   precioUsd: number;
+}
+
+/* --- Plantillas de salida recurrente --- */
+
+export interface PlantillaSalidaApi {
+  id: string;
+  transporteId: string | null;
+  tourId: string | null;
+  horaSalida: string;
+  diasSemana: number[];
+  fechaDesde: string;
+  fechaHasta: string | null;
+  capacidad: number;
+  minimoPasajeros: number;
+  precioPen: string | number;
+  precioUsd: string | number;
+  activo: boolean;
+  transporte?: { slug: string; origenNombre: string; destinoNombre: string } | null;
+  tour?: { slug: string; destinoNombre: string } | null;
+  _count?: { salidasTransporte: number; salidasTour: number };
+  salidasGeneradas?: number;
+}
+
+export interface CrearPlantillaEntrada {
+  horaSalida: string;
+  diasSemana: number[];
+  fechaDesde: string;
+  fechaHasta?: string;
+  capacidad: number;
+  minimoPasajeros?: number;
+  precioPen: number;
+  precioUsd: number;
+}
+
+export interface ActualizarPlantillaEntrada {
+  horaSalida?: string;
+  diasSemana?: number[];
+  fechaDesde?: string;
+  fechaHasta?: string | null;
+  capacidad?: number;
+  minimoPasajeros?: number;
+  precioPen?: number;
+  precioUsd?: number;
+  activo?: boolean;
+}
+
+/* --- Auditoría --- */
+
+export type EntidadAuditoria =
+  | "TRANSPORTE"
+  | "TOUR"
+  | "SALIDA"
+  | "PLANTILLA_SALIDA"
+  | "PROMOCION"
+  | "USUARIO"
+  | "PAGO";
+
+export interface AuditoriaApi {
+  id: string;
+  accion: "CREAR" | "ACTUALIZAR" | "ELIMINAR" | "DESACTIVAR" | "CONFIRMAR";
+  entidad: EntidadAuditoria;
+  entidadId: string | null;
+  descripcion: string;
+  detalle: Record<string, unknown> | null;
+  creadoEn: string;
+  usuario: { correo: string; nombres: string; apellidos: string } | null;
 }
 
 /* --- Itinerario de tour --- */
@@ -314,6 +386,17 @@ export interface CrearReservaEntrada {
   paisResidencia?: string;
   moneda: Moneda;
   pasajeros: PasajeroEntrada[];
+  codigoPromocion?: string;
+}
+
+/* Respuesta de POST /reservas/:codigo/iniciar-pago-adelanto */
+export interface PagoAdelantoApi {
+  pagoId: string;
+  monto: number | string;
+  moneda: Moneda;
+  estado: string;
+  formToken: string;
+  llavePublica: string;
 }
 
 export interface ReservaApi {

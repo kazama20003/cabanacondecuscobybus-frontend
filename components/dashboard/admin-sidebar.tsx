@@ -7,6 +7,7 @@ import {
   BusIcon,
   CalendarClockIcon,
   CreditCardIcon,
+  HistoryIcon,
   ImageIcon,
   TagIcon,
   LayoutDashboardIcon,
@@ -60,6 +61,7 @@ const navegacion = [
     etiqueta: "Administración",
     items: [
       { titulo: "Usuarios", url: "/dashboard/usuarios", icono: <UsersIcon /> },
+      { titulo: "Auditoría", url: "/dashboard/auditoria", icono: <HistoryIcon /> },
     ],
   },
 ];

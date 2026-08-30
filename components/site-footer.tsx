@@ -2,7 +2,8 @@
 
 import { CSSProperties } from "react";
 import Link from "next/link";
-import { CONTACT, transportRoutes, tours, destinations } from "@/lib/data";
+import { CONTACT, transportRoutes, destinations } from "@/lib/data";
+import { useToursSeed } from "@/lib/data-i18n";
 import { useT } from "@/lib/i18n";
 
 const glyphBox: CSSProperties = {
@@ -46,6 +47,7 @@ function FooterLink({ glyph, label, href }: { glyph?: string; label: string; hre
 
 export default function SiteFooter() {
   const t = useT();
+  const tours = useToursSeed();
   return (
     <footer style={{ marginTop: 160 }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 40 }}>
@@ -68,7 +70,6 @@ export default function SiteFooter() {
         <FooterColumn title={t("footer.empresa")}>
           <FooterLink glyph="◈" label={t("nav.nosotros")} href="/nosotros" />
           <FooterLink glyph="✆" label={t("header.contacto")} href="/contacto" />
-          <FooterLink glyph="⊕" label={t("footer.trasladosPrivados")} href="/traslados" />
           <FooterLink glyph="≡" label={t("home.transporteTuristico")} href="/transporte" />
         </FooterColumn>
       </div>

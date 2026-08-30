@@ -10,11 +10,9 @@ import {
   MEDIA_VIDEO,
   IMG_SAN_LAZARO,
   IMG_TEMPLO,
-  transportRoutes,
-  tours,
-  destinations,
   type TransportRoute,
 } from "@/lib/data";
+import { useToursSeed, useDestinations } from "@/lib/data-i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTours, useTransportes } from "@/hooks/use-catalogo";
@@ -87,13 +85,16 @@ export default function Home() {
   const asideScrollRef = useRef<HTMLDivElement>(null);
   const t = useT();
   const { idioma } = useIdioma();
-  const { data: transportesApi } = useTransportes({ pagina: 1, porPagina: 6 });
-  const { data: toursApi } = useTours({ pagina: 1, porPagina: 12 });
+  const tours = useToursSeed();
+  const destinations = useDestinations();
+  const { data: transportesApi, isLoading: cargandoRutas } = useTransportes({ pagina: 1, porPagina: 6 });
+  const { data: toursApi } = useTours({ pagina: 1, porPagina: 12, esEvento: false });
 
-  // API con respaldo en los datos de ejemplo mientras carga o si está vacía.
+  // Solo rutas reales de la API; si no hay, se muestra el mensaje de vacío.
   const rutas: TransportRoute[] = transportesApi?.datos?.length
     ? transportesApi.datos.map((tp) => aRuta(tp, idioma))
-    : transportRoutes;
+    : [];
+  const sinRutas = !cargandoRutas && rutas.length === 0;
   const toursLista = toursApi?.datos?.length
     ? (toursApi.datos as TourApi[]).map((tour) => {
         const tr = elegirTr(tour.traducciones as TraduccionApi[] | undefined, idioma);
@@ -143,6 +144,8 @@ export default function Home() {
       if (canScrollInner) {
         e.preventDefault();
         e.stopPropagation();
+        // el auto-scroll pudo mover scrollTop fuera del lerp: resincroniza
+        if (!animating) target = el.scrollTop;
         target = Math.max(0, Math.min(max, target + e.deltaY));
         if (!animating) {
           animating = true;
@@ -156,6 +159,48 @@ export default function Home() {
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       el.removeEventListener("wheel", onWheel);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Auto-scroll del aside: baja solo de forma continua; se pausa con hover
+  // (mientras el cursor esté encima) y al llegar al fondo espera y vuelve arriba.
+  useEffect(() => {
+    const el = asideScrollRef.current;
+    if (!el) return;
+    let raf = 0;
+    let hovering = false;
+    let pausaHasta = 0;
+    let volviendo = false;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (hovering || now < pausaHasta) return;
+      const max = el.scrollHeight - el.clientHeight;
+      if (max <= 0) return;
+      if (volviendo) {
+        // regreso suave al inicio
+        el.scrollTop += (0 - el.scrollTop) * 0.06;
+        if (el.scrollTop <= 1) {
+          el.scrollTop = 0;
+          volviendo = false;
+          pausaHasta = now + 1800;
+        }
+      } else {
+        el.scrollTop += 0.45;
+        if (el.scrollTop >= max - 0.5) {
+          pausaHasta = now + 1800;
+          volviendo = true;
+        }
+      }
+    };
+    const onEnter = () => { hovering = true; };
+    const onLeave = () => { hovering = false; pausaHasta = performance.now() + 600; };
+    el.addEventListener("mouseenter", onEnter);
+    el.addEventListener("mouseleave", onLeave);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -207,12 +252,15 @@ export default function Home() {
                 {t("home.verTodas")}
               </Link>
             </div>
+            {sinRutas && (
+              <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
+            )}
             {rutas.slice(0, 3).map((ruta, i) => (
               <div
                 key={ruta.slug}
                 style={{
                   paddingTop: i === 0 ? 0 : 20,
-                  borderTop: i === 0 ? "none" : "1px solid var(--line)",
+                  borderTop: i === 0 ? "none" : "1px solid var(--aside-divider)",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -316,6 +364,9 @@ export default function Home() {
           </Link>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {sinRutas && (
+            <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
+          )}
           {rutas.slice(0, 4).map((r) => (
             <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} compact />
           ))}
@@ -339,12 +390,12 @@ export default function Home() {
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 26 }}>
           {[
-            { name: "María Fernanda R.", role: "Viajó Cusco → Arequipa", badge: "MR" },
-            { name: "Lucas B.", role: "Tour Cañón del Colca 2D", badge: "LB" },
-          ].map((t, i) => (
+            { name: "María Fernanda R.", role: t("home.testiRole1"), badge: "MR" },
+            { name: "Lucas B.", role: t("home.testiRole2"), badge: "LB" },
+          ].map((testi, i) => (
             <figure key={i} style={{ margin: 0 }}>
               <div style={{ width: "100%", height: 520, position: "relative" }}>
-                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`Video testimonial ${i + 1}`} />
+                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`${t("home.videoTesti")} ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <span
@@ -376,11 +427,11 @@ export default function Home() {
                     fontWeight: 700,
                   }}
                 >
-                  {t.badge}
+                  {testi.badge}
                 </span>
                 <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
-                  <strong style={{ fontSize: 14 }}>{t.name}</strong>
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{t.role}</span>
+                  <strong style={{ fontSize: 14 }}>{testi.name}</strong>
+                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{testi.role}</span>
                 </span>
               </figcaption>
             </figure>
@@ -456,32 +507,23 @@ export default function Home() {
             textWrap: "pretty",
           }}
         >
-          <p style={{ margin: "0 0 1em" }}>
-            Inca Travel Peru© es una agencia de turismo especializada en <em className="serif">transporte turístico</em>,{" "}
-            <em className="serif">tours</em> y <em className="serif">traslados</em> por el sur del Perú.
-          </p>
-          <p style={{ margin: "0 0 1em" }}>
-            Flota propia, guías locales y salidas diarias entre Cusco, Arequipa, el Valle del Colca, Puno y{" "}
-            <em className="serif">Machu Picchu</em>.
-          </p>
-          <p style={{ margin: 0 }}>
-            Pequeños por elección y viajeros de corazón: eliminamos intermediarios para que tu viaje sea más directo,
-            más seguro y a mejor precio.
-          </p>
+          <p style={{ margin: "0 0 1em" }}>{t("home.aboutP1")}</p>
+          <p style={{ margin: "0 0 1em" }}>{t("home.aboutP2")}</p>
+          <p style={{ margin: 0 }}>{t("home.aboutP3")}</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ position: "relative", width: "100%", height: 480 }}>
-            <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder="Foto de la oficina" />
+            <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder={t("home.officePhoto")} />
             <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
               <strong>Cusco</strong>
               <br />
-              <span style={{ opacity: 0.85 }}>Oficina principal</span>
+              <span style={{ opacity: 0.85 }}>{t("home.oficinaPrincipal")}</span>
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
             {[
-              { name: "Transporte turístico", role: "6 rutas · salidas diarias", href: "/transporte" },
-              { name: "Traslados privados", role: "Aeropuerto · hoteles · 24/7", href: "/traslados" },
+              { name: t("home.transporteTuristico"), role: t("home.cardTransRole"), href: "/transporte" },
+              { name: t("nav.tours"), role: t("home.cardTransRole"), href: "/tours" },
             ].map((f) => (
               <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
                 <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>
