@@ -153,7 +153,7 @@ export default function RouteCard({
         <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 2", borderRadius: 10, overflow: "hidden" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={r.image}
+            src={r.image || undefined}
             alt={`${r.from} — ${r.to}`}
             loading="lazy"
             style={{

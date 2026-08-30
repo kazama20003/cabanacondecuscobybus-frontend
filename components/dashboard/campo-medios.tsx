@@ -96,7 +96,7 @@ export function CampoMedios({
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={medio.url}
+                  src={medio.url || undefined}
                   alt={medio.textoAlterno ?? ""}
                   className="size-14 shrink-0 rounded-md object-cover"
                 />
