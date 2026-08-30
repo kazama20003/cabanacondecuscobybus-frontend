@@ -87,15 +87,8 @@ export default function RoutePage() {
   );
   const precio = precioDesde(salidasTodas);
   const paradas = [...(transporte.paradas ?? [])].sort((a: ParadaApi, b: ParadaApi) => a.orden - b.orden);
-  const imagenes = [
-    ...(transporte.imagenes ?? []),
-    ...paradas.flatMap((parada) => parada.imagenes ?? []),
-  ]
+  const imagenes = [...(transporte.imagenes ?? [])]
     .filter((imagen) => imagen.url.trim())
-    .filter(
-      (imagen, indice, lista) =>
-        lista.findIndex((item) => item.url === imagen.url) === indice,
-    )
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
   const videoPrincipal = imagenes.find((imagen) => imagen.tipo === "VIDEO");
   const imagenesGaleria = imagenes.filter((imagen) => imagen.tipo !== "VIDEO");
@@ -247,7 +240,6 @@ export default function RoutePage() {
         </section>
       )}
 
-      {proximasSalidas.length > 0 && (
       <section style={{ marginTop: 56 }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 18 }}>
           <div>
@@ -264,20 +256,25 @@ export default function RoutePage() {
             </span>
           )}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 10 }}>
-          {proximasSalidas.slice(0, 6).map((salida) => (
-            <div key={salida.id} style={{ border: "1px solid var(--line)", padding: "16px", background: "var(--card)" }}>
-              <strong style={{ display: "block", fontSize: 14.5, textTransform: "capitalize" }}>
-                {formatoFecha.format(new Date(salida.fechaHoraSalida))}
-              </strong>
-              <span style={{ display: "block", marginTop: 7, fontSize: 13.5, color: "var(--muted)" }}>
-                S/ {Number(salida.precioPen)} · US$ {Number(salida.precioUsd)}
-              </span>
-            </div>
-          ))}
-        </div>
+        {proximasSalidas.length === 0 ? (
+          <p style={{ margin: 0, padding: "20px", background: "var(--card)", color: "var(--muted)", fontSize: 14 }}>
+            {t("reservar.sinSalidas")}
+          </p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 10 }}>
+            {proximasSalidas.slice(0, 6).map((salida) => (
+              <div key={salida.id} style={{ border: "1px solid var(--line)", padding: "16px", background: "var(--card)" }}>
+                <strong style={{ display: "block", fontSize: 14.5, textTransform: "capitalize" }}>
+                  {formatoFecha.format(new Date(salida.fechaHoraSalida))}
+                </strong>
+                <span style={{ display: "block", marginTop: 7, fontSize: 13.5, color: "var(--muted)" }}>
+                  S/ {Number(salida.precioPen)} · US$ {Number(salida.precioUsd)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
-      )}
 
       {/* Qué incluye / no incluye */}
       <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
@@ -286,13 +283,8 @@ export default function RoutePage() {
       <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
         <div>
           <h2 style={{ margin: "0 0 28px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-            Paradas del recorrido
+            {t("detalle.itinerarioRuta")}
           </h2>
-          {paradas.length > 0 && (
-            <p style={{ margin: "-16px 0 24px", fontSize: 14, color: "var(--muted)" }}>
-              {paradas.length} paradas desde {transporte.origenNombre} hasta {transporte.destinoNombre}.
-            </p>
-          )}
           {paradas.length === 0 ? (
             <p style={{ fontSize: 14, color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p>
           ) : (
@@ -310,7 +302,7 @@ export default function RoutePage() {
                       padding: "14px 0",
                     }}
                   >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--muted)" }}>{offset ?? `Parada ${s.orden}`}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--muted)" }}>{offset ?? "Salida"}</span>
                     <span style={{ lineHeight: 1.4 }}>
                       <strong style={{ fontSize: 14.5 }}>{s.nombre}</strong>
                       {s.descripcion && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{s.descripcion}</div>}
