@@ -60,6 +60,29 @@ const inicial = {
   precioUsd: "",
 };
 
+function fechaLocalHoy() {
+  const fecha = new Date();
+  fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
+  return fecha.toISOString().slice(0, 10);
+}
+
+function siguienteFechaRecurrente(
+  fechaDesde: string,
+  horaSalida: string,
+  diasSemana: number[],
+) {
+  if (!fechaDesde || !horaSalida || diasSemana.length === 0) return null;
+  const cursor = new Date(`${fechaDesde}T12:00:00`);
+  for (let i = 0; i < 7; i += 1) {
+    const diaIso = cursor.getDay() === 0 ? 7 : cursor.getDay();
+    if (diasSemana.includes(diaIso)) {
+      return new Date(`${cursor.toISOString().slice(0, 10)}T${horaSalida}:00`);
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return null;
+}
+
 /** Encabezado de sección del formulario: número + título + descripción. */
 function SeccionForm({
   paso,
@@ -91,7 +114,10 @@ function SeccionForm({
 export default function PaginaNuevaSalida() {
   const router = useRouter();
   const [modo, setModo] = useState<"UNICA" | "RECURRENTE">("UNICA");
-  const [campos, setCampos] = useState(inicial);
+  const [campos, setCampos] = useState(() => ({
+    ...inicial,
+    fechaDesde: fechaLocalHoy(),
+  }));
   const crear = useCrearSalida();
   const crearPlantilla = useCrearPlantilla();
   const { data: transportes } = useTransportes({ porPagina: 100 });
@@ -169,6 +195,14 @@ export default function PaginaNuevaSalida() {
       : campos.horaSalida && campos.fechaDesde && campos.diasSemana.length > 0);
 
   const servicioElegido = opciones.find((o) => o.id === campos.servicioId);
+  const proximaSalida =
+    modo === "RECURRENTE"
+      ? siguienteFechaRecurrente(
+          campos.fechaDesde,
+          campos.horaSalida,
+          campos.diasSemana,
+        )
+      : null;
 
   return (
     <div className="flex w-full flex-col gap-4 p-4 lg:p-6">
@@ -367,6 +401,7 @@ export default function PaginaNuevaSalida() {
                       id="fechaDesde"
                       required
                       type="date"
+                      min={fechaLocalHoy()}
                       value={campos.fechaDesde}
                       onChange={(e) =>
                         setCampos((c) => ({
@@ -490,6 +525,17 @@ export default function PaginaNuevaSalida() {
                   {campos.fechaDesde
                     ? `${campos.fechaDesde} → ${campos.fechaHasta || "indefinida"}`
                     : "—"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-2">
+                <span className="text-muted-foreground">Primera salida</span>
+                <span className="text-right font-medium">
+                  {proximaSalida
+                    ? proximaSalida.toLocaleString("es-PE", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })
+                    : "Selecciona días y hora"}
                 </span>
               </div>
             </>
