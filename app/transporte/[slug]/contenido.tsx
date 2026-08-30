@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
+import { CameraIcon, Clock3Icon, MapPinIcon, RouteIcon } from "lucide-react";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
@@ -115,7 +116,7 @@ export default function RoutePage() {
 
       <section style={{ marginTop: 42, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 32, alignItems: "end" }}>
         <div><span style={{ display: "block", marginBottom: 12, fontSize: 11, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" }}>Ruta panorámica</span><h1 style={{ margin: 0, fontSize: "clamp(40px, 5.5vw, 78px)", lineHeight: 0.98, letterSpacing: "-0.05em", fontWeight: 400, textWrap: "balance" }}>{heading}</h1>{intro && <p style={{ maxWidth: 620, margin: "18px 0 0", fontSize: 16, lineHeight: 1.65, color: "var(--muted)", textWrap: "pretty" }}>{intro}</p>}</div>
-        <div style={{ borderLeft: "2px solid var(--fg)", paddingLeft: 20, display: "grid", gap: 12 }}><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ color: "var(--muted)", fontSize: 13 }}>Salida</span><strong>{transporte.origenNombre}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ color: "var(--muted)", fontSize: 13 }}>Trayecto estimado</span><strong>{dur ?? "Por confirmar"}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ color: "var(--muted)", fontSize: 13 }}>Llegada</span><strong>{transporte.destinoNombre}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ color: "var(--muted)", fontSize: 13 }}>Paradas</span><strong>{paradas.length}</strong></div></div>
+        <div style={{ borderLeft: "2px solid var(--fg)", paddingLeft: 20, display: "grid", gap: 12 }}><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "var(--muted)", fontSize: 13 }}><MapPinIcon size={15} color="#16a34a" />Salida</span><strong>{transporte.origenNombre}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "var(--muted)", fontSize: 13 }}><Clock3Icon size={15} color="#2563eb" />Trayecto estimado</span><strong>{dur ?? "Por confirmar"}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "var(--muted)", fontSize: 13 }}><MapPinIcon size={15} color="#dc2626" />Llegada</span><strong>{transporte.destinoNombre}</strong></div><div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}><span style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "var(--muted)", fontSize: 13 }}><RouteIcon size={15} color="#d97706" />Paradas</span><strong>{paradas.length}</strong></div></div>
       </section>
 
       <section style={{ marginTop: 76, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 290px), 1fr))", gap: 54, alignItems: "start" }}>
@@ -126,13 +127,21 @@ export default function RoutePage() {
             <span style={{ fontSize: 13, color: "var(--muted)" }}>{paradas.length} lugares</span>
           </div>
           {paradas.length === 0 ? <p style={{ color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p> : (
-            <ol style={{ position: "relative", margin: 0, padding: "4px 0 4px 24px", listStyle: "none", display: "grid", gap: 26 }}>
+            <ol style={{ position: "relative", margin: 0, padding: "4px 0 4px 24px", listStyle: "none", display: "grid", gap: 8 }}>
               <span aria-hidden style={{ position: "absolute", top: 18, bottom: 18, left: 34, width: 1, background: "var(--line)" }} />
               {paradas.map((parada) => (
-                <li key={parada.id} style={{ position: "relative", display: "grid", gridTemplateColumns: parada.imagenes?.[0] ? "28px minmax(0, 1fr) minmax(150px, 0.42fr)" : "28px minmax(0, 1fr)", gap: 18, alignItems: "start" }}>
+                <li key={parada.id} style={{ position: "relative", display: "grid", gridTemplateColumns: "28px minmax(0, 1fr)", gap: 18, alignItems: "start" }}>
                   <span style={{ position: "relative", zIndex: 1, display: "grid", placeItems: "center", width: 22, height: 22, borderRadius: "50%", background: "var(--bg)", border: "1px solid var(--fg)", fontSize: 10, fontWeight: 700 }}>{parada.orden}</span>
-                  <article style={{ padding: "4px 0 20px" }}><span style={{ fontSize: 11, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.1em" }}>{formatearTiempoDeRuta(parada.minutos) ?? "PARADA EN RUTA"}</span><h3 style={{ margin: "7px 0", fontSize: 23, letterSpacing: "-0.025em" }}>{parada.nombre}</h3>{parada.descripcion && <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>{parada.descripcion}</p>}{parada.duracionParadaMinutos > 0 && <span style={{ display: "inline-block", marginTop: 12, padding: "5px 8px", fontSize: 12, border: "1px solid var(--line)", borderRadius: 99 }}>Tiempo de parada: {formatearDuracion(parada.duracionParadaMinutos)}</span>}</article>
-                  {parada.imagenes?.[0] && <div style={{ position: "relative", minHeight: 160, marginBottom: 20 }}><ImageSlot radius={9} src={parada.imagenes[0].tipo === "VIDEO" ? undefined : parada.imagenes[0].url} video={parada.imagenes[0].tipo === "VIDEO" ? parada.imagenes[0].url : undefined} placeholder={parada.nombre} /></div>}
+                  <details open={parada.orden === 1} style={{ border: "1px solid var(--line)", background: "var(--card)" }}>
+                    <summary style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 16, alignItems: "center", padding: "18px", cursor: "pointer", listStyle: "none" }}>
+                      <span><span style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5, fontSize: 11, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.1em" }}><MapPinIcon size={14} color="#d97706" />{formatearTiempoDeRuta(parada.minutos) ?? "PARADA EN RUTA"}</span><strong style={{ fontSize: 20, letterSpacing: "-0.02em" }}>{parada.nombre}</strong></span>
+                      <span style={{ fontSize: 12, color: "var(--muted)", whiteSpace: "nowrap" }}>Ver detalle +</span>
+                    </summary>
+                    <div style={{ display: "grid", gridTemplateColumns: parada.imagenes?.[0] ? "repeat(auto-fit, minmax(min(100%, 220px), 1fr))" : "1fr", gap: 18, padding: "0 18px 20px", borderTop: "1px solid var(--line)" }}>
+                      <div>{parada.descripcion && <p style={{ margin: "18px 0 0", fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>{parada.descripcion}</p>}{parada.duracionParadaMinutos > 0 && <span style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, padding: "5px 8px", fontSize: 12, border: "1px solid var(--line)", borderRadius: 99 }}><Clock3Icon size={14} color="#2563eb" />Tiempo de parada: {formatearDuracion(parada.duracionParadaMinutos)}</span>}</div>
+                      {parada.imagenes?.[0] && <div style={{ position: "relative", minHeight: 190, marginTop: 18 }}><span style={{ position: "absolute", zIndex: 1, top: 10, left: 10, display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 7px", borderRadius: 99, background: "var(--bg)", fontSize: 11, fontWeight: 700 }}><CameraIcon size={13} color="#8b5cf6" />Vista del lugar</span><ImageSlot radius={9} src={parada.imagenes[0].tipo === "VIDEO" ? undefined : parada.imagenes[0].url} video={parada.imagenes[0].tipo === "VIDEO" ? parada.imagenes[0].url : undefined} placeholder={parada.nombre} /></div>}
+                    </div>
+                  </details>
                 </li>
               ))}
             </ol>
