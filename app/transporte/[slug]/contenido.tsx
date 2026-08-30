@@ -40,7 +40,8 @@ export default function RoutePage() {
   const t = useT();
   const { data: transporte, isLoading, isError } = useTransporte(slug, idioma);
   const { salidas } = useSalidasTransporte(slug);
-  const [medioActivo, setMedioActivo] = useState(0);
+  const [fotoActiva, setFotoActiva] = useState(0);
+  const [mostrarVideo, setMostrarVideo] = useState(false);
 
   if (isLoading) {
     return (
@@ -87,9 +88,11 @@ export default function RoutePage() {
     (medio, indice, lista) =>
       Boolean(medio.url.trim()) && lista.findIndex((item) => item.url === medio.url) === indice,
   );
-  const indiceActivo = Math.min(medioActivo, Math.max(medios.length - 1, 0));
-  const medioPrincipal = medios[indiceActivo];
-  const mediosSecundarios = medios.filter((_, indice) => indice !== indiceActivo).slice(0, 2);
+  const fotos = medios.filter((medio) => medio.tipo !== "VIDEO");
+  const videoPrincipal = medios.find((medio) => medio.tipo === "VIDEO");
+  const indiceFotoActivo = Math.min(fotoActiva, Math.max(fotos.length - 1, 0));
+  const visualPrincipal =
+    mostrarVideo && videoPrincipal ? videoPrincipal : fotos[indiceFotoActivo] ?? videoPrincipal;
 
   return (
     <PageShell>
@@ -100,50 +103,23 @@ export default function RoutePage() {
         / {transporte.origenNombre} — {transporte.destinoNombre}
       </nav>
 
-      <section style={{ marginTop: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 36, alignItems: "end" }}>
-        <div>
-          <span style={{ display: "block", marginBottom: 14, fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--muted)" }}>
-            Ruta panorámica
-          </span>
-          <h1 style={{ fontSize: "clamp(42px, 5.2vw, 80px)", lineHeight: 0.98, letterSpacing: "-0.045em", fontWeight: 400, margin: 0, textWrap: "balance" }}>
-            {heading}
-          </h1>
-        </div>
-        {intro && <p style={{ margin: 0, fontSize: 16, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>{intro}</p>}
-      </section>
-
-      <section style={{ marginTop: 40 }}>
-        <div style={{ display: "grid", gridTemplateColumns: mediosSecundarios.length ? "minmax(0, 1.55fr) minmax(190px, 0.65fr)" : "1fr", gap: 10, minHeight: 420 }}>
-          <div style={{ position: "relative", minHeight: 320 }}>
-            <ImageSlot radius={12} src={medioPrincipal?.tipo === "VIDEO" ? undefined : medioPrincipal?.url} video={medioPrincipal?.tipo === "VIDEO" ? medioPrincipal.url : undefined} placeholder={heading} />
-            <span style={{ position: "absolute", left: 16, bottom: 16, background: "color-mix(in srgb, var(--bg) 88%, transparent)", padding: "7px 10px", fontSize: 12, fontWeight: 700, borderRadius: 999 }}>
-              {medioPrincipal?.tipo === "VIDEO" ? "Video de la ruta" : "Cabanaconde → Cusco"}
-            </span>
+      <section style={{ position: "relative", minHeight: 560, marginTop: 26, overflow: "hidden", borderRadius: 14, background: "var(--card)" }}>
+        <ImageSlot radius={0} src={visualPrincipal?.tipo === "VIDEO" ? undefined : visualPrincipal?.url} video={visualPrincipal?.tipo === "VIDEO" ? visualPrincipal.url : undefined} placeholder={heading} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 46%, transparent 100%)" }} />
+        <div style={{ position: "relative", zIndex: 1, minHeight: 560, padding: "clamp(24px, 5vw, 64px)", display: "flex", flexDirection: "column", justifyContent: "space-between", maxWidth: 760 }}>
+          <div>
+            <span style={{ display: "inline-block", padding: "7px 10px", border: "1px solid var(--line)", borderRadius: 99, background: "color-mix(in srgb, var(--bg) 78%, transparent)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Ruta panorámica</span>
+            <h1 style={{ maxWidth: 700, margin: "20px 0 18px", fontSize: "clamp(42px, 6vw, 86px)", lineHeight: 0.94, letterSpacing: "-0.055em", fontWeight: 400, textWrap: "balance" }}>{heading}</h1>
+            {intro && <p style={{ maxWidth: 570, margin: 0, fontSize: 16, lineHeight: 1.6, textWrap: "pretty" }}>{intro}</p>}
           </div>
-          <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 10 }}>
-            {mediosSecundarios.map((medio) => (
-              <button key={medio.clave ?? medio.url} type="button" onClick={() => setMedioActivo(medios.findIndex((item) => item.url === medio.url))} style={{ position: "relative", border: "none", padding: 0, cursor: "pointer", background: "transparent", minHeight: 150 }}>
-                <ImageSlot radius={10} src={medio.tipo === "VIDEO" ? undefined : medio.url} video={medio.tipo === "VIDEO" ? medio.url : undefined} placeholder={heading} />
-              </button>
-            ))}
+          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", gap: 10, minWidth: "min(100%, 360px)", fontSize: 13 }}><strong>{transporte.origenNombre}</strong><span style={{ height: 1, background: "currentColor", opacity: 0.5 }} /><strong>{transporte.destinoNombre}</strong></div>
+            {videoPrincipal && <div style={{ display: "flex", gap: 8 }}><button type="button" onClick={() => setMostrarVideo(false)} aria-pressed={!mostrarVideo} style={{ border: "1px solid var(--line)", background: !mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: !mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Foto</button><button type="button" onClick={() => setMostrarVideo(true)} aria-pressed={mostrarVideo} style={{ border: "1px solid var(--line)", background: mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Video</button></div>}
           </div>
         </div>
-        {medios.length > 1 && (
-          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingTop: 10 }}>
-            {medios.map((medio: ImagenApi, indice) => (
-              <button key={medio.clave ?? medio.url} type="button" aria-label={`Ver medio ${indice + 1}`} aria-pressed={indice === indiceActivo} onClick={() => setMedioActivo(indice)} style={{ position: "relative", flex: "0 0 82px", aspectRatio: "1", border: indice === indiceActivo ? "2px solid var(--fg)" : "1px solid var(--line)", borderRadius: 7, overflow: "hidden", padding: 0, background: "var(--card)", cursor: "pointer" }}>
-                <ImageSlot radius={5} src={medio.tipo === "VIDEO" ? undefined : medio.url} video={medio.tipo === "VIDEO" ? medio.url : undefined} placeholder={String(indice + 1)} />
-              </button>
-            ))}
-          </div>
-        )}
       </section>
 
-      <section style={{ marginTop: 20, padding: "18px 0", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 16 }}>
-        <div><span style={{ display: "block", fontSize: 11, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Salida</span><strong>{transporte.origenNombre}</strong></div>
-        <div style={{ textAlign: "center", color: "var(--muted)", fontSize: 13 }}>{dur ?? "Ruta turística"}<br /><span style={{ fontSize: 11 }}>{paradas.length} paradas seleccionadas</span></div>
-        <div style={{ textAlign: "right" }}><span style={{ display: "block", fontSize: 11, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Llegada</span><strong>{transporte.destinoNombre}</strong></div>
-      </section>
+      {fotos.length > 1 && <div style={{ display: "flex", gap: 9, overflowX: "auto", paddingTop: 12 }}>{fotos.map((foto: ImagenApi, indice) => <button key={foto.clave ?? foto.url} type="button" aria-label={`Ver foto ${indice + 1}`} aria-pressed={indice === indiceFotoActivo && !mostrarVideo} onClick={() => { setFotoActiva(indice); setMostrarVideo(false); }} style={{ position: "relative", flex: "0 0 108px", aspectRatio: "4 / 3", padding: 0, overflow: "hidden", border: indice === indiceFotoActivo && !mostrarVideo ? "2px solid var(--fg)" : "1px solid var(--line)", borderRadius: 8, background: "var(--card)", cursor: "pointer" }}><ImageSlot radius={6} src={foto.url} placeholder={heading} /></button>)}</div>}
 
       <section style={{ marginTop: 76, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 290px), 1fr))", gap: 54, alignItems: "start" }}>
         <div>
@@ -153,14 +129,16 @@ export default function RoutePage() {
             <span style={{ fontSize: 13, color: "var(--muted)" }}>{paradas.length} lugares</span>
           </div>
           {paradas.length === 0 ? <p style={{ color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p> : (
-            <div style={{ display: "grid", gap: 18 }}>
-              {paradas.map((parada, indice) => (
-                <article key={parada.id} style={{ display: "grid", gridTemplateColumns: parada.imagenes?.[0] ? "minmax(150px, 0.42fr) minmax(0, 1fr)" : "68px minmax(0, 1fr)", gap: 18, padding: "18px", background: indice % 2 === 0 ? "var(--card)" : "transparent", border: "1px solid var(--line)" }}>
-                  {parada.imagenes?.[0] ? <div style={{ position: "relative", minHeight: 150 }}><ImageSlot radius={8} src={parada.imagenes[0].tipo === "VIDEO" ? undefined : parada.imagenes[0].url} video={parada.imagenes[0].tipo === "VIDEO" ? parada.imagenes[0].url : undefined} placeholder={parada.nombre} /></div> : <span style={{ fontSize: 13, color: "var(--muted)", fontWeight: 700 }}>0{parada.orden}</span>}
-                  <div><span style={{ fontSize: 12, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.08em" }}>PARADA {String(parada.orden).padStart(2, "0")}</span><h3 style={{ margin: "8px 0", fontSize: 21, letterSpacing: "-0.02em" }}>{parada.nombre}</h3>{parada.descripcion && <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>{parada.descripcion}</p>}{parada.duracionParadaMinutos > 0 && <span style={{ display: "inline-block", marginTop: 12, padding: "5px 8px", fontSize: 12, background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 99 }}>Tiempo de parada: {formatearDuracion(parada.duracionParadaMinutos)}</span>}</div>
-                </article>
+            <ol style={{ position: "relative", margin: 0, padding: "4px 0 4px 24px", listStyle: "none", display: "grid", gap: 26 }}>
+              <span aria-hidden style={{ position: "absolute", top: 18, bottom: 18, left: 34, width: 1, background: "var(--line)" }} />
+              {paradas.map((parada) => (
+                <li key={parada.id} style={{ position: "relative", display: "grid", gridTemplateColumns: parada.imagenes?.[0] ? "28px minmax(0, 1fr) minmax(150px, 0.42fr)" : "28px minmax(0, 1fr)", gap: 18, alignItems: "start" }}>
+                  <span style={{ position: "relative", zIndex: 1, display: "grid", placeItems: "center", width: 22, height: 22, borderRadius: "50%", background: "var(--bg)", border: "1px solid var(--fg)", fontSize: 10, fontWeight: 700 }}>{parada.orden}</span>
+                  <article style={{ padding: "4px 0 20px" }}><span style={{ fontSize: 11, color: "var(--muted)", fontWeight: 700, letterSpacing: "0.1em" }}>HITO DEL CAMINO</span><h3 style={{ margin: "7px 0", fontSize: 23, letterSpacing: "-0.025em" }}>{parada.nombre}</h3>{parada.descripcion && <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>{parada.descripcion}</p>}{parada.duracionParadaMinutos > 0 && <span style={{ display: "inline-block", marginTop: 12, padding: "5px 8px", fontSize: 12, border: "1px solid var(--line)", borderRadius: 99 }}>Tiempo de parada: {formatearDuracion(parada.duracionParadaMinutos)}</span>}</article>
+                  {parada.imagenes?.[0] && <div style={{ position: "relative", minHeight: 160, marginBottom: 20 }}><ImageSlot radius={9} src={parada.imagenes[0].tipo === "VIDEO" ? undefined : parada.imagenes[0].url} video={parada.imagenes[0].tipo === "VIDEO" ? parada.imagenes[0].url : undefined} placeholder={parada.nombre} /></div>}
+                </li>
               ))}
-            </div>
+            </ol>
           )}
           <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
         </div>
