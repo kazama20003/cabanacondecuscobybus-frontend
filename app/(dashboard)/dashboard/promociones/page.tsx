@@ -109,7 +109,7 @@ export default function PaginaPromociones() {
                       <div className="relative h-11 w-11">
                         <ImageSlot
                           radius={8}
-                          src={p.imagenUrl ?? undefined}
+                          src={p.imagenUrl || undefined}
                           placeholder="—"
                         />
                       </div>
