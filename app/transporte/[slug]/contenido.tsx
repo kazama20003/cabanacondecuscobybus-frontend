@@ -96,25 +96,25 @@ export default function RoutePage() {
 
   return (
     <PageShell>
-      <nav style={{ margin: "40px 0 0", fontSize: 13, color: "var(--muted)" }}>
-        <Link href="/transporte" style={{ color: "var(--muted)" }}>
-          {t("nav.transporte")}
-        </Link>{" "}
-        / {transporte.origenNombre} — {transporte.destinoNombre}
-      </nav>
-
-      <section style={{ position: "relative", minHeight: 560, marginTop: 26, overflow: "hidden", borderRadius: 14, background: "var(--card)" }}>
+      <section style={{ position: "relative", minHeight: "clamp(480px, 68vh, 720px)", marginTop: 24, overflow: "hidden", borderRadius: 14, background: "var(--card)" }}>
         <ImageSlot radius={0} src={visualPrincipal?.tipo === "VIDEO" ? undefined : visualPrincipal?.url} video={visualPrincipal?.tipo === "VIDEO" ? visualPrincipal.url : undefined} placeholder={heading} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 60%, transparent) 46%, transparent 100%)" }} />
-        <div style={{ position: "relative", zIndex: 1, minHeight: 560, padding: "clamp(24px, 5vw, 64px)", display: "flex", flexDirection: "column", justifyContent: "space-between", maxWidth: 760 }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, color-mix(in srgb, var(--bg) 48%, transparent) 0%, transparent 42%, color-mix(in srgb, var(--bg) 92%, transparent) 100%)" }} />
+        <div style={{ position: "relative", zIndex: 1, minHeight: "clamp(480px, 68vh, 720px)", padding: "clamp(20px, 4vw, 52px)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>
-            <span style={{ display: "inline-block", padding: "7px 10px", border: "1px solid var(--line)", borderRadius: 99, background: "color-mix(in srgb, var(--bg) 78%, transparent)", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>Ruta panorámica</span>
-            <h1 style={{ maxWidth: 700, margin: "20px 0 18px", fontSize: "clamp(42px, 6vw, 86px)", lineHeight: 0.94, letterSpacing: "-0.055em", fontWeight: 400, textWrap: "balance" }}>{heading}</h1>
-            {intro && <p style={{ maxWidth: 570, margin: 0, fontSize: 16, lineHeight: 1.6, textWrap: "pretty" }}>{intro}</p>}
+            <nav style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 11px", border: "1px solid color-mix(in srgb, var(--bg) 42%, transparent)", borderRadius: 999, background: "color-mix(in srgb, var(--bg) 70%, transparent)", backdropFilter: "blur(10px)", fontSize: 12.5 }}>
+              <Link href="/transporte" style={{ color: "inherit", fontWeight: 700 }}>{t("nav.transporte")}</Link>
+              <span aria-hidden style={{ opacity: 0.55 }}>·</span>
+              <span>{transporte.origenNombre} — {transporte.destinoNombre}</span>
+            </nav>
           </div>
-          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", gap: 10, minWidth: "min(100%, 360px)", fontSize: 13 }}><strong>{transporte.origenNombre}</strong><span style={{ height: 1, background: "currentColor", opacity: 0.5 }} /><strong>{transporte.destinoNombre}</strong></div>
-            {videoPrincipal && <div style={{ display: "flex", gap: 8 }}><button type="button" onClick={() => setMostrarVideo(false)} aria-pressed={!mostrarVideo} style={{ border: "1px solid var(--line)", background: !mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: !mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Foto</button><button type="button" onClick={() => setMostrarVideo(true)} aria-pressed={mostrarVideo} style={{ border: "1px solid var(--line)", background: mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Video</button></div>}
+          <div style={{ maxWidth: 800 }}>
+            <span style={{ display: "inline-block", marginBottom: 14, fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.78 }}>Ruta panorámica</span>
+            <h1 style={{ margin: 0, fontSize: "clamp(42px, 6vw, 86px)", lineHeight: 0.94, letterSpacing: "-0.055em", fontWeight: 400, textWrap: "balance" }}>{heading}</h1>
+            {intro && <p style={{ maxWidth: 610, margin: "16px 0 0", fontSize: 16, lineHeight: 1.6, textWrap: "pretty" }}>{intro}</p>}
+            <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginTop: 24 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", alignItems: "center", gap: 10, minWidth: "min(100%, 360px)", fontSize: 13 }}><strong>{transporte.origenNombre}</strong><span style={{ height: 1, background: "currentColor", opacity: 0.5 }} /><strong>{transporte.destinoNombre}</strong></div>
+              {videoPrincipal && <div style={{ display: "flex", gap: 8 }}><button type="button" onClick={() => setMostrarVideo(false)} aria-pressed={!mostrarVideo} style={{ border: "1px solid var(--line)", background: !mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: !mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Foto</button><button type="button" onClick={() => setMostrarVideo(true)} aria-pressed={mostrarVideo} style={{ border: "1px solid var(--line)", background: mostrarVideo ? "var(--fg)" : "color-mix(in srgb, var(--bg) 78%, transparent)", color: mostrarVideo ? "var(--bg)" : "var(--fg)", padding: "8px 11px", borderRadius: 7, cursor: "pointer" }}>Video</button></div>}
+            </div>
           </div>
         </div>
       </section>
