@@ -39,6 +39,7 @@ import {
   useSalidasAdmin,
 } from "@/hooks/use-catalogo";
 import type { EstadoSalida } from "@/lib/api";
+import { toast } from "sonner";
 
 const NOMBRES_DIAS = ["", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
@@ -323,14 +324,24 @@ function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
                         size="sm"
                         variant="destructive"
                         disabled={eliminar.isPending}
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "¿Eliminar este horario? Se borran sus salidas futuras sin reservas.",
-                            )
-                          )
-                            eliminar.mutate(p.id);
-                        }}
+                        onClick={() =>
+                          toast.warning("¿Eliminar este horario?", {
+                            description:
+                              "Se borrarán sus salidas futuras sin reservas.",
+                            duration: Infinity,
+                            cancel: { label: "Cancelar", onClick: () => {} },
+                            action: {
+                              label: "Eliminar",
+                              onClick: () => {
+                                void toast.promise(eliminar.mutateAsync(p.id), {
+                                  loading: "Eliminando horario...",
+                                  success: "Horario eliminado.",
+                                  error: "No se pudo eliminar el horario.",
+                                });
+                              },
+                            },
+                          })
+                        }
                       >
                         Eliminar
                       </Button>

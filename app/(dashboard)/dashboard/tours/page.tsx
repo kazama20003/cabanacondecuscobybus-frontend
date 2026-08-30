@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import { useEliminarTour, useTours } from "@/hooks/use-catalogo";
+import { toast } from "sonner";
 
 export default function PaginaTours() {
   const [pagina, setPagina] = useState(1);
@@ -132,9 +133,24 @@ export default function PaginaTours() {
                           size="sm"
                           className="text-destructive"
                           disabled={eliminar.isPending || (tour.salidas?.length ?? 0) > 0}
-                          onClick={() => {
-                            if (window.confirm("Se eliminará el tour y todos sus medios de Cloudinary. ¿Continuar?")) eliminar.mutate(tour.id);
-                          }}
+                          onClick={() =>
+                            toast.warning("¿Eliminar este tour?", {
+                              description:
+                                "También se eliminarán todos sus medios de Cloudinary.",
+                              duration: Infinity,
+                              cancel: { label: "Cancelar", onClick: () => {} },
+                              action: {
+                                label: "Eliminar",
+                                onClick: () => {
+                                  void toast.promise(eliminar.mutateAsync(tour.id), {
+                                    loading: "Eliminando tour...",
+                                    success: "Tour eliminado.",
+                                    error: "No se pudo eliminar el tour.",
+                                  });
+                                },
+                              },
+                            })
+                          }
                         >
                           <Trash2Icon /> Eliminar
                         </Button>
