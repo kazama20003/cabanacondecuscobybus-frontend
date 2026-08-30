@@ -36,6 +36,12 @@ export const endpoints = {
     salidasAdmin: "/administracion/salidas",
     actualizarSalida: (tipo: "transporte" | "tour", id: string) =>
       `/administracion/salidas/${tipo}/${id}`,
+    plantillasSalida: "/administracion/plantillas-salida",
+    crearPlantillaTransporte: (id: string) =>
+      `/administracion/transportes/${id}/plantillas-salida`,
+    crearPlantillaTour: (id: string) =>
+      `/administracion/tours/${id}/plantillas-salida`,
+    plantillaSalida: (id: string) => `/administracion/plantillas-salida/${id}`,
   },
   uploads: {
     subir: (categoria: "transportes" | "tours" | "promociones" | "comprobantes") =>
@@ -44,6 +50,9 @@ export const endpoints = {
   usuarios: {
     listar: "/administracion/usuarios",
     actualizar: (id: string) => `/administracion/usuarios/${id}`,
+  },
+  auditoria: {
+    listar: "/administracion/auditoria",
   },
   promociones: {
     vigentes: "/promociones",

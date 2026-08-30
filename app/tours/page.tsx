@@ -5,12 +5,15 @@ import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
 import { useT } from "@/lib/i18n";
+import { useIdioma } from "@/components/lang-provider";
 import { useTours } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
-function traduccionDe(item: TourApi): TraduccionApi | undefined {
+/** El listado trae todas las traducciones publicadas; elige la del idioma activo, con respaldo en español. */
+function traduccionDe(item: TourApi, idioma: string): TraduccionApi | undefined {
   const arr = item.traducciones as TraduccionApi[] | undefined;
-  return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
+  if (!Array.isArray(arr) || arr.length === 0) return undefined;
+  return arr.find((x) => x.idioma === idioma) ?? arr.find((x) => x.idioma === "es") ?? arr[0];
 }
 
 function formatearDuracion(minutos?: number): string | null {
@@ -27,14 +30,15 @@ function precioDesde(salidas?: SalidaApi[]): number | null {
   return Math.min(...precios);
 }
 
-function tituloTour(t: TourApi): string {
-  const tr = traduccionDe(t);
+function tituloTour(t: TourApi, idioma: string): string {
+  const tr = traduccionDe(t, idioma);
   return tr?.titulo || t.nombre || (t.destinoNombre as string | undefined) || "Tour";
 }
 
 export default function ToursPage() {
   const t = useT();
-  const { data, isLoading, isError } = useTours();
+  const { idioma } = useIdioma();
+  const { data, isLoading, isError } = useTours({ esEvento: false });
   const tours = data?.datos ?? [];
 
   return (
@@ -67,8 +71,8 @@ export default function ToursPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         {tours.map((tour) => {
-          const tr = traduccionDe(tour);
-          const titulo = tituloTour(tour);
+          const tr = traduccionDe(tour, idioma);
+          const titulo = tituloTour(tour, idioma);
           const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
           const precio = precioDesde(tour.salidas);
           return (
@@ -99,7 +103,7 @@ export default function ToursPage() {
                     <span />
                   )}
                   <a
-                    href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${titulo}`)}`}
+                    href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${titulo}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
