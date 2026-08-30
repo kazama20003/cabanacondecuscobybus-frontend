@@ -1,185 +1,86 @@
-"use client";
+import type { Metadata } from "next";
+import {
+  obtenerJson,
+  recortar,
+  SITE_URL,
+  tituloTour,
+  type TourSeo,
+} from "@/lib/seo";
+import TourContenido from "./contenido";
 
-import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
-import PageShell from "@/components/page-shell";
-import ImageSlot from "@/components/image-slot";
-import IncluyeNoIncluye from "@/components/incluye-no-incluye";
-import { CONTACT } from "@/lib/data";
-import { useIdioma } from "@/components/lang-provider";
-import { useT } from "@/lib/i18n";
-import { useTour } from "@/hooks/use-catalogo";
-import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
-
-function traduccionDe(item: TourApi | undefined): TraduccionApi | undefined {
-  if (!item) return undefined;
-  const arr = item.traducciones as TraduccionApi[] | undefined;
-  return Array.isArray(arr) && arr.length > 0 ? arr[0] : undefined;
+interface Props {
+  params: Promise<{ slug: string }>;
 }
 
-function formatearDuracion(minutos?: number): string | null {
-  if (!minutos || minutos <= 0) return null;
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
-  return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
-}
-
-function precioDesde(salidas?: SalidaApi[]): number | null {
-  if (!salidas || salidas.length === 0) return null;
-  const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
-  if (precios.length === 0) return null;
-  return Math.min(...precios);
-}
-
-export default function TourPage() {
-  const params = useParams();
-  const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
-  const { idioma } = useIdioma();
-  const t = useT();
-  const { data: tour, isLoading, isError } = useTour(slug, idioma);
-
-  if (isLoading) {
-    return (
-      <PageShell>
-        <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>{t("lista.cargando")}</p>
-      </PageShell>
-    );
-  }
-
-  if (isError) {
-    return (
-      <PageShell>
-        <p style={{ margin: "60px 0", color: "var(--muted)", fontSize: 15 }}>
-          {t("lista.errorTour")}
-        </p>
-      </PageShell>
-    );
-  }
-
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const tour = await obtenerJson<TourSeo>(`/tours/${slug}`);
   if (!tour) {
-    notFound();
+    return { title: "Tour no encontrado — Inca Travel Peru" };
   }
+  const titulo = tituloTour(tour);
+  const descripcion =
+    recortar(
+      tour.traducciones?.[0]?.resumen || tour.traducciones?.[0]?.descripcion,
+    ) ??
+    `Tour a ${tour.destinoNombre} con guía profesional y salidas programadas. Reserva en línea con Inca Travel Peru.`;
+  const url = `${SITE_URL}/tours/${slug}`;
+  const imagen = tour.imagenes?.[0]?.url;
+  return {
+    title: `${titulo} — Inca Travel Peru`,
+    description: descripcion,
+    alternates: { canonical: url },
+    openGraph: {
+      title: titulo,
+      description: descripcion,
+      url,
+      type: "website",
+      siteName: "Inca Travel Peru",
+      ...(imagen ? { images: [{ url: imagen }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titulo,
+      description: descripcion,
+      ...(imagen ? { images: [imagen] } : {}),
+    },
+  };
+}
 
-  const tr = traduccionDe(tour);
-  const destino = tour.destinoNombre as string | undefined;
-  const heading = tr?.titulo || tour.nombre || destino || "Tour";
-  const intro = tr?.resumen || tr?.descripcion || "";
-  const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
-  const precio = precioDesde(tour.salidas);
-  const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
+export default async function TourPage({ params }: Props) {
+  const { slug } = await params;
+  const tour = await obtenerJson<TourSeo>(`/tours/${slug}`);
 
-  const fichas = [
-    dur ? { label: t("ficha.duracion"), value: dur } : null,
-    destino ? { label: t("ficha.destino"), value: destino } : null,
-    precio != null ? { label: t("ficha.precio"), value: `${t("common.desde")} S/ ${precio} ${t("detalle.pp")}` } : null,
-  ].filter(Boolean) as { label: string; value: string }[];
+  const jsonLd = tour
+    ? {
+        "@context": "https://schema.org",
+        "@type": "TouristTrip",
+        name: tituloTour(tour),
+        description: recortar(
+          tour.traducciones?.[0]?.resumen ||
+            tour.traducciones?.[0]?.descripcion,
+          300,
+        ),
+        url: `${SITE_URL}/tours/${slug}`,
+        ...(tour.imagenes?.[0]?.url ? { image: tour.imagenes[0].url } : {}),
+        touristType: "Turismo cultural y de naturaleza",
+        provider: {
+          "@type": "TravelAgency",
+          name: "Inca Travel Peru",
+          url: SITE_URL,
+        },
+      }
+    : null;
 
   return (
-    <PageShell>
-      <nav style={{ margin: "40px 0 0", fontSize: 13, color: "var(--muted)" }}>
-        <Link href="/tours" style={{ color: "var(--muted)" }}>
-          {t("nav.tours")}
-        </Link>{" "}
-        / {heading}
-      </nav>
-
-      <h1
-        style={{
-          fontSize: "clamp(36px, 4.6vw, 72px)",
-          lineHeight: 1.08,
-          letterSpacing: "-0.03em",
-          fontWeight: 400,
-          margin: "24px 0 20px",
-          textWrap: "pretty",
-        }}
-      >
-        {heading}
-      </h1>
-      {intro && (
-        <p style={{ maxWidth: 560, margin: "0 0 36px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-          {intro}
-        </p>
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       )}
-
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 480" }}>
-        <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={heading} />
-      </div>
-
-      {/* Ficha resumen */}
-      {fichas.length > 0 && (
-        <section
-          style={{
-            marginTop: 40,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 12,
-          }}
-        >
-          {fichas.map((c) => (
-            <div key={c.label} style={{ background: "var(--card)", padding: "18px 20px" }}>
-              <div style={{ fontSize: 12.5, color: "var(--muted)", marginBottom: 6 }}>{c.label}</div>
-              <div style={{ fontSize: 14.5, fontWeight: 600, lineHeight: 1.4 }}>{c.value}</div>
-            </div>
-          ))}
-        </section>
-      )}
-
-      {/* Qué incluye / no incluye */}
-      <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
-
-      {/* Itinerario + reserva */}
-      <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
-        <div>
-          <h2 style={{ margin: "0 0 28px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-            {t("detalle.itinerarioTour")}
-          </h2>
-          {itinerarios.length === 0 ? (
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p>
-          ) : (
-            <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
-              {itinerarios.map((it) => (
-                <li key={it.id} style={{ borderTop: "1px solid var(--line)", padding: "14px 0", lineHeight: 1.4 }}>
-                  <strong style={{ fontSize: 14.5 }}>{it.titulo}</strong>
-                  {it.descripcion && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{it.descripcion}</div>}
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-        <div>
-          {tr?.queLlevar && (
-            <>
-              <h2 style={{ margin: "0 0 20px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-                {t("detalle.queLlevar")}
-              </h2>
-              <p style={{ margin: "0 0 36px", fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>
-                {tr.queLlevar}
-              </p>
-            </>
-          )}
-          <div style={{ background: "var(--card)", padding: "28px 26px" }}>
-            {precio != null && (
-              <>
-                <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{t("detalle.precioPersona")}</div>
-                <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>{t("common.desde")} S/ {precio}</div>
-              </>
-            )}
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
-              <a
-                href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quiero información del tour ${heading}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
-              >
-                {t("common.reservarWhatsapp")}
-              </a>
-              <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
-                {t("detalle.consultar")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    </PageShell>
+      <TourContenido />
+    </>
   );
 }

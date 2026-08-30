@@ -3,11 +3,12 @@
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import { destinations } from "@/lib/data";
+import { useDestinations } from "@/lib/data-i18n";
 import { useT } from "@/lib/i18n";
 
 export default function DestinosContenido() {
   const t = useT();
+  const destinations = useDestinations();
   return (
     <PageShell>
       <h1

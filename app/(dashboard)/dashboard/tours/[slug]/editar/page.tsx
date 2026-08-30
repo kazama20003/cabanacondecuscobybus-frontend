@@ -39,6 +39,8 @@ export default function PaginaEditarTour({
     destinoLongitud: "",
     duracionMinutos: "",
   });
+  const [esEvento, setEsEvento] = useState(false);
+  const [temporada, setTemporada] = useState({ inicio: "", fin: "" });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
   const [errorMedios, setErrorMedios] = useState<string | null>(null);
   const [listo, setListo] = useState(false);
@@ -50,6 +52,11 @@ export default function PaginaEditarTour({
       destinoLatitud: textoDe(tour.destinoLatitud),
       destinoLongitud: textoDe(tour.destinoLongitud),
       duracionMinutos: textoDe(tour.duracionMinutos),
+    });
+    setEsEvento(Boolean(tour.esEvento));
+    setTemporada({
+      inicio: textoDe(tour.temporadaInicio).slice(0, 10),
+      fin: textoDe(tour.temporadaFin).slice(0, 10),
     });
     setMedios(
       (tour.imagenes ?? []).map((imagen: ImagenApi) => ({
@@ -83,6 +90,9 @@ export default function PaginaEditarTour({
           destinoLatitud: Number(campos.destinoLatitud),
           destinoLongitud: Number(campos.destinoLongitud),
           duracionMinutos: Number(campos.duracionMinutos),
+          esEvento,
+          temporadaInicio: esEvento ? temporada.inicio || null : null,
+          temporadaFin: esEvento ? temporada.fin || null : null,
           medios,
         },
       },
@@ -145,6 +155,49 @@ export default function PaginaEditarTour({
                   setCampos((c) => ({ ...c, duracionMinutos: minutos }))
                 }
               />
+              <div className="rounded-lg border bg-muted/20 p-3">
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 size-4"
+                    checked={esEvento}
+                    onChange={(e) => setEsEvento(e.target.checked)}
+                  />
+                  <span>
+                    <span className="font-medium">Es un evento</span>
+                    <span className="text-muted-foreground block text-xs">
+                      Actividad estacional o de fechas puntuales. Aparece en la
+                      sección Eventos del sitio.
+                    </span>
+                  </span>
+                </label>
+                {esEvento && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-2">
+                      <Label htmlFor="temporadaInicio">Temporada desde</Label>
+                      <Input
+                        id="temporadaInicio"
+                        type="date"
+                        value={temporada.inicio}
+                        onChange={(e) =>
+                          setTemporada((t) => ({ ...t, inicio: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="temporadaFin">Temporada hasta</Label>
+                      <Input
+                        id="temporadaFin"
+                        type="date"
+                        value={temporada.fin}
+                        onChange={(e) =>
+                          setTemporada((t) => ({ ...t, fin: e.target.value }))
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
 

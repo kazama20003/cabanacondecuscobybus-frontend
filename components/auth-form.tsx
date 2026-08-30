@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSesionGoogle } from "@/hooks/use-auth";
 import { avatarStorage } from "@/lib/api";
+import { useT } from "@/lib/i18n";
 
 /* El ID token de Google es un JWT: el payload trae picture/name. */
 function extraerFotoGoogle(credential: string): string {
@@ -77,6 +78,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const router = useRouter();
   const sesionGoogle = useSesionGoogle();
+  const t = useT();
 
   const manejarCredencialRef = useRef<(respuesta: CredencialGoogle) => void>(() => {});
   manejarCredencialRef.current = (respuesta) => {
@@ -92,7 +94,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
               : "/cuenta",
           ),
         onError: (error) =>
-          setMensaje(error instanceof Error ? error.message : "No se pudo iniciar sesión."),
+          setMensaje(error instanceof Error ? error.message : t("auth.errGeneric")),
       });
   };
 
@@ -115,11 +117,11 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   const iniciarConGoogle = () => {
     if (!GOOGLE_CLIENT_ID) {
-      setMensaje("Falta configurar NEXT_PUBLIC_GOOGLE_CLIENT_ID en el frontend.");
+      setMensaje(t("auth.errNoClientId"));
       return;
     }
     if (!window.google) {
-      setMensaje("Google aún está cargando, intenta de nuevo en un segundo.");
+      setMensaje(t("auth.errLoading"));
       return;
     }
     if (!googleInicializado) {
@@ -148,18 +150,16 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       >
         {isLogin ? (
           <>
-            Bienvenido de <em className="serif">vuelta</em>.
+            {t("auth.loginTitlePre")}<em className="serif">{t("auth.loginTitleEm")}</em>.
           </>
         ) : (
           <>
-            Crea tu <em className="serif">cuenta</em>.
+            {t("auth.registerTitlePre")}<em className="serif">{t("auth.registerTitleEm")}</em>.
           </>
         )}
       </h1>
       <p style={{ margin: "0 0 32px", fontSize: 15, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>
-        {isLogin
-          ? "Ingresa con tu cuenta de Google para ver y gestionar tus reservas."
-          : "Usa tu cuenta de Google y listo: sin contraseñas ni formularios."}
+        {isLogin ? t("auth.loginSubtitle") : t("auth.registerSubtitle")}
       </p>
 
       {/* Card como las del resto del sitio */}
@@ -204,7 +204,7 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
           >
             <GoogleIcon />
           </span>
-          {sesionGoogle.isPending ? "Verificando…" : "Continuar con Google"}
+          {sesionGoogle.isPending ? t("auth.verifying") : t("auth.continueGoogle")}
         </button>
 
         {mensaje && (
@@ -218,23 +218,23 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       <p style={{ margin: "24px 0 0", fontSize: 13.5, color: "var(--muted)", textAlign: "center" }}>
         {isLogin ? (
           <>
-            ¿Primera vez aquí?{" "}
+            {t("auth.firstTime")}{" "}
             <Link href="/registro" style={{ fontWeight: 600 }}>
-              Crea tu cuenta
+              {t("auth.createAccount")}
             </Link>
           </>
         ) : (
           <>
-            ¿Ya tienes cuenta?{" "}
+            {t("auth.haveAccount")}{" "}
             <Link href="/login" style={{ fontWeight: 600 }}>
-              Inicia sesión
+              {t("auth.signIn")}
             </Link>
           </>
         )}
       </p>
       <p style={{ margin: "14px 0 0", fontSize: 12.5, textAlign: "center" }}>
         <Link href="/" style={{ color: "var(--muted)" }}>
-          ← Volver al inicio
+          {t("auth.backHome")}
         </Link>
       </p>
     </div>

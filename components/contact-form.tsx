@@ -37,11 +37,11 @@ export default function ContactForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const text = [
-      `Hola, soy ${name || "un viajero"}.`,
-      service && `Servicio: ${service}`,
-      date && `Fecha: ${date}`,
-      `Pasajeros: ${people}`,
-      message && `Mensaje: ${message}`,
+      `${t("wa.saludoSoy")}${name || t("wa.viajero")}.`,
+      service && `${t("wa.servicioLbl")}: ${service}`,
+      date && `${t("wa.fechaLbl")}: ${date}`,
+      `${t("wa.pasajerosLbl")}: ${people}`,
+      message && `${t("wa.mensajeLbl")}: ${message}`,
     ]
       .filter(Boolean)
       .join("\n");
@@ -77,7 +77,6 @@ export default function ContactForm() {
             ))}
           </optgroup>
           <optgroup label={t("form.grupoOtros")}>
-            <option value="Traslado privado">{t("form.trasladoPrivado")}</option>
             <option value="Itinerario personalizado">{t("form.itinerarioPersonalizado")}</option>
           </optgroup>
         </select>

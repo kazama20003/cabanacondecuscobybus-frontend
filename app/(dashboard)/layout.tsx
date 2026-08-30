@@ -10,6 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider
+      className="tema-panel"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
@@ -18,7 +19,7 @@ export default function DashboardLayout({
       }
     >
       <AdminSidebar variant="inset" />
-      <SidebarInset>
+      <SidebarInset className="md:border">
         <PanelHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
