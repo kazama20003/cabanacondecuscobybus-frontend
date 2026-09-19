@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import PageShell from "@/components/page-shell";
 import IzipayForm from "@/components/izipay-form";
@@ -23,6 +23,7 @@ function num(v: unknown): number {
 
 export default function ReservaPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const codigo = typeof params?.codigo === "string" ? params.codigo : Array.isArray(params?.codigo) ? params.codigo[0] : "";
   const t = useT();
   const queryClient = useQueryClient();
@@ -31,6 +32,7 @@ export default function ReservaPage() {
   const [logueado, setLogueado] = useState(false);
   const [pago, setPago] = useState<PagoAdelantoApi | null>(null);
   const [errorPago, setErrorPago] = useState<string | null>(null);
+  const [confirmandoPago, setConfirmandoPago] = useState(() => searchParams.get("confirmando") === "1");
 
   useEffect(() => {
     setToken(obtenerTokenInvitado(codigo));
@@ -43,6 +45,27 @@ export default function ReservaPage() {
 
   const reserva: ReservaApi | undefined =
     invitado.data ?? mias.data?.find((r) => r.codigo === codigo);
+
+  useEffect(() => {
+    if (!confirmandoPago) return;
+    if (reserva && reserva.estado !== "PENDIENTE_PAGO") {
+      setConfirmandoPago(false);
+      return;
+    }
+    const hasta = Date.now() + 60_000;
+    const consultar = () => {
+      if (Date.now() >= hasta) {
+        setConfirmandoPago(false);
+        setErrorPago("El pago sigue en validación. Actualiza esta página en unos minutos.");
+        return;
+      }
+      void invitado.refetch();
+      void mias.refetch();
+    };
+    consultar();
+    const intervalo = window.setInterval(consultar, 3_000);
+    return () => window.clearInterval(intervalo);
+  }, [confirmandoPago, invitado.refetch, mias.refetch, reserva]);
 
   const cargando = invitado.isLoading || mias.isLoading;
 
@@ -57,9 +80,10 @@ export default function ReservaPage() {
   };
 
   const alPagar = () => {
-    // El webhook confirma el pago de forma asíncrona; refrescamos el estado.
+    // Izipay en el navegador no es una confirmación: esperamos el IPN firmado.
     setPago(null);
-    void queryClient.invalidateQueries();
+    setConfirmandoPago(true);
+    void queryClient.invalidateQueries({ queryKey: ["reservas"] });
   };
 
   if (cargando) {
@@ -135,9 +159,10 @@ export default function ReservaPage() {
                     style={{ border: "none", cursor: "pointer", background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "12px 18px", borderRadius: 8, fontSize: 14.5, fontWeight: 600, opacity: iniciarPago.isPending ? 0.6 : 1 }}
                   >
                     {iniciarPago.isPending ? t("reserva.iniciando") : `${t("reserva.pagarAdelanto")} ${simbolo} ${montoAdelanto || montoTotal}`}
-                  </button>
-                  {errorPago && <p style={{ marginTop: 12, color: "#c0392b", fontSize: 14 }}>{errorPago}</p>}
-                </>
+                   </button>
+                   {errorPago && <p style={{ marginTop: 12, color: "#c0392b", fontSize: 14 }}>{errorPago}</p>}
+                   {confirmandoPago && <p style={{ marginTop: 12, color: "var(--muted)", fontSize: 14 }}>Pago enviado. Estamos confirmándolo de forma segura.</p>}
+                 </>
               ) : (
                 <IzipayForm formToken={pago.formToken} llavePublica={pago.llavePublica} onPagado={alPagar} />
               )}

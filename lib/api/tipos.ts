@@ -3,6 +3,7 @@
 export type RolUsuario = "CLIENTE" | "OPERADOR" | "ADMINISTRADOR";
 export type Moneda = "PEN" | "USD";
 export type MetodoPago = "IZIPAY" | "TRANSFERENCIA" | "EFECTIVO_OFICINA";
+export type EstadoPago = "PENDIENTE" | "APROBADO" | "RECHAZADO" | "REEMBOLSADO";
 export type TipoServicio = "TRANSPORTE" | "TOUR";
 
 /* --- Paginación estándar del backend --- */
@@ -413,4 +414,75 @@ export interface ComprobanteSaldoEntrada {
   codigoOperacion: string;
   urlComprobante: string;
   metodo: MetodoPago;
+}
+
+export interface PagoAdminApi {
+  id: string;
+  monto: string | number;
+  moneda: Moneda;
+  metodo: MetodoPago;
+  estado: EstadoPago;
+  esAdelanto: boolean;
+  codigoOperacion: string | null;
+  referenciaProveedor: string | null;
+  creadoEn: string;
+  confirmadoEn: string | null;
+  reserva: {
+    codigo: string;
+    correoContacto: string;
+    estado: string;
+  };
+}
+
+export interface FiltrosPagosAdmin extends ParametrosPagina {
+  estado?: EstadoPago;
+  metodo?: MetodoPago;
+  codigoReserva?: string;
+}
+
+/* --- Carrito y checkout --- */
+
+export interface CarritoItemApi {
+  id: string;
+  tipoServicio: TipoServicio;
+  salidaTransporte?:
+    | (SalidaApi & {
+        transporte: Pick<TransporteApi, "origenNombre" | "destinoNombre" | "slug">;
+      })
+    | null;
+  salidaTour?:
+    | (SalidaApi & {
+        tour: Pick<TourApi, "slug"> & { destinoNombre?: string };
+      })
+    | null;
+}
+
+export interface CarritoApi {
+  id: string;
+  token: string;
+  moneda: Moneda;
+  items: CarritoItemApi[];
+}
+
+export interface CheckoutCarritoEntrada {
+  correoContacto: string;
+  telefonoWhatsApp: string;
+  paisResidencia?: string;
+  pasajeros: PasajeroEntrada[];
+  codigoPromocion?: string;
+}
+
+export interface PagoCheckoutApi {
+  codigoReserva: string;
+  pagoId?: string;
+  monto?: string | number;
+  moneda?: Moneda;
+  formToken?: string;
+  llavePublica?: string;
+  error?: string;
+}
+
+export interface CheckoutCarritoApi {
+  reservas: ReservaApi[];
+  pagos: PagoCheckoutApi[];
 }
