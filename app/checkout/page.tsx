@@ -4,15 +4,16 @@
 import { CSSProperties, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import IzipayForm from "@/components/izipay-form";
 import PageShell from "@/components/page-shell";
 import { useCarrito } from "@/components/cart-provider";
 import { useIdioma } from "@/components/lang-provider";
 import { useT, LOCALES } from "@/lib/i18n";
-import { useCrearReserva } from "@/hooks/use-reservas";
+import { useCrearReserva, useIniciarPagoAdelanto } from "@/hooks/use-reservas";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { guardarReservaInvitado } from "@/lib/reservas-invitado";
 import { ApiError } from "@/lib/api";
-import type { Moneda, PasajeroEntrada, ReservaApi } from "@/lib/api";
+import type { Moneda, PagoAdelantoApi, PasajeroEntrada, ReservaApi } from "@/lib/api";
 
 const campo: CSSProperties = {
   width: "100%",
@@ -41,6 +42,7 @@ export default function CheckoutPage() {
   const { items, total, totalLineas, limpiar } = useCarrito();
   const { data: perfil } = useMiPerfil();
   const crearReserva = useCrearReserva();
+  const iniciarPago = useIniciarPagoAdelanto();
 
   const [moneda, setMoneda] = useState<Moneda>("PEN");
   const [correoContacto, setCorreo] = useState("");
@@ -50,6 +52,8 @@ export default function CheckoutPage() {
   const [pasajerosPorItem, setPasajeros] = useState<Record<string, PasajeroEntrada[]>>({});
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [reservaCreada, setReservaCreada] = useState<ReservaApi | null>(null);
+  const [pago, setPago] = useState<PagoAdelantoApi | null>(null);
 
   // Prellena contacto con el perfil si hay sesión (solo al llegar el perfil).
   useEffect(() => {
@@ -116,6 +120,15 @@ export default function CheckoutPage() {
         }
       }
       limpiar();
+      if (creadas.length === 1) {
+        setReservaCreada(creadas[0]);
+        try {
+          setPago(await iniciarPago.mutateAsync(creadas[0].codigo));
+        } catch (e) {
+          setError(e instanceof ApiError ? e.message : t("reserva.errorPago"));
+        }
+        return;
+      }
       router.push(`/reserva/${creadas[0].codigo}`);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : t("checkout.errorGenerico"));
@@ -131,6 +144,34 @@ export default function CheckoutPage() {
     ],
     [t],
   );
+
+  if (reservaCreada) {
+    return (
+      <PageShell>
+        <div style={{ maxWidth: 680, padding: "64px 0 80px" }}>
+          <p style={{ margin: "0 0 8px", color: "var(--muted)", fontSize: 14 }}>Reserva creada</p>
+          <h1 style={{ margin: "0 0 12px", fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 400 }}>Completa tu pago</h1>
+          <p style={{ margin: "0 0 24px", color: "var(--muted)", lineHeight: 1.6 }}>
+            Tu reserva <strong style={{ color: "var(--fg)" }}>{reservaCreada.codigo}</strong> quedó registrada. El pago se confirmará únicamente cuando llegue el IPN firmado de Izipay.
+          </p>
+          {pago ? (
+            <IzipayForm
+              formToken={pago.formToken}
+              llavePublica={pago.llavePublica}
+              onPagado={() => router.push(`/reserva/${reservaCreada.codigo}?confirmando=1`)}
+            />
+          ) : (
+            <>
+              {error && <p role="alert" style={{ color: "#c0392b", fontSize: 14 }}>{error}</p>}
+              <Link href={`/reserva/${reservaCreada.codigo}`} style={{ fontWeight: 600 }}>
+                Ir a la reserva para reintentar el pago
+              </Link>
+            </>
+          )}
+        </div>
+      </PageShell>
+    );
+  }
 
   if (totalLineas === 0) {
     return (

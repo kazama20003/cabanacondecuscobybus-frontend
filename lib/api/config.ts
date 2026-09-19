@@ -68,4 +68,15 @@ export const endpoints = {
     iniciarPagoAdelanto: (codigo: string) => `/reservas/${codigo}/iniciar-pago-adelanto`,
     comprobanteSaldo: (codigo: string) => `/reservas/${codigo}/comprobantes-saldo`,
   },
+  pagos: {
+    listarAdministracion: "/reservas/administracion/pagos",
+    confirmar: (pagoId: string) => `/reservas/administracion/pagos/${pagoId}/confirmar`,
+  },
+  carritos: {
+    crear: "/carritos",
+    obtener: (token: string) => `/carritos/${token}`,
+    agregarItem: (token: string) => `/carritos/${token}/items`,
+    eliminarItem: (token: string, itemId: string) => `/carritos/${token}/items/${itemId}`,
+    checkout: (token: string) => `/carritos/${token}/checkout`,
+  },
 } as const;

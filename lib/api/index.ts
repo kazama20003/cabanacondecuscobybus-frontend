@@ -10,5 +10,7 @@ export { servicioAuditoria } from "./servicios/auditoria";
 export { servicioAutenticacion } from "./servicios/autenticacion";
 export { servicioCatalogo } from "./servicios/catalogo";
 export { servicioPromociones } from "./servicios/promociones";
+export { servicioPagos } from "./servicios/pagos";
 export { servicioReservas } from "./servicios/reservas";
+export { servicioCarritos } from "./servicios/carritos";
 export { servicioUsuarios } from "./servicios/usuarios";
