@@ -25,16 +25,89 @@ function FlagUS({ size = 16 }: { size?: number }) {
   );
 }
 
+function FlagFR({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="10" height="21" fill="#002395" />
+      <rect x="10" width="10" height="21" fill="#fff" />
+      <rect x="20" width="10" height="21" fill="#ED2939" />
+    </svg>
+  );
+}
+
+function FlagIT({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="10" height="21" fill="#009246" />
+      <rect x="10" width="10" height="21" fill="#fff" />
+      <rect x="20" width="10" height="21" fill="#CE2B37" />
+    </svg>
+  );
+}
+
+function FlagPT({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="12" height="21" fill="#046A38" />
+      <rect x="12" width="18" height="21" fill="#DA291C" />
+      <circle cx="12" cy="10.5" r="3.3" fill="#FFCD00" />
+      <circle cx="12" cy="10.5" r="2.1" fill="#fff" />
+    </svg>
+  );
+}
+
+function FlagCN({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="30" height="21" fill="#DE2910" />
+      <path d="M6 3.1 7 5.6l2.7.2-2.1 1.7.7 2.6L6 8.7l-2.3 1.4.7-2.6-2.1-1.7 2.7-.2z" fill="#FFDE00" />
+      <circle cx="12" cy="3.8" r=".75" fill="#FFDE00" />
+      <circle cx="14.2" cy="6" r=".75" fill="#FFDE00" />
+      <circle cx="14.1" cy="9" r=".75" fill="#FFDE00" />
+      <circle cx="11.8" cy="11" r=".75" fill="#FFDE00" />
+    </svg>
+  );
+}
+
+function FlagJP({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="30" height="21" fill="#fff" />
+      <circle cx="15" cy="10.5" r="6" fill="#BC002D" />
+    </svg>
+  );
+}
+
+function FlagRU({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="30" height="7" fill="#fff" />
+      <rect y="7" width="30" height="7" fill="#0039A6" />
+      <rect y="14" width="30" height="7" fill="#D52B1E" />
+    </svg>
+  );
+}
+
+function FlagDE({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.7} viewBox="0 0 30 21" style={{ borderRadius: 2, display: "block" }} aria-hidden>
+      <rect width="30" height="7" fill="#000" />
+      <rect y="7" width="30" height="7" fill="#DD0000" />
+      <rect y="14" width="30" height="7" fill="#FFCE00" />
+    </svg>
+  );
+}
+
 const LANGS = [
   { code: "es", label: "Español", short: "ES", Flag: FlagPE },
   { code: "en", label: "English", short: "EN", Flag: FlagUS },
-  { code: "fr", label: "Français", short: "FR", Flag: FlagUS },
-  { code: "it", label: "Italiano", short: "IT", Flag: FlagUS },
-  { code: "pt", label: "Português", short: "PT", Flag: FlagUS },
-  { code: "zh", label: "中文", short: "ZH", Flag: FlagUS },
-  { code: "ja", label: "日本語", short: "JA", Flag: FlagUS },
-  { code: "ru", label: "Русский", short: "RU", Flag: FlagUS },
-  { code: "de", label: "Deutsch", short: "DE", Flag: FlagUS },
+  { code: "fr", label: "Français", short: "FR", Flag: FlagFR },
+  { code: "it", label: "Italiano", short: "IT", Flag: FlagIT },
+  { code: "pt", label: "Português", short: "PT", Flag: FlagPT },
+  { code: "zh", label: "中文", short: "ZH", Flag: FlagCN },
+  { code: "ja", label: "日本語", short: "JA", Flag: FlagJP },
+  { code: "ru", label: "Русский", short: "RU", Flag: FlagRU },
+  { code: "de", label: "Deutsch", short: "DE", Flag: FlagDE },
 ] as const;
 
 /* Selector de idioma con banderas. Escribe el idioma global (IdiomaProvider),
