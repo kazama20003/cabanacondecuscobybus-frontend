@@ -1638,6 +1638,14 @@ const esX3: Diccionario = {
 };
 
 const enX3: Diccionario = {
+  "nav.eventos": "Events",
+  "lista.cargandoEventos": "Loading events…",
+  "lista.errorEventos": "Events could not be loaded. Please try again later.",
+  "lista.sinEventos": "No events are scheduled yet.",
+  "eventos.heroT1": "Events and festivals",
+  "eventos.heroT2": "of southern Peru.",
+  "eventos.intro": "Celebrations, fairs, and unique moments in the Andean calendar. Dates are limited each year: book your spot in advance.",
+  "eventos.temporada": "Season",
   "carrito.titulo": "Cart",
   "carrito.vacio": "Your cart is empty. Add a transport departure or a tour.",
   "carrito.verTransporte": "View transport",
@@ -1697,6 +1705,14 @@ const enX3: Diccionario = {
 };
 
 const frX3: Diccionario = {
+  "nav.eventos": "Événements",
+  "lista.cargandoEventos": "Chargement des événements…",
+  "lista.errorEventos": "Impossible de charger les événements. Réessayez plus tard.",
+  "lista.sinEventos": "Aucun événement prévu pour le moment.",
+  "eventos.heroT1": "Événements et fêtes",
+  "eventos.heroT2": "du sud du Pérou.",
+  "eventos.intro": "Célébrations, foires et saisons uniques du calendrier andin. Les dates sont limitées dans l’année : réservez votre place à l’avance.",
+  "eventos.temporada": "Saison",
   "carrito.titulo": "Panier",
   "carrito.vacio": "Ton panier est vide. Ajoute un départ de transport ou un circuit.",
   "carrito.verTransporte": "Voir le transport",
@@ -1756,6 +1772,14 @@ const frX3: Diccionario = {
 };
 
 const itX3: Diccionario = {
+  "nav.eventos": "Eventi",
+  "lista.cargandoEventos": "Caricamento degli eventi…",
+  "lista.errorEventos": "Impossibile caricare gli eventi. Riprova più tardi.",
+  "lista.sinEventos": "Non ci sono eventi in programma.",
+  "eventos.heroT1": "Eventi e feste",
+  "eventos.heroT2": "del Perù meridionale.",
+  "eventos.intro": "Celebrazioni, fiere e stagioni uniche del calendario andino. Le date sono limitate durante l’anno: prenota in anticipo il tuo posto.",
+  "eventos.temporada": "Stagione",
   "carrito.titulo": "Carrello",
   "carrito.vacio": "Il tuo carrello è vuoto. Aggiungi una partenza di trasporto o un tour.",
   "carrito.verTransporte": "Vedi trasporto",
@@ -1815,6 +1839,14 @@ const itX3: Diccionario = {
 };
 
 const ptX3: Diccionario = {
+  "nav.eventos": "Eventos",
+  "lista.cargandoEventos": "Carregando eventos…",
+  "lista.errorEventos": "Não foi possível carregar os eventos. Tente novamente mais tarde.",
+  "lista.sinEventos": "Ainda não há eventos programados.",
+  "eventos.heroT1": "Eventos e festas",
+  "eventos.heroT2": "do sul do Peru.",
+  "eventos.intro": "Celebrações, feiras e temporadas únicas do calendário andino. As datas são limitadas durante o ano: reserve sua vaga com antecedência.",
+  "eventos.temporada": "Temporada",
   "carrito.titulo": "Carrinho",
   "carrito.vacio": "Seu carrinho está vazio. Adicione uma saída de transporte ou um tour.",
   "carrito.verTransporte": "Ver transporte",
@@ -1874,6 +1906,14 @@ const ptX3: Diccionario = {
 };
 
 const zhX3: Diccionario = {
+  "nav.eventos": "活动",
+  "lista.cargandoEventos": "正在加载活动…",
+  "lista.errorEventos": "无法加载活动，请稍后重试。",
+  "lista.sinEventos": "目前还没有安排活动。",
+  "eventos.heroT1": "秘鲁南部的",
+  "eventos.heroT2": "活动与节庆。",
+  "eventos.intro": "安第斯历法中的庆典、集市和独特时节。每年的日期有限，请提前预订名额。",
+  "eventos.temporada": "季节",
   "carrito.titulo": "购物车",
   "carrito.vacio": "你的购物车是空的。添加一个交通班次或旅行团。",
   "carrito.verTransporte": "查看交通",
@@ -1933,6 +1973,14 @@ const zhX3: Diccionario = {
 };
 
 const jaX3: Diccionario = {
+  "nav.eventos": "イベント",
+  "lista.cargandoEventos": "イベントを読み込み中…",
+  "lista.errorEventos": "イベントを読み込めませんでした。しばらくしてからもう一度お試しください。",
+  "lista.sinEventos": "予定されているイベントはまだありません。",
+  "eventos.heroT1": "南ペルーの",
+  "eventos.heroT2": "イベントと祭り。",
+  "eventos.intro": "アンデスの暦を彩る祭典や市、特別な季節をご紹介します。開催日は限られているため、早めのご予約をおすすめします。",
+  "eventos.temporada": "シーズン",
   "carrito.titulo": "カート",
   "carrito.vacio": "カートは空です。交通の便またはツアーを追加してください。",
   "carrito.verTransporte": "交通を見る",
@@ -1992,6 +2040,14 @@ const jaX3: Diccionario = {
 };
 
 const ruX3: Diccionario = {
+  "nav.eventos": "События",
+  "lista.cargandoEventos": "Загрузка событий…",
+  "lista.errorEventos": "Не удалось загрузить события. Попробуйте позже.",
+  "lista.sinEventos": "Запланированных событий пока нет.",
+  "eventos.heroT1": "События и праздники",
+  "eventos.heroT2": "юга Перу.",
+  "eventos.intro": "Праздники, ярмарки и уникальные сезоны андского календаря. Даты ограничены, поэтому бронируйте заранее.",
+  "eventos.temporada": "Сезон",
   "carrito.titulo": "Корзина",
   "carrito.vacio": "Твоя корзина пуста. Добавь рейс транспорта или тур.",
   "carrito.verTransporte": "Смотреть транспорт",
@@ -2051,6 +2107,14 @@ const ruX3: Diccionario = {
 };
 
 const deX3: Diccionario = {
+  "nav.eventos": "Veranstaltungen",
+  "lista.cargandoEventos": "Veranstaltungen werden geladen…",
+  "lista.errorEventos": "Veranstaltungen konnten nicht geladen werden. Bitte versuche es später erneut.",
+  "lista.sinEventos": "Es sind noch keine Veranstaltungen geplant.",
+  "eventos.heroT1": "Veranstaltungen und Feste",
+  "eventos.heroT2": "im Süden Perus.",
+  "eventos.intro": "Feiern, Messen und besondere Zeiten im Andenkalender. Die Termine sind begrenzt: Buche deinen Platz im Voraus.",
+  "eventos.temporada": "Saison",
   "carrito.titulo": "Warenkorb",
   "carrito.vacio": "Dein Warenkorb ist leer. Füge eine Transport-Abfahrt oder eine Tour hinzu.",
   "carrito.verTransporte": "Transport ansehen",
