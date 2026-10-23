@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeftIcon, CalendarDaysIcon, ImageIcon, MapPinIcon, SparklesIcon } from "lucide-react";
+import { ArrowLeftIcon, CalendarDaysIcon, ImageIcon, MapPinIcon, PlusIcon, SparklesIcon, Trash2Icon } from "lucide-react";
 import { TituloSeccion } from "@/components/dashboard/titulo-seccion";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
@@ -26,6 +26,7 @@ export default function NuevoEventoEspecial() {
   const [campos, setCampos] = useState({ titulo: "", destino: "", latitud: "", longitud: "", duracion: "", inicio: "", fin: "" });
   const [contenido, setContenido] = useState<ContenidoEntrada>({ titulo: "", resumen: "", descripcion: "", queLlevar: "", incluye: "", noIncluye: "" });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
+  const [puntos, setPuntos] = useState<{ titulo: string; descripcion: string; latitud: string; longitud: string }[]>([]);
   const [errorMedios, setErrorMedios] = useState("");
 
   const enviar = (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,6 +37,10 @@ export default function NuevoEventoEspecial() {
     }
     if (!medios.length) {
       setErrorMedios("Añade al menos una imagen o video para presentar el evento.");
+      return;
+    }
+    if (puntos.some((punto) => !punto.titulo.trim() || !punto.descripcion.trim())) {
+      setErrorMedios("Completa el nombre y la descripción de cada punto del recorrido.");
       return;
     }
     setErrorMedios("");
@@ -49,6 +54,12 @@ export default function NuevoEventoEspecial() {
       temporadaFin: campos.fin,
       medios,
       contenido: { ...contenido, titulo: campos.titulo },
+      puntos: puntos.map((punto) => ({
+        titulo: punto.titulo.trim(),
+        descripcion: punto.descripcion.trim(),
+        ...(punto.latitud !== "" && { latitud: Number(punto.latitud) }),
+        ...(punto.longitud !== "" && { longitud: Number(punto.longitud) }),
+      })),
     }, { onSuccess: () => router.push("/dashboard/eventos") });
   };
 
@@ -80,12 +91,26 @@ export default function NuevoEventoEspecial() {
             <CardContent className="grid gap-4">
               <div className="grid gap-2"><Label htmlFor="event-destination">Lugar o destino</Label><Input id="event-destination" required placeholder="Arequipa, Perú" value={campos.destino} onChange={(e) => setCampos((c) => ({ ...c, destino: e.target.value }))} /></div>
               <CampoCoordenadas etiqueta="Punto principal del evento" latitud={campos.latitud} longitud={campos.longitud} onCambiar={(latitud, longitud) => setCampos((c) => ({ ...c, latitud, longitud }))} />
+              <div className="grid gap-3 rounded-xl border p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div><p className="text-sm font-medium">Puntos del recorrido</p><p className="text-muted-foreground mt-1 text-xs">Añade paradas en Arequipa, Cabanaconde, Chivay, Cusco u otros destinos.</p></div>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPuntos((actuales) => [...actuales, { titulo: "", descripcion: "", latitud: "", longitud: "" }])}><PlusIcon /> Añadir punto</Button>
+                </div>
+                {puntos.map((punto, indice) => (
+                  <div key={indice} className="grid gap-3 rounded-lg bg-muted/40 p-3">
+                    <div className="flex items-center justify-between"><Label>Punto {indice + 1}</Label><Button type="button" size="icon" variant="ghost" aria-label={`Quitar punto ${indice + 1}`} onClick={() => setPuntos((actuales) => actuales.filter((_, i) => i !== indice))}><Trash2Icon /></Button></div>
+                    <Input required aria-label={`Nombre del punto ${indice + 1}`} placeholder="Cabanaconde, mirador de la Cruz del Cóndor…" value={punto.titulo} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, titulo: e.target.value } : item))} />
+                    <Textarea required aria-label={`Descripción del punto ${indice + 1}`} rows={2} placeholder="Qué verá o hará el viajero en este punto." value={punto.descripcion} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, descripcion: e.target.value } : item))} />
+                    <div className="grid grid-cols-2 gap-2"><Input type="number" step="any" aria-label={`Latitud del punto ${indice + 1}`} placeholder="Latitud (opcional)" value={punto.latitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, latitud: e.target.value } : item))} /><Input type="number" step="any" aria-label={`Longitud del punto ${indice + 1}`} placeholder="Longitud (opcional)" value={punto.longitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, longitud: e.target.value } : item))} /></div>
+                  </div>
+                ))}
+              </div>
               <CampoDuracion etiqueta="Duración estimada" requerido minutosTotales={campos.duracion} onCambiar={(duracion) => setCampos((c) => ({ ...c, duracion }))} />
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="grid gap-2"><Label htmlFor="event-start">Disponible desde</Label><Input id="event-start" required type="date" value={campos.inicio} onChange={(e) => setCampos((c) => ({ ...c, inicio: e.target.value }))} /></div>
                 <div className="grid gap-2"><Label htmlFor="event-end">Disponible hasta</Label><Input id="event-end" required type="date" min={campos.inicio || undefined} value={campos.fin} onChange={(e) => setCampos((c) => ({ ...c, fin: e.target.value }))} /></div>
               </div>
-              <p className="text-muted-foreground text-xs">Usa fechas concretas de este año. Para la siguiente temporada, podrás editar las fechas y volver a programar sus salidas.</p>
+              <p className="text-muted-foreground text-xs">Usa el calendario anual del evento. Las fechas pueden actualizarse para cada temporada y las salidas se programan por separado.</p>
             </CardContent>
           </Card>
         </div>
