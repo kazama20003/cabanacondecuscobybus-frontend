@@ -37,6 +37,8 @@ import {
   useEliminarPlantilla,
   usePlantillasSalida,
   useSalidasAdmin,
+  useTours,
+  useTransportes,
 } from "@/hooks/use-catalogo";
 import type { EstadoSalida } from "@/lib/api";
 import { toast } from "sonner";
@@ -60,7 +62,10 @@ function aInputLocal(iso: string): string {
   return local.toISOString().slice(0, 16);
 }
 
-const colorEstado: Record<EstadoSalida, "default" | "secondary" | "destructive" | "outline"> = {
+const colorEstado: Record<
+  EstadoSalida,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   BORRADOR: "outline",
   A_LA_VENTA: "default",
   PENDIENTE_DE_MINIMO: "secondary",
@@ -73,13 +78,34 @@ const colorEstado: Record<EstadoSalida, "default" | "secondary" | "destructive" 
 export default function PaginaSalidas() {
   const [tipo, setTipo] = useState<"TRANSPORTE" | "TOUR">("TRANSPORTE");
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError, error } = useSalidasAdmin({
+  const {
+    data: resultado,
+    isLoading,
+    isError,
+    error,
+  } = useSalidasAdmin({
     tipo,
     pagina,
     porPagina: 10,
   });
+  const { data: transportesActivos, isLoading: cargandoTransportes } =
+    useTransportes({ pagina: 1, porPagina: 1 });
+  const { data: toursActivos, isLoading: cargandoTours } = useTours({
+    pagina: 1,
+    porPagina: 1,
+  });
   const actualizar = useActualizarSalida();
   const salidas = resultado?.datos ?? [];
+  const hayServiciosActivos =
+    tipo === "TRANSPORTE"
+      ? (transportesActivos?.total ?? 0) > 0
+      : (toursActivos?.total ?? 0) > 0;
+  const cargandoServicios =
+    tipo === "TRANSPORTE" ? cargandoTransportes : cargandoTours;
+  const rutaCrearServicio =
+    tipo === "TRANSPORTE"
+      ? "/dashboard/transportes/nuevo"
+      : "/dashboard/tours/nuevo";
 
   return (
     <div className="flex flex-col gap-4 p-4 lg:p-6">
@@ -88,16 +114,25 @@ export default function PaginaSalidas() {
           <div>
             <CardTitle>Control de salidas</CardTitle>
             <CardDescription>
-              Decide qué sale y qué no: cambia el estado de cada salida
-              (a la venta, confirmada, cancelada…) y mira la ocupación.
+              Decide qué sale y qué no: cambia el estado de cada salida (a la
+              venta, confirmada, cancelada…) y mira la ocupación.
             </CardDescription>
           </div>
-          <Button asChild>
-            <Link href="/dashboard/salidas/nueva">
-              <PlusIcon />
-              Nueva salida
-            </Link>
-          </Button>
+          {hayServiciosActivos ? (
+            <Button asChild>
+              <Link href="/dashboard/salidas/nueva">
+                <PlusIcon />
+                Nueva salida
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline" disabled={cargandoServicios}>
+              <Link href={rutaCrearServicio}>
+                <PlusIcon />
+                Crear {tipo === "TRANSPORTE" ? "ruta" : "tour"}
+              </Link>
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <Tabs
@@ -129,6 +164,17 @@ export default function PaginaSalidas() {
             </p>
           )}
 
+          {resultado &&
+            salidas.length > 0 &&
+            !hayServiciosActivos &&
+            !cargandoServicios && (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-foreground">
+                No hay {tipo === "TRANSPORTE" ? "rutas" : "tours"} activos. Las
+                salidas que ves son registros históricos; crea o activa un
+                servicio para programar nuevas.
+              </div>
+            )}
+
           {salidas.length > 0 && (
             <Table>
               <TableHeader>
@@ -147,9 +193,21 @@ export default function PaginaSalidas() {
                     ? `${s.transporte.origenNombre} → ${s.transporte.destinoNombre}`
                     : (s.tour?.destinoNombre ?? "—");
                   const llena = s.ocupados >= s.capacidad;
+                  const servicioInactivo =
+                    s.transporte?.activo === false || s.tour?.activo === false;
                   return (
                     <TableRow key={s.id}>
-                      <TableCell className="font-medium">{nombre}</TableCell>
+                      <TableCell className="font-medium">
+                        <div>{nombre}</div>
+                        {servicioInactivo && (
+                          <Badge
+                            variant="outline"
+                            className="mt-1 text-muted-foreground"
+                          >
+                            Servicio inactivo · histórico
+                          </Badge>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Input
                           type="datetime-local"
@@ -170,7 +228,11 @@ export default function PaginaSalidas() {
                         />
                       </TableCell>
                       <TableCell>
-                        <span className={llena ? "text-destructive font-semibold" : ""}>
+                        <span
+                          className={
+                            llena ? "text-destructive font-semibold" : ""
+                          }
+                        >
                           {s.ocupados}/{s.capacidad}
                         </span>
                         <span className="text-muted-foreground ml-2 inline-flex items-center gap-1 text-xs">
@@ -217,7 +279,13 @@ export default function PaginaSalidas() {
                           </SelectTrigger>
                           <SelectContent>
                             {ESTADOS.map((e) => (
-                              <SelectItem key={e.valor} value={e.valor}>
+                              <SelectItem
+                                key={e.valor}
+                                value={e.valor}
+                                disabled={
+                                  servicioInactivo && e.valor === "A_LA_VENTA"
+                                }
+                              >
                                 {e.nombre}
                               </SelectItem>
                             ))}

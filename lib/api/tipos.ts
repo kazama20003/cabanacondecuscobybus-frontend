@@ -220,7 +220,11 @@ export interface PlantillaSalidaApi {
   precioPen: string | number;
   precioUsd: string | number;
   activo: boolean;
-  transporte?: { slug: string; origenNombre: string; destinoNombre: string } | null;
+  transporte?: {
+    slug: string;
+    origenNombre: string;
+    destinoNombre: string;
+  } | null;
   tour?: { slug: string; destinoNombre: string } | null;
   _count?: { salidasTransporte: number; salidasTour: number };
   salidasGeneradas?: number;
@@ -311,8 +315,13 @@ export interface SalidaAdminApi {
   precioUsd: string | number;
   estado: EstadoSalida;
   ocupados: number;
-  transporte?: { origenNombre: string; destinoNombre: string; slug: string };
-  tour?: { destinoNombre: string; slug: string };
+  transporte?: {
+    origenNombre: string;
+    destinoNombre: string;
+    slug: string;
+    activo: boolean;
+  };
+  tour?: { destinoNombre: string; slug: string; activo: boolean };
   vehiculo?: { placa: string } | null;
 }
 
@@ -328,7 +337,8 @@ export interface ActualizarSalidaEntrada {
 
 /* --- Promociones --- */
 
-export type TipoPromocion = "OFERTA" | "DESCUENTO" | "EVENTO_ESPECIAL" | "ANIVERSARIO";
+export type TipoPromocion =
+  "OFERTA" | "DESCUENTO" | "EVENTO_ESPECIAL" | "ANIVERSARIO";
 export type ObjetivoPromocion = "TODOS" | "TRANSPORTES" | "TOURS";
 
 export interface PromocionApi {
@@ -447,7 +457,10 @@ export interface CarritoItemApi {
   tipoServicio: TipoServicio;
   salidaTransporte?:
     | (SalidaApi & {
-        transporte: Pick<TransporteApi, "origenNombre" | "destinoNombre" | "slug">;
+        transporte: Pick<
+          TransporteApi,
+          "origenNombre" | "destinoNombre" | "slug"
+        >;
       })
     | null;
   salidaTour?:
