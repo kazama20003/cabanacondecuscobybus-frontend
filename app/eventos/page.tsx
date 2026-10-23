@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, CalendarDays, MapPin, Route } from "lucide-react";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import { CONTACT } from "@/lib/data";
 import { useT, LOCALES } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useEventos } from "@/hooks/use-catalogo";
@@ -145,14 +144,12 @@ export default function EventosPage() {
 
                       <div className={styles.cardBottom}>
                         {precio != null ? <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio}</strong> : <span className={styles.priceNote}>{t("eventos.programaPendiente")}</span>}
-                        <a
+                        <Link
                           className={styles.cardCta}
-                          href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${titulo}`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          href={`/tours/${evento.slug}#reservar`}
                         >
                           {t(precio != null ? "common.reservar" : "common.consultar")}<ArrowUpRight size={15} />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </article>
