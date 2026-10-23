@@ -70,6 +70,7 @@ export default function TourPage() {
   const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
   const precio = precioDesde(tour.salidas);
   const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
+  const portada = tour.imagenes?.[0];
 
   const fichas = [
     dur ? { label: t("ficha.duracion"), value: dur } : null,
@@ -97,7 +98,12 @@ export default function TourPage() {
       )}
 
       <div className={styles.detailImage}>
-        <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={heading} />
+        <ImageSlot
+          radius={10}
+          src={portada?.tipo === "VIDEO" ? undefined : portada?.url}
+          video={portada?.tipo === "VIDEO" ? portada.url : undefined}
+          placeholder={heading}
+        />
       </div>
 
       {/* Ficha resumen */}

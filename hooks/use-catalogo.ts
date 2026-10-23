@@ -16,6 +16,7 @@ import type {
   ContenidoEntrada,
   CrearSalidaEntrada,
   CrearTourEntrada,
+  CrearEventoEspecialEntrada,
   CrearTransporteEntrada,
   ItinerarioEntrada,
   ParadaEntrada,
@@ -47,6 +48,43 @@ export function useTours(
     queryKey: [...claves.catalogo.tours(filtros?.destino), filtros ?? {}],
     queryFn: () => servicioCatalogo.tours(filtros),
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useEventos(filtros?: ParametrosPagina) {
+  return useQuery({
+    queryKey: ["eventos", "publicos", filtros ?? {}],
+    queryFn: () => servicioCatalogo.eventos(filtros),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useEventosAdmin(filtros?: ParametrosPagina) {
+  return useQuery({
+    queryKey: ["eventos", "admin", filtros ?? {}],
+    queryFn: () => servicioCatalogo.eventosAdmin(filtros),
+    placeholderData: keepPreviousData,
+  });
+}
+
+export function useCrearEventoEspecial() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (datos: CrearEventoEspecialEntrada) =>
+      servicioCatalogo.crearEventoEspecial(datos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventos"] });
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas });
+    },
+  });
+}
+
+export function useActualizarEstadoEvento() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; activo: boolean }) =>
+      servicioCatalogo.actualizarEstadoEvento(params.id, params.activo),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["eventos"] }),
   });
 }
 

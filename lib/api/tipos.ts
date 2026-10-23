@@ -129,6 +129,11 @@ export interface TransporteApi {
 export interface TourApi {
   id: string;
   slug: string;
+  destinoNombre?: string;
+  destinoLatitud?: number | string;
+  destinoLongitud?: number | string;
+  duracionMinutos?: number;
+  activo?: boolean;
   nombre?: string;
   esEvento?: boolean;
   temporadaInicio?: string | null;
@@ -136,6 +141,7 @@ export interface TourApi {
   imagenes?: ImagenApi[];
   salidas?: SalidaApi[];
   itinerarios?: ItinerarioApi[];
+  traducciones?: TraduccionApi[];
   [clave: string]: unknown;
 }
 
@@ -189,6 +195,14 @@ export interface CrearTourEntrada {
   temporadaFin?: string | null;
   medios?: MedioEntrada[];
   contenido?: ContenidoEntrada;
+}
+
+export interface CrearEventoEspecialEntrada
+  extends Omit<CrearTourEntrada, "esEvento" | "temporadaInicio" | "temporadaFin" | "medios" | "contenido"> {
+  temporadaInicio: string;
+  temporadaFin: string;
+  medios: MedioEntrada[];
+  contenido: ContenidoEntrada;
 }
 
 export type ActualizarTransporteEntrada = Partial<
