@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useTours } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
+import styles from "./tours.module.css";
 
 /** El listado trae todas las traducciones publicadas; elige la del idioma activo, con respaldo en español. */
 function traduccionDe(item: TourApi, idioma: string): TraduccionApi | undefined {
@@ -43,23 +44,14 @@ export default function ToursPage() {
 
   return (
     <PageShell>
-      <h1
-        style={{
-          fontSize: "clamp(40px, 5.4vw, 84px)",
-          lineHeight: 1.06,
-          letterSpacing: "-0.03em",
-          fontWeight: 400,
-          margin: "48px 0 24px",
-          textWrap: "pretty",
-        }}
-      >
-        {t("tours.heroT1")}
-        <br />
-        {t("tours.heroT2")}
-      </h1>
-      <p style={{ maxWidth: 560, margin: "0 0 56px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
-        {t("tours.intro")}
-      </p>
+      <header className={styles.hero}>
+        <span className={styles.eyebrow}>{t("nav.tours")}</span>
+        <h1 className={styles.heroTitle}>{t("tours.heroT1")}<br />{t("tours.heroT2")}</h1>
+        <div className={styles.heroFoot}>
+          <p className={styles.heroIntro}>{t("tours.intro")}</p>
+          <span className={styles.heroMark} aria-hidden="true">01 — 10</span>
+        </div>
+      </header>
 
       {isLoading && <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.cargandoTours")}</p>}
       {isError && (
@@ -69,36 +61,35 @@ export default function ToursPage() {
         <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinTours")}</p>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
-        {tours.map((tour) => {
+      <div className={styles.grid}>
+        {tours.map((tour, index) => {
           const tr = traduccionDe(tour, idioma);
           const titulo = tituloTour(tour, idioma);
           const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
           const precio = precioDesde(tour.salidas);
           return (
-            <figure key={tour.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
-              <Link href={`/tours/${tour.slug}`} style={{ display: "block" }}>
-                <div style={{ position: "relative", width: "100%", height: 220 }}>
+            <article key={tour.slug} className={`${styles.card} ${index === 0 ? styles.featuredCard : ""}`}>
+              <Link href={`/tours/${tour.slug}`} className={styles.cardImageLink} aria-label={titulo}>
+                <div className={styles.cardImage}>
                   <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={titulo} />
                 </div>
               </Link>
-              <figcaption style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                {(tour.destinoNombre || dur) && (
-                  <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
-                    {[tour.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ")}
-                  </div>
-                )}
-                <Link href={`/tours/${tour.slug}`} style={{ color: "inherit" }}>
-                  <strong style={{ fontSize: 16, letterSpacing: "-0.01em" }}>{titulo}</strong>
+              <div className={styles.cardBody}>
+                <div className={styles.cardMeta}>
+                  <span>{[tour.destinoNombre as string | undefined, dur].filter(Boolean).join(" · ") || t("nav.tours")}</span>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                </div>
+                <Link href={`/tours/${tour.slug}`} className={styles.cardTitleLink}>
+                  <h2 className={styles.cardTitle}>{titulo}</h2>
                 </Link>
                 {tr?.resumen && (
-                  <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty", flex: 1 }}>
+                  <p className={styles.cardSummary}>
                     {tr.resumen}
                   </p>
                 )}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                <div className={styles.cardBottom}>
                   {precio != null ? (
-                    <strong style={{ fontSize: 15 }}>{t("common.desde")} S/ {precio}</strong>
+                    <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio}</strong>
                   ) : (
                     <span />
                   )}
@@ -106,27 +97,28 @@ export default function ToursPage() {
                     href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${titulo}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ fontSize: 13, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "7px 12px", borderRadius: 8 }}
+                    className={styles.cardCta}
                   >
                     {t("common.reservar")}
                   </a>
                 </div>
-              </figcaption>
-            </figure>
+              </div>
+            </article>
           );
         })}
       </div>
 
-      <section style={{ marginTop: 120, textAlign: "center" }}>
-        <h2 style={{ margin: "0 auto 20px", maxWidth: 560, fontSize: "clamp(24px, 2vw, 34px)", fontWeight: 400, letterSpacing: "-0.015em", textWrap: "pretty" }}>
+      <section className={styles.customSection}>
+        <span className={styles.eyebrow}>{t("nav.tours")}</span>
+        <h2 className={styles.customTitle}>
           {t("tours.medidaTitulo")}
         </h2>
-        <p style={{ maxWidth: 480, margin: "0 auto 28px", fontSize: 15, lineHeight: 1.55, color: "var(--muted)", textWrap: "pretty" }}>
+        <p className={styles.customText}>
           {t("tours.medidaTexto")}
         </p>
         <Link
           href="/contacto"
-          style={{ display: "inline-block", fontSize: 14, fontWeight: 600, background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 18px", borderRadius: 8 }}
+          className={styles.cardCta}
         >
           {t("tours.medidaCta")}
         </Link>
