@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -120,6 +120,13 @@ export default function PaginaNuevaSalida() {
   }));
   const crear = useCrearSalida();
   const crearPlantilla = useCrearPlantilla();
+  useEffect(() => {
+    const parametros = new URLSearchParams(window.location.search);
+    const servicioId = parametros.get("servicioId");
+    if (parametros.get("tipo") === "TOUR" && servicioId) {
+      setCampos((actual) => ({ ...actual, tipo: "TOUR", servicioId }));
+    }
+  }, []);
   const {
     data: transportes,
     isLoading: cargandoTransportes,

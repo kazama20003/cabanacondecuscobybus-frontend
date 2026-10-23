@@ -40,7 +40,7 @@ const nombreTipo: Record<TipoPromocion, string> = {
 
 export default function PaginaPromociones() {
   const [pagina, setPagina] = useState(1);
-  const { data: resultado, isLoading, isError, error } = usePromociones({
+  const { data: resultado, isLoading, isError, error, refetch, isFetching } = usePromociones({
     pagina,
     porPagina: 10,
   });
@@ -73,7 +73,14 @@ export default function PaginaPromociones() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {isLoading && <Skeleton className="h-48 w-full" />}
-          {isError && <p className="text-destructive text-sm">{error.message}</p>}
+          {isError && (
+            <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm">
+              <p className="text-destructive">{error.message}</p>
+              <Button type="button" variant="outline" size="sm" disabled={isFetching} onClick={() => void refetch()}>
+                {isFetching ? "Conectando…" : "Reintentar conexión"}
+              </Button>
+            </div>
+          )}
           {(actualizar.isError || eliminar.isError) && (
             <p className="text-destructive text-sm">
               {actualizar.error?.message ?? eliminar.error?.message}

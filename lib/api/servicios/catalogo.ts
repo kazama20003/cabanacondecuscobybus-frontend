@@ -16,6 +16,7 @@ import type {
   SalidaAdminApi,
   TraduccionApi,
   CrearTourEntrada,
+  CrearEventoEspecialEntrada,
   CrearTransporteEntrada,
   Paginado,
   ParametrosPagina,
@@ -50,6 +51,24 @@ export const servicioCatalogo = {
     solicitar<TransporteApi>(endpoints.catalogo.crearTransporte, {
       metodo: "POST",
       cuerpo: datos,
+    }),
+
+  eventos: (filtros?: ParametrosPagina) =>
+    solicitar<Paginado<TourApi>>(endpoints.catalogo.eventos, { query: filtros }),
+
+  eventosAdmin: (filtros?: ParametrosPagina) =>
+    solicitar<Paginado<TourApi>>(endpoints.catalogo.eventosAdmin, { query: filtros }),
+
+  crearEventoEspecial: (datos: CrearEventoEspecialEntrada) =>
+    solicitar<TourApi>(endpoints.catalogo.crearEventoEspecial, {
+      metodo: "POST",
+      cuerpo: datos,
+    }),
+
+  actualizarEstadoEvento: (id: string, activo: boolean) =>
+    solicitar<TourApi>(endpoints.catalogo.actualizarEstadoEvento(id), {
+      metodo: "PATCH",
+      cuerpo: { activo },
     }),
 
   crearTour: (datos: CrearTourEntrada) =>
