@@ -6,7 +6,7 @@ import ImageSlot from "@/components/image-slot";
 import { CONTACT } from "@/lib/data";
 import { useT, LOCALES } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
-import { useTours } from "@/hooks/use-catalogo";
+import { useEventos } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
 
 /** El listado trae todas las traducciones publicadas; elige la del idioma activo, con respaldo en español. */
@@ -47,7 +47,7 @@ function temporadaTexto(t: TourApi, locale: string): string | null {
 export default function EventosPage() {
   const t = useT();
   const { idioma } = useIdioma();
-  const { data, isLoading, isError } = useTours({ esEvento: true });
+  const { data, isLoading, isError } = useEventos();
   const eventos = data?.datos ?? [];
   const locale = LOCALES[idioma] ?? "es-PE";
 
@@ -85,11 +85,17 @@ export default function EventosPage() {
           const titulo = tituloEvento(evento, idioma);
           const temporada = temporadaTexto(evento, locale);
           const precio = precioDesde(evento.salidas);
+          const portada = evento.imagenes?.[0];
           return (
             <figure key={evento.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
               <Link href={`/tours/${evento.slug}`} style={{ display: "block" }}>
                 <div style={{ position: "relative", width: "100%", height: 220 }}>
-                  <ImageSlot radius={10} src={evento.imagenes?.[0]?.url} placeholder={titulo} />
+                  <ImageSlot
+                    radius={10}
+                    src={portada?.tipo === "VIDEO" ? undefined : portada?.url}
+                    video={portada?.tipo === "VIDEO" ? portada.url : undefined}
+                    placeholder={titulo}
+                  />
                   {temporada && (
                     <span
                       style={{

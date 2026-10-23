@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   BusIcon,
   CalendarClockIcon,
+  CalendarDaysIcon,
   CreditCardIcon,
   HistoryIcon,
   ImageIcon,
@@ -45,6 +46,7 @@ const navegacion = [
     items: [
       { titulo: "Transportes", url: "/dashboard/transportes", icono: <BusIcon /> },
       { titulo: "Tours", url: "/dashboard/tours", icono: <MapIcon /> },
+      { titulo: "Eventos especiales", url: "/dashboard/eventos", icono: <CalendarDaysIcon /> },
       { titulo: "Salidas", url: "/dashboard/salidas", icono: <CalendarClockIcon /> },
       { titulo: "Imágenes", url: "/dashboard/imagenes", icono: <ImageIcon /> },
     ],
