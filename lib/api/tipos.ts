@@ -203,6 +203,14 @@ export interface CrearEventoEspecialEntrada
   temporadaFin: string;
   medios: MedioEntrada[];
   contenido: ContenidoEntrada;
+  puntos?: PuntoEventoEntrada[];
+}
+
+export interface PuntoEventoEntrada {
+  titulo: string;
+  descripcion: string;
+  latitud?: number;
+  longitud?: number;
 }
 
 export type ActualizarTransporteEntrada = Partial<
@@ -306,6 +314,8 @@ export interface ItinerarioApi {
   descripcion: string;
   latitud?: number | string | null;
   longitud?: number | string | null;
+  tituloI18n?: Record<string, string> | null;
+  descripcionI18n?: Record<string, string> | null;
   imagenes?: ImagenApi[];
 }
 

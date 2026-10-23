@@ -86,6 +86,7 @@ export default function EventosPage() {
           const temporada = temporadaTexto(evento, locale);
           const precio = precioDesde(evento.salidas);
           const portada = evento.imagenes?.[0];
+          const puntos = evento.itinerarios?.map((item) => item.tituloI18n?.[idioma] || item.titulo).filter(Boolean) ?? [];
           return (
             <figure key={evento.slug} style={{ margin: 0, background: "var(--card)", padding: 16, borderRadius: 14, display: "flex", flexDirection: "column" }}>
               <Link href={`/tours/${evento.slug}`} style={{ display: "block" }}>
@@ -120,6 +121,11 @@ export default function EventosPage() {
                 {(evento.destinoNombre || temporada) && (
                   <div style={{ fontSize: 12.5, color: "var(--muted)" }}>
                     {[evento.destinoNombre as string | undefined, temporada ? `${t("eventos.temporada")}: ${temporada}` : null].filter(Boolean).join(" · ")}
+                  </div>
+                )}
+                {puntos.length > 0 && (
+                  <div style={{ fontSize: 12, color: "var(--muted)" }}>
+                    {t("eventos.recorrido")}: {puntos.join(" · ")}
                   </div>
                 )}
                 <Link href={`/tours/${evento.slug}`} style={{ color: "inherit" }}>
