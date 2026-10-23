@@ -120,8 +120,20 @@ export default function PaginaNuevaSalida() {
   }));
   const crear = useCrearSalida();
   const crearPlantilla = useCrearPlantilla();
-  const { data: transportes } = useTransportes({ porPagina: 100 });
-  const { data: tours } = useTours({ porPagina: 100 });
+  const {
+    data: transportes,
+    isLoading: cargandoTransportes,
+    isError: errorTransportes,
+  } = useTransportes({ porPagina: 100 });
+  const {
+    data: tours,
+    isLoading: cargandoTours,
+    isError: errorTours,
+  } = useTours({ porPagina: 100 });
+  const cargandoServicios =
+    campos.tipo === "TRANSPORTE" ? cargandoTransportes : cargandoTours;
+  const errorServicios =
+    campos.tipo === "TRANSPORTE" ? errorTransportes : errorTours;
 
   const opciones =
     campos.tipo === "TRANSPORTE"
@@ -146,6 +158,7 @@ export default function PaginaNuevaSalida() {
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!opciones.some((opcion) => opcion.id === campos.servicioId)) return;
     const base = {
       capacidad: Number(campos.capacidad),
       minimoPasajeros: campos.minimoPasajeros
@@ -185,8 +198,9 @@ export default function PaginaNuevaSalida() {
     }
   };
 
+  const servicioElegido = opciones.find((o) => o.id === campos.servicioId);
   const listoParaEnviar =
-    campos.servicioId &&
+    servicioElegido &&
     campos.capacidad &&
     campos.precioPen &&
     campos.precioUsd &&
@@ -194,7 +208,6 @@ export default function PaginaNuevaSalida() {
       ? campos.fechaHoraSalida
       : campos.horaSalida && campos.fechaDesde && campos.diasSemana.length > 0);
 
-  const servicioElegido = opciones.find((o) => o.id === campos.servicioId);
   const proximaSalida =
     modo === "RECURRENTE"
       ? siguienteFechaRecurrente(
@@ -226,352 +239,448 @@ export default function PaginaNuevaSalida() {
       </div>
 
       <div className="grid items-start gap-4 lg:grid-cols-[1fr_360px]">
-      <div className="flex flex-col gap-4">
-      {/* Selector de modo: dos tarjetas grandes */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        {(
-          [
-            {
-              valor: "UNICA",
-              titulo: "Salida única",
-              descripcion: "Una fecha y hora concreta.",
-              icono: <CalendarClockIcon />,
-            },
-            {
-              valor: "RECURRENTE",
-              titulo: "Horario recurrente",
-              descripcion: "Se repite ciertos días de la semana.",
-              icono: <RepeatIcon />,
-            },
-          ] as const
-        ).map((op) => (
-          <button
-            key={op.valor}
-            type="button"
-            onClick={() => setModo(op.valor)}
-            className={`rounded-2xl border p-4 text-left transition-colors ${
-              modo === op.valor
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card hover:bg-accent"
-            }`}
-          >
-            <span className="flex items-center gap-2 font-medium [&_svg]:size-4">
-              {op.icono}
-              {op.titulo}
-            </span>
-            <span
-              className={`mt-1 block text-sm ${
-                modo === op.valor
-                  ? "text-primary-foreground/70"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {op.descripcion}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <Card>
-        <CardContent className="pt-6">
-          <form onSubmit={enviar} className="flex flex-col gap-6">
-            {/* 1. Servicio */}
-            <SeccionForm
-              paso="1"
-              titulo="Servicio"
-              descripcion="Qué ruta o tour vas a programar."
-              icono={campos.tipo === "TRANSPORTE" ? <BusIcon /> : <MapIcon />}
-            />
-            <div className="grid gap-4 pl-11 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label>Tipo de servicio</Label>
-                <Select
-                  value={campos.tipo}
-                  onValueChange={(tipo) =>
-                    setCampos((c) => ({
-                      ...c,
-                      tipo: tipo as "TRANSPORTE" | "TOUR",
-                      servicioId: "",
-                    }))
-                  }
+        <div className="flex flex-col gap-4">
+          {/* Selector de modo: dos tarjetas grandes */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(
+              [
+                {
+                  valor: "UNICA",
+                  titulo: "Salida única",
+                  descripcion: "Una fecha y hora concreta.",
+                  icono: <CalendarClockIcon />,
+                },
+                {
+                  valor: "RECURRENTE",
+                  titulo: "Horario recurrente",
+                  descripcion: "Se repite ciertos días de la semana.",
+                  icono: <RepeatIcon />,
+                },
+              ] as const
+            ).map((op) => (
+              <button
+                key={op.valor}
+                type="button"
+                onClick={() => setModo(op.valor)}
+                className={`rounded-2xl border p-4 text-left transition-colors ${
+                  modo === op.valor
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card hover:bg-accent"
+                }`}
+              >
+                <span className="flex items-center gap-2 font-medium [&_svg]:size-4">
+                  {op.icono}
+                  {op.titulo}
+                </span>
+                <span
+                  className={`mt-1 block text-sm ${
+                    modo === op.valor
+                      ? "text-primary-foreground/70"
+                      : "text-muted-foreground"
+                  }`}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="TRANSPORTE">Transporte</SelectItem>
-                    <SelectItem value="TOUR">Tour</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label>{campos.tipo === "TRANSPORTE" ? "Ruta" : "Tour"}</Label>
-                <Select
-                  value={campos.servicioId}
-                  onValueChange={(servicioId) =>
-                    setCampos((c) => ({ ...c, servicioId }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {opciones.map((o) => (
-                      <SelectItem key={o.id} value={o.id}>
-                        {o.nombre}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                  {op.descripcion}
+                </span>
+              </button>
+            ))}
+          </div>
 
-            <Separator />
-
-            {/* 2. Programación */}
-            <SeccionForm
-              paso="2"
-              titulo="Programación"
-              descripcion={
-                modo === "UNICA"
-                  ? "Fecha y hora exacta de esta salida."
-                  : "Días, hora y vigencia del horario."
-              }
-              icono={<CalendarClockIcon />}
-            />
-            {modo === "UNICA" ? (
-              <div className="grid gap-2 pl-11 sm:max-w-xs">
-                <Label htmlFor="fechaSalida">Fecha y hora de salida</Label>
-                <Input
-                  id="fechaSalida"
-                  required
-                  type="datetime-local"
-                  value={campos.fechaHoraSalida}
-                  onChange={(e) =>
-                    setCampos((c) => ({
-                      ...c,
-                      fechaHoraSalida: e.target.value,
-                    }))
+          <Card>
+            <CardContent className="pt-6">
+              <form onSubmit={enviar} className="flex flex-col gap-6">
+                {/* 1. Servicio */}
+                <SeccionForm
+                  paso="1"
+                  titulo="Servicio"
+                  descripcion="Qué ruta o tour vas a programar."
+                  icono={
+                    campos.tipo === "TRANSPORTE" ? <BusIcon /> : <MapIcon />
                   }
                 />
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4 pl-11">
-                <div className="grid gap-2">
-                  <Label>Días de salida</Label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {DIAS.map((d) => {
-                      const activo = campos.diasSemana.includes(d.valor);
-                      return (
-                        <button
-                          key={d.valor}
-                          type="button"
-                          onClick={() => alternarDia(d.valor)}
-                          className={`size-11 rounded-full border text-sm font-medium transition-colors ${
-                            activo
-                              ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
-                          }`}
+                <div className="grid gap-4 pl-11 sm:grid-cols-2">
+                  <div className="grid gap-2">
+                    <Label>Tipo de servicio</Label>
+                    <Select
+                      value={campos.tipo}
+                      onValueChange={(tipo) =>
+                        setCampos((c) => ({
+                          ...c,
+                          tipo: tipo as "TRANSPORTE" | "TOUR",
+                          servicioId: "",
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="TRANSPORTE">Transporte</SelectItem>
+                        <SelectItem value="TOUR">Tour</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>
+                      {campos.tipo === "TRANSPORTE" ? "Ruta" : "Tour"}
+                    </Label>
+                    <Select
+                      value={campos.servicioId}
+                      disabled={cargandoServicios || opciones.length === 0}
+                      onValueChange={(servicioId) =>
+                        setCampos((c) => ({ ...c, servicioId }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            cargandoServicios
+                              ? "Cargando servicios…"
+                              : "Selecciona…"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {opciones.map((o) => (
+                          <SelectItem key={o.id} value={o.id}>
+                            {o.nombre}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {errorServicios && (
+                  <p role="alert" className="pl-11 text-sm text-destructive">
+                    No se pudieron cargar los servicios. Actualiza la página e
+                    inténtalo de nuevo.
+                  </p>
+                )}
+                {!cargandoServicios &&
+                  !errorServicios &&
+                  opciones.length === 0 && (
+                    <div className="ml-11 rounded-lg border border-dashed p-4 text-sm">
+                      <p className="font-medium">
+                        No hay{" "}
+                        {campos.tipo === "TRANSPORTE" ? "rutas" : "tours"}{" "}
+                        activos para programar.
+                      </p>
+                      <p className="text-muted-foreground mt-1">
+                        Crea o activa un servicio y luego vuelve aquí.
+                      </p>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="mt-3"
+                      >
+                        <Link
+                          href={
+                            campos.tipo === "TRANSPORTE"
+                              ? "/dashboard/transportes/nuevo"
+                              : "/dashboard/tours/nuevo"
+                          }
                         >
-                          {d.nombre}
-                        </button>
-                      );
-                    })}
+                          Crear {campos.tipo === "TRANSPORTE" ? "ruta" : "tour"}
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+
+                <Separator />
+
+                {/* 2. Programación */}
+                <SeccionForm
+                  paso="2"
+                  titulo="Programación"
+                  descripcion={
+                    modo === "UNICA"
+                      ? "Fecha y hora exacta de esta salida."
+                      : "Días, hora y vigencia del horario."
+                  }
+                  icono={<CalendarClockIcon />}
+                />
+                {modo === "UNICA" ? (
+                  <div className="grid gap-2 pl-11 sm:max-w-xs">
+                    <Label htmlFor="fechaSalida">Fecha y hora de salida</Label>
+                    <Input
+                      id="fechaSalida"
+                      required
+                      type="datetime-local"
+                      value={campos.fechaHoraSalida}
+                      onChange={(e) =>
+                        setCampos((c) => ({
+                          ...c,
+                          fechaHoraSalida: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4 pl-11">
+                    <div className="grid gap-2">
+                      <Label>Días de salida</Label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {DIAS.map((d) => {
+                          const activo = campos.diasSemana.includes(d.valor);
+                          return (
+                            <button
+                              key={d.valor}
+                              type="button"
+                              onClick={() => alternarDia(d.valor)}
+                              className={`size-11 rounded-full border text-sm font-medium transition-colors ${
+                                activo
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground"
+                              }`}
+                            >
+                              {d.nombre}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <div className="grid gap-2">
+                        <Label htmlFor="horaSalida">Hora de salida</Label>
+                        <Input
+                          id="horaSalida"
+                          required
+                          type="time"
+                          value={campos.horaSalida}
+                          onChange={(e) =>
+                            setCampos((c) => ({
+                              ...c,
+                              horaSalida: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="fechaDesde">Disponible desde</Label>
+                        <Input
+                          id="fechaDesde"
+                          required
+                          type="date"
+                          min={fechaLocalHoy()}
+                          value={campos.fechaDesde}
+                          onChange={(e) =>
+                            setCampos((c) => ({
+                              ...c,
+                              fechaDesde: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="fechaHasta">Hasta (opcional)</Label>
+                        <Input
+                          id="fechaHasta"
+                          type="date"
+                          value={campos.fechaHasta}
+                          onChange={(e) =>
+                            setCampos((c) => ({
+                              ...c,
+                              fechaHasta: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      Sin fecha final, las salidas se generan de forma continua
+                      (60 días hacia adelante, extendidas automáticamente cada
+                      día).
+                    </p>
+                  </div>
+                )}
+
+                <Separator />
+
+                {/* 3. Cupos y precios */}
+                <SeccionForm
+                  paso="3"
+                  titulo="Cupos y precios"
+                  descripcion="Capacidad del vehículo y tarifas por pasajero."
+                  icono={<CoinsIcon />}
+                />
+                <div className="grid gap-4 pl-11 sm:grid-cols-2">
+                  <div className="grid gap-2">
+                    <Label htmlFor="capacidad">Capacidad</Label>
+                    <Input
+                      id="capacidad"
+                      required
+                      type="number"
+                      min={1}
+                      placeholder="20"
+                      value={campos.capacidad}
+                      onChange={(e) =>
+                        setCampos((c) => ({ ...c, capacidad: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="minimo">Mínimo pasajeros</Label>
+                    <Input
+                      id="minimo"
+                      type="number"
+                      min={1}
+                      placeholder="2"
+                      value={campos.minimoPasajeros}
+                      onChange={(e) =>
+                        setCampos((c) => ({
+                          ...c,
+                          minimoPasajeros: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="precioPen">Precio S/</Label>
+                    <Input
+                      id="precioPen"
+                      required
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="150"
+                      value={campos.precioPen}
+                      onChange={(e) =>
+                        setCampos((c) => ({ ...c, precioPen: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="precioUsd">Precio US$</Label>
+                    <Input
+                      id="precioUsd"
+                      required
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="45"
+                      value={campos.precioUsd}
+                      onChange={(e) =>
+                        setCampos((c) => ({ ...c, precioUsd: e.target.value }))
+                      }
+                    />
                   </div>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="grid gap-2">
-                    <Label htmlFor="horaSalida">Hora de salida</Label>
-                    <Input
-                      id="horaSalida"
-                      required
-                      type="time"
-                      value={campos.horaSalida}
-                      onChange={(e) =>
-                        setCampos((c) => ({
-                          ...c,
-                          horaSalida: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="fechaDesde">Disponible desde</Label>
-                    <Input
-                      id="fechaDesde"
-                      required
-                      type="date"
-                      min={fechaLocalHoy()}
-                      value={campos.fechaDesde}
-                      onChange={(e) =>
-                        setCampos((c) => ({
-                          ...c,
-                          fechaDesde: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="fechaHasta">Hasta (opcional)</Label>
-                    <Input
-                      id="fechaHasta"
-                      type="date"
-                      value={campos.fechaHasta}
-                      onChange={(e) =>
-                        setCampos((c) => ({
-                          ...c,
-                          fechaHasta: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-                <p className="text-muted-foreground text-xs">
-                  Sin fecha final, las salidas se generan de forma continua (60
-                  días hacia adelante, extendidas automáticamente cada día).
-                </p>
-              </div>
-            )}
 
-            <Separator />
+                {mutacion.isError && (
+                  <p className="text-destructive pl-11 text-sm">
+                    {mutacion.error.message}
+                  </p>
+                )}
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
-            {/* 3. Cupos y precios */}
-            <SeccionForm
-              paso="3"
-              titulo="Cupos y precios"
-              descripcion="Capacidad del vehículo y tarifas por pasajero."
-              icono={<CoinsIcon />}
-            />
-            <div className="grid gap-4 pl-11 sm:grid-cols-2">
-              <div className="grid gap-2">
-                <Label htmlFor="capacidad">Capacidad</Label>
-                <Input id="capacidad" required type="number" min={1} placeholder="20" value={campos.capacidad} onChange={(e) => setCampos((c) => ({ ...c, capacidad: e.target.value }))} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="minimo">Mínimo pasajeros</Label>
-                <Input id="minimo" type="number" min={1} placeholder="2" value={campos.minimoPasajeros} onChange={(e) => setCampos((c) => ({ ...c, minimoPasajeros: e.target.value }))} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="precioPen">Precio S/</Label>
-                <Input id="precioPen" required type="number" min={0} step="0.01" placeholder="150" value={campos.precioPen} onChange={(e) => setCampos((c) => ({ ...c, precioPen: e.target.value }))} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="precioUsd">Precio US$</Label>
-                <Input id="precioUsd" required type="number" min={0} step="0.01" placeholder="45" value={campos.precioUsd} onChange={(e) => setCampos((c) => ({ ...c, precioUsd: e.target.value }))} />
-              </div>
-            </div>
-
-            {mutacion.isError && (
-              <p className="text-destructive pl-11 text-sm">
-                {mutacion.error.message}
-              </p>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-      </div>
-
-      {/* Resumen lateral sticky */}
-      <Card className="lg:sticky lg:top-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base [&_svg]:size-4">
-            {modo === "UNICA" ? <CalendarClockIcon /> : <RepeatIcon />}
-            Resumen
-          </CardTitle>
-          <CardDescription>
-            {modo === "UNICA" ? "Salida única" : "Horario recurrente"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3 text-sm">
-          <div className="flex justify-between gap-2">
-            <span className="text-muted-foreground">Servicio</span>
-            <span className="text-right font-medium">
-              {servicioElegido?.nombre ?? "—"}
-            </span>
-          </div>
-          <Separator />
-          {modo === "UNICA" ? (
+        {/* Resumen lateral sticky */}
+        <Card className="lg:sticky lg:top-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base [&_svg]:size-4">
+              {modo === "UNICA" ? <CalendarClockIcon /> : <RepeatIcon />}
+              Resumen
+            </CardTitle>
+            <CardDescription>
+              {modo === "UNICA" ? "Salida única" : "Horario recurrente"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between gap-2">
-              <span className="text-muted-foreground">Fecha</span>
+              <span className="text-muted-foreground">Servicio</span>
               <span className="text-right font-medium">
-                {campos.fechaHoraSalida
-                  ? new Date(campos.fechaHoraSalida).toLocaleString("es-PE", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })
-                  : "—"}
+                {servicioElegido?.nombre ?? "—"}
               </span>
             </div>
-          ) : (
-            <>
+            <Separator />
+            {modo === "UNICA" ? (
               <div className="flex justify-between gap-2">
-                <span className="text-muted-foreground">Días</span>
+                <span className="text-muted-foreground">Fecha</span>
                 <span className="text-right font-medium">
-                  {campos.diasSemana.length > 0
-                    ? [...campos.diasSemana]
-                        .sort()
-                        .map((d) => DIAS.find((x) => x.valor === d)?.nombre)
-                        .join(" · ")
-                    : "—"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-muted-foreground">Hora</span>
-                <span className="font-medium">{campos.horaSalida || "—"}</span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-muted-foreground">Vigencia</span>
-                <span className="text-right font-medium">
-                  {campos.fechaDesde
-                    ? `${campos.fechaDesde} → ${campos.fechaHasta || "indefinida"}`
-                    : "—"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-2">
-                <span className="text-muted-foreground">Primera salida</span>
-                <span className="text-right font-medium">
-                  {proximaSalida
-                    ? proximaSalida.toLocaleString("es-PE", {
+                  {campos.fechaHoraSalida
+                    ? new Date(campos.fechaHoraSalida).toLocaleString("es-PE", {
                         dateStyle: "medium",
                         timeStyle: "short",
                       })
-                    : "Selecciona días y hora"}
+                    : "—"}
                 </span>
               </div>
-            </>
-          )}
-          <Separator />
-          <div className="flex justify-between gap-2">
-            <span className="text-muted-foreground">Capacidad</span>
-            <span className="font-medium">
-              {campos.capacidad || "—"}
-              {campos.minimoPasajeros ? ` (mín. ${campos.minimoPasajeros})` : ""}
-            </span>
-          </div>
-          <div className="flex justify-between gap-2">
-            <span className="text-muted-foreground">Precio</span>
-            <span className="font-medium">
-              {campos.precioPen ? `S/ ${campos.precioPen}` : "—"}
-              {campos.precioUsd ? ` · US$ ${campos.precioUsd}` : ""}
-            </span>
-          </div>
-          <div className="mt-2 flex flex-col gap-2">
-            <Button
-              onClick={enviar}
-              disabled={mutacion.isPending || !listoParaEnviar}
-            >
-              {mutacion.isPending
-                ? "Guardando…"
-                : modo === "UNICA"
-                  ? "Programar salida"
-                  : "Crear horario recurrente"}
-            </Button>
-            <Button type="button" variant="outline" asChild>
-              <Link href="/dashboard/salidas">Cancelar</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            ) : (
+              <>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Días</span>
+                  <span className="text-right font-medium">
+                    {campos.diasSemana.length > 0
+                      ? [...campos.diasSemana]
+                          .sort()
+                          .map((d) => DIAS.find((x) => x.valor === d)?.nombre)
+                          .join(" · ")
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Hora</span>
+                  <span className="font-medium">
+                    {campos.horaSalida || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Vigencia</span>
+                  <span className="text-right font-medium">
+                    {campos.fechaDesde
+                      ? `${campos.fechaDesde} → ${campos.fechaHasta || "indefinida"}`
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span className="text-muted-foreground">Primera salida</span>
+                  <span className="text-right font-medium">
+                    {proximaSalida
+                      ? proximaSalida.toLocaleString("es-PE", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "Selecciona días y hora"}
+                  </span>
+                </div>
+              </>
+            )}
+            <Separator />
+            <div className="flex justify-between gap-2">
+              <span className="text-muted-foreground">Capacidad</span>
+              <span className="font-medium">
+                {campos.capacidad || "—"}
+                {campos.minimoPasajeros
+                  ? ` (mín. ${campos.minimoPasajeros})`
+                  : ""}
+              </span>
+            </div>
+            <div className="flex justify-between gap-2">
+              <span className="text-muted-foreground">Precio</span>
+              <span className="font-medium">
+                {campos.precioPen ? `S/ ${campos.precioPen}` : "—"}
+                {campos.precioUsd ? ` · US$ ${campos.precioUsd}` : ""}
+              </span>
+            </div>
+            <div className="mt-2 flex flex-col gap-2">
+              <Button
+                onClick={enviar}
+                disabled={mutacion.isPending || !listoParaEnviar}
+              >
+                {mutacion.isPending
+                  ? "Guardando…"
+                  : modo === "UNICA"
+                    ? "Programar salida"
+                    : "Crear horario recurrente"}
+              </Button>
+              <Button type="button" variant="outline" asChild>
+                <Link href="/dashboard/salidas">Cancelar</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
