@@ -42,6 +42,10 @@ export default function PaginaEventosEspeciales() {
   const { data, isLoading, isError, error, refetch, isFetching } = useEventosAdmin({ pagina, porPagina: 10 });
   const cambiarEstado = useActualizarEstadoEvento();
   const eventos = data?.datos ?? [];
+  const activos = eventos.filter((evento) => evento.activo !== false).length;
+  const salidasProgramadas = eventos.reduce((total, evento) => total + (evento.salidas?.length ?? 0), 0);
+  const mediosCargados = eventos.reduce((total, evento) => total + (evento.imagenes?.length ?? 0), 0);
+  const proximos = eventos.filter((evento) => estadoTemporada(evento) === "Programado").length;
 
   return (
     <div className="flex flex-col gap-5 p-4 lg:p-6">
@@ -60,7 +64,23 @@ export default function PaginaEventosEspeciales() {
         </Button>
       </div>
 
-      <Card>
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        {[
+          { label: "Eventos activos", value: activos, hint: "En esta página", icon: CalendarDaysIcon },
+          { label: "Próximas temporadas", value: proximos, hint: "Aún por comenzar", icon: PlayIcon },
+          { label: "Salidas programadas", value: salidasProgramadas, hint: "Con fecha y tarifa", icon: PlusIcon },
+          { label: "Fotos y videos", value: mediosCargados, hint: "Contenido cargado", icon: ImageIcon },
+        ].map(({ label, value, hint, icon: Icon }) => (
+          <Card key={label} className="overflow-hidden">
+            <CardContent className="flex items-center justify-between gap-3 p-4 sm:p-5">
+              <div className="min-w-0"><p className="text-muted-foreground truncate text-xs font-medium">{label}</p><p className="mt-1 text-2xl font-semibold tracking-tight">{isLoading ? "—" : value}</p><p className="text-muted-foreground mt-1 text-xs">{hint}</p></div>
+              <span className="bg-muted flex size-10 shrink-0 items-center justify-center rounded-xl"><Icon className="size-5" /></span>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>Agenda de eventos</CardTitle>
           <CardDescription>Las fechas definen cuándo se muestra cada evento en el sitio. Las salidas y tarifas se programan por separado.</CardDescription>
@@ -85,7 +105,34 @@ export default function PaginaEventosEspeciales() {
             </div>
           )}
           {eventos.length > 0 && (
-            <div className="overflow-x-auto">
+            <>
+            <div className="space-y-3 md:hidden">
+              {eventos.map((evento) => {
+                const media = evento.imagenes?.[0];
+                const estado = estadoTemporada(evento);
+                return (
+                  <article key={evento.id} className="rounded-xl border p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted"><ImageSlot src={media?.tipo === "VIDEO" ? undefined : media?.url} video={media?.tipo === "VIDEO" ? media.url : undefined} placeholder={titulo(evento)} radius={8} /></div>
+                      <div className="min-w-0 flex-1"><p className="truncate font-medium">{titulo(evento)}</p><p className="text-muted-foreground truncate text-xs">{String(evento.destinoNombre ?? "")}</p></div>
+                      <Badge variant={evento.activo === false ? "secondary" : estado === "En temporada" ? "default" : "outline"}>{evento.activo === false ? "Inactivo" : estado}</Badge>
+                    </div>
+                    <div className="text-muted-foreground mt-3 grid grid-cols-2 gap-2 text-xs">
+                      <span className="inline-flex items-center gap-1.5"><CalendarDaysIcon className="size-3.5" />{fecha(evento.temporadaInicio)} – {fecha(evento.temporadaFin)}</span>
+                      <span className="inline-flex items-center gap-1.5"><ImageIcon className="size-3.5" />{evento.imagenes?.length ?? 0} medios · {evento.salidas?.length ?? 0} salidas</span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
+                      <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/editar`}>Editar evento</Link></Button>
+                      {evento.activo !== false ? <>
+                        <Button size="sm" asChild><Link href={`/dashboard/salidas/nueva?tipo=TOUR&servicioId=${encodeURIComponent(evento.id)}`}>Programar salida</Link></Button>
+                        <Button variant="ghost" size="icon" aria-label="Pausar evento" title="Pausar evento" disabled={cambiarEstado.isPending} onClick={() => cambiarEstado.mutate({ id: evento.id, activo: false })}><PauseIcon /></Button>
+                      </> : <Button size="sm" variant="outline" disabled={cambiarEstado.isPending} onClick={() => cambiarEstado.mutate({ id: evento.id, activo: true })}><PlayIcon /> Reactivar</Button>}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
               <Table>
                 <TableHeader><TableRow>
                   <TableHead>Evento</TableHead><TableHead>Temporada</TableHead><TableHead>Multimedia</TableHead><TableHead>Salidas</TableHead><TableHead>Estado</TableHead><TableHead className="text-right">Acciones</TableHead>
@@ -129,6 +176,7 @@ export default function PaginaEventosEspeciales() {
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
           {data && <Paginacion resultado={data} onCambiarPagina={setPagina} />}
         </CardContent>
