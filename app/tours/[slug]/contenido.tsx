@@ -9,7 +9,7 @@ import AddToCart from "@/components/add-to-cart";
 import { CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
-import { useTour, useSalidasTour } from "@/hooks/use-catalogo";
+import { useTour } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
 import styles from "../tours.module.css";
 
@@ -39,7 +39,6 @@ export default function TourPage() {
   const { idioma } = useIdioma();
   const t = useT();
   const { data: tour, isLoading, isError } = useTour(slug, idioma);
-  const { salidas } = useSalidasTour(slug);
 
   if (isLoading) {
     return (
@@ -68,7 +67,8 @@ export default function TourPage() {
   const heading = tr?.titulo || tour.nombre || destino || "Tour";
   const intro = tr?.resumen || tr?.descripcion || "";
   const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
-  const precio = precioDesde(tour.salidas);
+  const salidas = tour.salidas ?? [];
+  const precio = precioDesde(salidas);
   const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
   const portada = tour.imagenes?.[0];
   const esEvento = Boolean(tour.esEvento);
@@ -169,7 +169,7 @@ export default function TourPage() {
               </p>
             </>
           )}
-          <div className={styles.bookingCard}>
+          <div className={styles.bookingCard} id="reservar">
             {precio != null && (
               <>
                 <div className={styles.factLabel}>{t("detalle.precioPersona")}</div>
