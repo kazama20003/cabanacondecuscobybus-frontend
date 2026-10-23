@@ -71,8 +71,21 @@ export default function TourPage() {
   const precio = precioDesde(tour.salidas);
   const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
   const portada = tour.imagenes?.[0];
+  const esEvento = Boolean(tour.esEvento);
+  const locale = idioma === "ja" ? "ja-JP" : idioma === "en" ? "en-US" : idioma === "pt" ? "pt-BR" : idioma === "fr" ? "fr-FR" : idioma === "it" ? "it-IT" : idioma === "ru" ? "ru-RU" : "es-PE";
+  const fechaTemporada = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+  };
+  const inicioTemporada = fechaTemporada(tour.temporadaInicio);
+  const finTemporada = fechaTemporada(tour.temporadaFin);
+  const temporada = inicioTemporada && finTemporada
+    ? `${inicioTemporada} – ${finTemporada}`
+    : inicioTemporada || finTemporada;
 
   const fichas = [
+    esEvento && temporada ? { label: t("eventos.temporada"), value: temporada } : null,
     dur ? { label: t("ficha.duracion"), value: dur } : null,
     destino ? { label: t("ficha.destino"), value: destino } : null,
     precio != null ? { label: t("ficha.precio"), value: `${t("common.desde")} S/ ${precio} ${t("detalle.pp")}` } : null,
@@ -87,6 +100,8 @@ export default function TourPage() {
         </Link>{" "}
         / {heading}
       </nav>
+
+      {esEvento && <div className={styles.eventEyebrow}><span />{t("nav.eventos")} {tour.temporadaInicio ? new Date(tour.temporadaInicio).getUTCFullYear() : ""}</div>}
 
       <h1 className={styles.detailTitle}>
         {heading}
@@ -104,6 +119,7 @@ export default function TourPage() {
           video={portada?.tipo === "VIDEO" ? portada.url : undefined}
           placeholder={heading}
         />
+        {esEvento && temporada && <span className={styles.eventSeason}><span aria-hidden="true">✦</span>{temporada}</span>}
       </div>
 
       {/* Ficha resumen */}
