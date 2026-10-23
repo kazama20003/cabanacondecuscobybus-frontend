@@ -11,6 +11,7 @@ import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTour, useSalidasTour } from "@/hooks/use-catalogo";
 import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
+import styles from "../tours.module.css";
 
 function traduccionDe(item: TourApi | undefined): TraduccionApi | undefined {
   if (!item) return undefined;
@@ -78,49 +79,36 @@ export default function TourPage() {
 
   return (
     <PageShell>
-      <nav style={{ margin: "40px 0 0", fontSize: 13, color: "var(--muted)" }}>
+      <div className={styles.detailPage}>
+      <nav className={styles.breadcrumb}>
         <Link href="/tours" style={{ color: "var(--muted)" }}>
           {t("nav.tours")}
         </Link>{" "}
         / {heading}
       </nav>
 
-      <h1
-        style={{
-          fontSize: "clamp(36px, 4.6vw, 72px)",
-          lineHeight: 1.08,
-          letterSpacing: "-0.03em",
-          fontWeight: 400,
-          margin: "24px 0 20px",
-          textWrap: "pretty",
-        }}
-      >
+      <h1 className={styles.detailTitle}>
         {heading}
       </h1>
       {intro && (
-        <p style={{ maxWidth: 560, margin: "0 0 36px", fontSize: 16, lineHeight: 1.5, color: "var(--muted)", textWrap: "pretty" }}>
+        <p className={styles.detailIntro}>
           {intro}
         </p>
       )}
 
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 480" }}>
+      <div className={styles.detailImage}>
         <ImageSlot radius={10} src={tour.imagenes?.[0]?.url} placeholder={heading} />
       </div>
 
       {/* Ficha resumen */}
       {fichas.length > 0 && (
         <section
-          style={{
-            marginTop: 40,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 12,
-          }}
+          className={styles.facts}
         >
           {fichas.map((c) => (
-            <div key={c.label} style={{ background: "var(--card)", padding: "18px 20px" }}>
-              <div style={{ fontSize: 12.5, color: "var(--muted)", marginBottom: 6 }}>{c.label}</div>
-              <div style={{ fontSize: 14.5, fontWeight: 600, lineHeight: 1.4 }}>{c.value}</div>
+            <div key={c.label} className={styles.fact}>
+              <div className={styles.factLabel}>{c.label}</div>
+              <div className={styles.factValue}>{c.value}</div>
             </div>
           ))}
         </section>
@@ -130,19 +118,19 @@ export default function TourPage() {
       <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
 
       {/* Itinerario + reserva */}
-      <section style={{ marginTop: 110, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48 }}>
+      <section className={styles.detailColumns}>
         <div>
-          <h2 style={{ margin: "0 0 28px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
+          <h2 className={styles.sectionTitle}>
             {t("detalle.itinerarioTour")}
           </h2>
           {itinerarios.length === 0 ? (
-            <p style={{ fontSize: 14, color: "var(--muted)" }}>{t("detalle.itinerarioNota")}</p>
+            <p className={styles.detailIntro}>{t("detalle.itinerarioNota")}</p>
           ) : (
-            <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            <ol className={styles.itinerary}>
               {itinerarios.map((it) => (
-                <li key={it.id} style={{ borderTop: "1px solid var(--line)", padding: "14px 0", lineHeight: 1.4 }}>
-                  <strong style={{ fontSize: 14.5 }}>{it.titulo}</strong>
-                  {it.descripcion && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{it.descripcion}</div>}
+                <li key={it.id} className={styles.itineraryItem}>
+                  <strong>{it.titulo}</strong>
+                  {it.descripcion && <div className={styles.itineraryDescription}>{it.descripcion}</div>}
                 </li>
               ))}
             </ol>
@@ -151,19 +139,19 @@ export default function TourPage() {
         <div>
           {tr?.queLlevar && (
             <>
-              <h2 style={{ margin: "0 0 20px", fontSize: "clamp(26px, 2.2vw, 36px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
+              <h2 className={styles.sectionTitle}>
                 {t("detalle.queLlevar")}
               </h2>
-              <p style={{ margin: "0 0 36px", fontSize: 14.5, lineHeight: 1.6, color: "var(--muted)", textWrap: "pretty" }}>
+              <p className={styles.detailIntro}>
                 {tr.queLlevar}
               </p>
             </>
           )}
-          <div style={{ background: "var(--card)", padding: "28px 26px" }}>
+          <div className={styles.bookingCard}>
             {precio != null && (
               <>
-                <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{t("detalle.precioPersona")}</div>
-                <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: "-0.02em", marginBottom: 18 }}>{t("common.desde")} S/ {precio}</div>
+                <div className={styles.factLabel}>{t("detalle.precioPersona")}</div>
+                <div className={styles.bookingPrice}>{t("common.desde")} S/ {precio}</div>
               </>
             )}
             <div style={{ marginBottom: 20 }}>
@@ -175,22 +163,23 @@ export default function TourPage() {
                 salidas={salidas}
               />
             </div>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600, borderTop: "1px solid var(--line)", paddingTop: 18 }}>
+            <div className={styles.bookingActions}>
               <a
                 href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${heading}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}
+                className={styles.cardCta}
               >
                 {t("common.reservarWhatsapp")}
               </a>
-              <Link href="/contacto" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
+              <Link href="/contacto" className={styles.secondaryCta}>
                 {t("detalle.consultar")}
               </Link>
             </div>
           </div>
         </div>
       </section>
+      </div>
     </PageShell>
   );
 }
