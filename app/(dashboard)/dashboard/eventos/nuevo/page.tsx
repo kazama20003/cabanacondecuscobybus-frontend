@@ -26,7 +26,7 @@ export default function NuevoEventoEspecial() {
   const [campos, setCampos] = useState({ titulo: "", destino: "", latitud: "", longitud: "", duracion: "", inicio: "", fin: "" });
   const [contenido, setContenido] = useState<ContenidoEntrada>({ titulo: "", resumen: "", descripcion: "", queLlevar: "", incluye: "", noIncluye: "" });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
-  const [puntos, setPuntos] = useState<{ titulo: string; descripcion: string; latitud: string; longitud: string }[]>([]);
+  const [puntos, setPuntos] = useState<{ titulo: string; descripcion: string; minutosDesdeSalida: string; duracionEstimadaMinutos: string; latitud: string; longitud: string; medios: MedioEntrada[] }[]>([]);
   const [errorMedios, setErrorMedios] = useState("");
 
   const enviar = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,8 +57,11 @@ export default function NuevoEventoEspecial() {
       puntos: puntos.map((punto) => ({
         titulo: punto.titulo.trim(),
         descripcion: punto.descripcion.trim(),
+        ...(punto.minutosDesdeSalida !== "" && { minutosDesdeSalida: Number(punto.minutosDesdeSalida) }),
+        ...(punto.duracionEstimadaMinutos !== "" && { duracionEstimadaMinutos: Number(punto.duracionEstimadaMinutos) }),
         ...(punto.latitud !== "" && { latitud: Number(punto.latitud) }),
         ...(punto.longitud !== "" && { longitud: Number(punto.longitud) }),
+        ...(punto.medios.length > 0 && { medios: punto.medios }),
       })),
     }, { onSuccess: () => router.push("/dashboard/eventos") });
   };
@@ -98,14 +101,16 @@ export default function NuevoEventoEspecial() {
               <div className="grid gap-3 rounded-xl border p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div><p className="text-sm font-medium">Puntos del recorrido</p><p className="text-muted-foreground mt-1 text-xs">Añade paradas en Arequipa, Cabanaconde, Chivay, Cusco u otros destinos.</p></div>
-                  <Button type="button" size="sm" variant="outline" onClick={() => setPuntos((actuales) => [...actuales, { titulo: "", descripcion: "", latitud: "", longitud: "" }])}><PlusIcon /> Añadir punto</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setPuntos((actuales) => [...actuales, { titulo: "", descripcion: "", minutosDesdeSalida: "", duracionEstimadaMinutos: "", latitud: "", longitud: "", medios: [] }])}><PlusIcon /> Añadir punto</Button>
                 </div>
                 {puntos.map((punto, indice) => (
                   <div key={indice} className="grid gap-3 rounded-lg bg-muted/40 p-3">
                     <div className="flex items-center justify-between"><Label>Punto {indice + 1}</Label><Button type="button" size="icon" variant="ghost" aria-label={`Quitar punto ${indice + 1}`} onClick={() => setPuntos((actuales) => actuales.filter((_, i) => i !== indice))}><Trash2Icon /></Button></div>
                     <Input required aria-label={`Nombre del punto ${indice + 1}`} placeholder="Cabanaconde, mirador de la Cruz del Cóndor…" value={punto.titulo} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, titulo: e.target.value } : item))} />
                     <Textarea required aria-label={`Descripción del punto ${indice + 1}`} rows={2} placeholder="Qué verá o hará el viajero en este punto." value={punto.descripcion} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, descripcion: e.target.value } : item))} />
+                    <div className="grid grid-cols-2 gap-2"><Input type="number" min="0" inputMode="numeric" aria-label={`Minutos desde la salida del punto ${indice + 1}`} placeholder="Minutos desde salida" value={punto.minutosDesdeSalida} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, minutosDesdeSalida: e.target.value } : item))} /><Input type="number" min="0" inputMode="numeric" aria-label={`Duración estimada del punto ${indice + 1}`} placeholder="Duración de etapa (min)" value={punto.duracionEstimadaMinutos} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, duracionEstimadaMinutos: e.target.value } : item))} /></div>
                     <div className="grid grid-cols-2 gap-2"><Input type="number" step="any" aria-label={`Latitud del punto ${indice + 1}`} placeholder="Latitud (opcional)" value={punto.latitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, latitud: e.target.value } : item))} /><Input type="number" step="any" aria-label={`Longitud del punto ${indice + 1}`} placeholder="Longitud (opcional)" value={punto.longitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, longitud: e.target.value } : item))} /></div>
+                    <div className="rounded-lg border bg-background p-3"><CampoMedios categoria="tours" medios={punto.medios} onCambiar={(medios) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, medios } : item))} /></div>
                   </div>
                 ))}
               </div>

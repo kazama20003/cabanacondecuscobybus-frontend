@@ -24,12 +24,14 @@ import type { ItinerarioApi, MedioEntrada } from "@/lib/api";
 interface FilaItem {
   titulo: string;
   descripcion: string;
+  minutosDesdeSalida: string;
+  duracionEstimadaMinutos: string;
   latitud: string;
   longitud: string;
   medios: MedioEntrada[];
 }
 
-const itemVacio: FilaItem = { titulo: "", descripcion: "", latitud: "", longitud: "", medios: [] };
+const itemVacio: FilaItem = { titulo: "", descripcion: "", minutosDesdeSalida: "", duracionEstimadaMinutos: "", latitud: "", longitud: "", medios: [] };
 
 export default function PaginaItinerario({
   params,
@@ -50,6 +52,8 @@ export default function PaginaItinerario({
         ? items.map((i) => ({
             titulo: i.titulo,
             descripcion: i.descripcion,
+            minutosDesdeSalida: i.minutosDesdeSalida != null ? String(i.minutosDesdeSalida) : "",
+            duracionEstimadaMinutos: i.duracionEstimadaMinutos != null ? String(i.duracionEstimadaMinutos) : "",
             latitud: i.latitud != null ? String(i.latitud) : "",
             longitud: i.longitud != null ? String(i.longitud) : "",
             medios: i.imagenes?.map(({ url, clave, textoAlterno, tipo }) => ({ url, clave: clave ?? undefined, textoAlterno: textoAlterno ?? undefined, tipo })) ?? [],
@@ -70,6 +74,8 @@ export default function PaginaItinerario({
         items: filas.map((f) => ({
           titulo: f.titulo,
           descripcion: f.descripcion,
+          minutosDesdeSalida: f.minutosDesdeSalida ? Number(f.minutosDesdeSalida) : undefined,
+          duracionEstimadaMinutos: f.duracionEstimadaMinutos ? Number(f.duracionEstimadaMinutos) : undefined,
           latitud: f.latitud ? Number(f.latitud) : undefined,
           longitud: f.longitud ? Number(f.longitud) : undefined,
           medios: f.medios.length ? f.medios : undefined,
@@ -104,7 +110,7 @@ export default function PaginaItinerario({
           <CardTitle>Itinerario: {String(tour.nombre ?? tour.destinoNombre ?? tour.slug)}</CardTitle>
           <CardDescription>
             Paso a paso de lo que vive el turista. El orden de la lista es el
-            orden del día. Las coordenadas son opcionales (para el mapa).
+            orden del día. Los tiempos son orientativos y las coordenadas opcionales.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -145,6 +151,14 @@ export default function PaginaItinerario({
                     onChange={(e) => cambiar(i, "descripcion", e.target.value)}
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label>Minutos desde la salida (referencial)</Label>
+                  <Input type="number" min="0" inputMode="numeric" placeholder="60" value={fila.minutosDesdeSalida} onChange={(e) => cambiar(i, "minutosDesdeSalida", e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Duración estimada de esta etapa (min)</Label>
+                  <Input type="number" min="0" inputMode="numeric" placeholder="90" value={fila.duracionEstimadaMinutos} onChange={(e) => cambiar(i, "duracionEstimadaMinutos", e.target.value)} />
+                </div>
                 <CampoCoordenadas
                   etiqueta="Coordenadas (opcional)"
                   requerido={false}
@@ -160,7 +174,6 @@ export default function PaginaItinerario({
                     categoria="tours"
                     medios={fila.medios}
                     onCambiar={(medios) => setFilas((actuales) => actuales.map((item, indice) => indice === i ? { ...item, medios } : item))}
-                    soloImagenes
                   />
                 </div>
               </div>

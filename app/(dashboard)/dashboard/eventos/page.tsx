@@ -123,6 +123,7 @@ export default function PaginaEventosEspeciales() {
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
                       <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/editar`}>Editar evento</Link></Button>
+                      <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/itinerario`}>Itinerario y multimedia</Link></Button>
                       {evento.activo !== false ? <>
                         <Button size="sm" asChild><Link href={`/dashboard/salidas/nueva?tipo=TOUR&servicioId=${encodeURIComponent(evento.id)}`}>Programar salida</Link></Button>
                         <Button variant="ghost" size="icon" aria-label="Pausar evento" title="Pausar evento" disabled={cambiarEstado.isPending} onClick={() => cambiarEstado.mutate({ id: evento.id, activo: false })}><PauseIcon /></Button>
@@ -160,6 +161,7 @@ export default function PaginaEventosEspeciales() {
                         <TableCell>
                           <div className="flex min-w-52 justify-end gap-2">
                             <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/editar`}>Editar</Link></Button>
+                            <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/itinerario`}>Itinerario</Link></Button>
                             {evento.activo !== false ? (
                               <>
                                 <Button size="sm" asChild><Link href={`/dashboard/salidas/nueva?tipo=TOUR&servicioId=${encodeURIComponent(evento.id)}`}>Programar salida</Link></Button>
