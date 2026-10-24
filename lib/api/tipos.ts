@@ -209,8 +209,11 @@ export interface CrearEventoEspecialEntrada
 export interface PuntoEventoEntrada {
   titulo: string;
   descripcion: string;
+  minutosDesdeSalida?: number;
+  duracionEstimadaMinutos?: number;
   latitud?: number;
   longitud?: number;
+  medios?: MedioEntrada[];
 }
 
 export type ActualizarTransporteEntrada = Partial<
@@ -302,6 +305,8 @@ export interface AuditoriaApi {
 export interface ItinerarioEntrada {
   titulo: string;
   descripcion: string;
+  minutosDesdeSalida?: number;
+  duracionEstimadaMinutos?: number;
   latitud?: number;
   longitud?: number;
   medios?: MedioEntrada[];
@@ -312,6 +317,8 @@ export interface ItinerarioApi {
   orden: number;
   titulo: string;
   descripcion: string;
+  minutosDesdeSalida?: number | null;
+  duracionEstimadaMinutos?: number | null;
   latitud?: number | string | null;
   longitud?: number | string | null;
   tituloI18n?: Record<string, string> | null;

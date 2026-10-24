@@ -191,7 +191,6 @@ export default function PaginaParadas({
                     categoria="transportes"
                     medios={fila.medios}
                     onCambiar={(medios) => setFilas((actuales) => actuales.map((parada, indice) => indice === i ? { ...parada, medios } : parada))}
-                    soloImagenes
                   />
                 </div>
                 <CampoCoordenadas

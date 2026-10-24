@@ -26,6 +26,13 @@ function formatearDuracion(minutos?: number): string | null {
   return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
 }
 
+function formatoTiempoRelativo(minutos?: number | null): string | null {
+  if (minutos == null || minutos < 0) return null;
+  const horas = Math.floor(minutos / 60);
+  const resto = minutos % 60;
+  return `Aprox. ${horas ? `${horas} h` : ""}${horas && resto ? " " : ""}${resto ? `${resto} min` : horas ? "" : "0 min"} desde la salida`;
+}
+
 function precioDesde(salidas?: SalidaApi[]): number | null {
   if (!salidas || salidas.length === 0) return null;
   const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
@@ -156,8 +163,15 @@ export default function TourPage() {
             <ol className={styles.itinerary}>
               {itinerarios.map((it) => (
                 <li key={it.id} className={styles.itineraryItem}>
-                  <strong>{it.titulo}</strong>
+                  <div className={styles.itineraryStageHead}>
+                    <strong>{it.titulo}</strong>
+                    <div className={styles.itineraryStageMeta}>
+                      {formatoTiempoRelativo(it.minutosDesdeSalida) && <span>{formatoTiempoRelativo(it.minutosDesdeSalida)}</span>}
+                      {formatearDuracion(it.duracionEstimadaMinutos ?? undefined) && <span>Duración: {formatearDuracion(it.duracionEstimadaMinutos ?? undefined)}</span>}
+                    </div>
+                  </div>
                   {it.descripcion && <div className={styles.itineraryDescription}>{it.descripcion}</div>}
+                  {it.imagenes?.length ? <div className={styles.itineraryMediaGrid}>{it.imagenes.map((medio) => <div key={medio.clave ?? medio.url} className={styles.itineraryMedia}><ImageSlot radius={8} src={medio.tipo === "VIDEO" ? undefined : medio.url} video={medio.tipo === "VIDEO" ? medio.url : undefined} placeholder={medio.textoAlterno ?? it.titulo} /></div>)}</div> : null}
                 </li>
               ))}
             </ol>

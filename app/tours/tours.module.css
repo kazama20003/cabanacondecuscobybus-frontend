@@ -98,6 +98,11 @@
 .itineraryItem::before { position: absolute; top: 23px; left: -24px; width: 9px; height: 9px; border: 2px solid var(--fg); border-radius: 50%; background: var(--bg); content: ""; }
 .itineraryItem strong { font-size: 16px; font-weight: 650; }
 .itineraryDescription { max-width: 660px; margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.7; text-wrap: pretty; }
+.itineraryStageHead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 18px; }
+.itineraryStageMeta { display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: 12px; }
+.itineraryStageMeta span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; }
+.itineraryMediaGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 10px; margin-top: 14px; }
+.itineraryMedia { position: relative; min-height: 180px; overflow: hidden; border-radius: 8px; background: var(--card); }
 .bookingCard { position: sticky; top: 24px; padding: 28px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
 .bookingPrice { margin: 4px 0 20px; font-size: 38px; font-weight: 600; letter-spacing: -.06em; }
 .bookingActions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 600; }
