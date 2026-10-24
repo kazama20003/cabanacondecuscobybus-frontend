@@ -117,14 +117,15 @@ export default function TourPage() {
           radius={10}
           src={portada?.tipo === "VIDEO" ? undefined : portada?.url}
           video={portada?.tipo === "VIDEO" ? portada.url : undefined}
-          placeholder={heading}
+          placeholder={portada?.textoAlterno ?? heading}
         />
         {esEvento && temporada && <span className={styles.eventSeason}><span aria-hidden="true">✦</span>{temporada}</span>}
+        {slug === "petroglifos-de-toro-muerto-y-valle-de-majes" && <a className={styles.imageCredit} href="https://commons.wikimedia.org/wiki/File:Toro_Muerto_Archaeological_site_-_petroglyph.jpg" target="_blank" rel="noopener noreferrer">Foto: AgainErick · CC BY-SA 3.0</a>}
       </div>
 
-      {esEvento && tr?.descripcion && tr.descripcion !== intro && (
+      {tr?.descripcion && tr.descripcion !== intro && (
         <section className={styles.eventNarrative}>
-          <span className={styles.sectionEyebrow}>{t("eventos.descripcion")}</span>
+          <span className={styles.sectionEyebrow}>{esEvento ? t("eventos.descripcion") : "Sobre esta experiencia"}</span>
           <p>{tr.descripcion}</p>
         </section>
       )}
@@ -143,17 +144,14 @@ export default function TourPage() {
         </section>
       )}
 
-      {/* Qué incluye / no incluye */}
-      <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
-
       {/* Itinerario + reserva */}
       <section className={styles.detailColumns}>
         <div>
           <h2 className={styles.sectionTitle}>
-            {t("detalle.itinerarioTour")}
+            {itinerarios.length ? t("detalle.itinerarioTour") : "Planifica tu visita"}
           </h2>
           {itinerarios.length === 0 ? (
-            <p className={styles.detailIntro}>{t("detalle.itinerarioNota")}</p>
+            <p className={styles.detailIntro}>El orden de las visitas, los horarios y los accesos se confirman según la fecha y las condiciones de operación. Consulta los detalles antes de reservar.</p>
           ) : (
             <ol className={styles.itinerary}>
               {itinerarios.map((it) => (
@@ -166,16 +164,11 @@ export default function TourPage() {
           )}
         </div>
         <div>
-          {tr?.queLlevar && (
-            <>
-              <h2 className={styles.sectionTitle}>
-                {t("detalle.queLlevar")}
-              </h2>
-              <p className={styles.detailIntro}>
-                {tr.queLlevar}
-              </p>
-            </>
-          )}
+          {tr?.queLlevar && <section className={styles.prepareCard}>
+            <span className={styles.sectionEyebrow}>Antes de salir</span>
+            <h2 className={styles.prepareTitle}>{t("detalle.queLlevar")}</h2>
+            <p>{tr.queLlevar}</p>
+          </section>}
           <div className={styles.bookingCard} id="reservar">
             {precio != null && (
               <>
@@ -207,6 +200,10 @@ export default function TourPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className={styles.includesSection} aria-label="Servicios incluidos">
+        <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
       </section>
       </div>
     </PageShell>
