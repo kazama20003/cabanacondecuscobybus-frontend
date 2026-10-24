@@ -18,8 +18,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!transporte) {
     return { title: "Transporte no encontrado — Inca Travel Peru" };
   }
-  const titulo = tituloTransporte(transporte);
-  const descripcion =
+  const tituloBase = tituloTransporte(transporte);
+  const titulo = slug === "arequipa-cotahuasi"
+    ? "Transporte de Arequipa a Cotahuasi: ruta y reservas"
+    : tituloBase;
+  const descripcion = slug === "arequipa-cotahuasi"
+    ? "Viaja de Arequipa a Cotahuasi, en la provincia de La Unión. Consulta la duración estimada, conoce la Reserva Paisajística y solicita disponibilidad para tu traslado."
+    :
     recortar(
       transporte.traducciones?.[0]?.resumen ||
         transporte.traducciones?.[0]?.descripcion,
@@ -63,8 +68,8 @@ export default async function TransportePage({ params }: Props) {
           300,
         ),
         url: `${SITE_URL}/transporte/${slug}`,
-        ...(transporte.imagenes?.[0]?.url
-          ? { image: transporte.imagenes[0].url }
+        ...(transporte.imagenes?.length
+          ? { image: transporte.imagenes.map((medio) => medio.url) }
           : {}),
         itinerary: {
           "@type": "ItemList",
