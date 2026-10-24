@@ -1,4 +1,6 @@
-import { CSSProperties } from "react";
+"use client";
+
+import { CSSProperties, useState } from "react";
 
 /* ---------- image-slot: placeholder box / imagen / video ---------- */
 export default function ImageSlot({
@@ -18,6 +20,9 @@ export default function ImageSlot({
   video?: string;
   style?: CSSProperties;
 }) {
+  const [medioFallido, setMedioFallido] = useState<{ src?: string; video?: string } | null>(null);
+  const errorDeMedio = medioFallido?.src === src && medioFallido?.video === video;
+
   const box: CSSProperties = {
     position: "absolute",
     inset: 0,
@@ -28,7 +33,7 @@ export default function ImageSlot({
     ...style,
   };
 
-  if (video) {
+  if (video && !errorDeMedio) {
     return (
       <video
         style={{ ...box, objectFit: "cover" }}
@@ -38,13 +43,14 @@ export default function ImageSlot({
         muted
         playsInline
         preload="metadata"
+        onError={() => setMedioFallido({ src, video })}
       />
     );
   }
 
-  if (src) {
+  if (src && !errorDeMedio) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img style={{ ...box, objectFit: "cover" }} src={src} alt={placeholder ?? ""} loading="lazy" />;
+    return <img style={{ ...box, objectFit: "cover" }} src={src} alt={placeholder ?? ""} loading="lazy" onError={() => setMedioFallido({ src, video })} />;
   }
 
   return (
