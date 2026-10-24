@@ -122,6 +122,13 @@ export default function TourPage() {
         {esEvento && temporada && <span className={styles.eventSeason}><span aria-hidden="true">✦</span>{temporada}</span>}
       </div>
 
+      {esEvento && tr?.descripcion && tr.descripcion !== intro && (
+        <section className={styles.eventNarrative}>
+          <span className={styles.sectionEyebrow}>{t("eventos.descripcion")}</span>
+          <p>{tr.descripcion}</p>
+        </section>
+      )}
+
       {/* Ficha resumen */}
       {fichas.length > 0 && (
         <section
