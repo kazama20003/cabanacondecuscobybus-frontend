@@ -34,6 +34,20 @@ export default function ImageSlot({
   };
 
   if (video && !errorDeMedio) {
+    const videoId = video.match(/(?:youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/)?.[1];
+    if (videoId) {
+      return (
+        <iframe
+          title={placeholder ?? "Video del destino"}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
+          style={{ ...box, border: 0 }}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      );
+    }
     return (
       <video
         style={{ ...box, objectFit: "cover" }}
