@@ -3,7 +3,7 @@
 import Link from "next/link";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
-import { CONTACT } from "@/lib/data";
+import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useT } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useTours } from "@/hooks/use-catalogo";
@@ -93,14 +93,14 @@ export default function ToursPage() {
                   ) : (
                     <span />
                   )}
-                  <a
+                  {canalesReservaPara("TOUR", tour.esEvento).includes("WHATSAPP") ? <a
                     href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${titulo}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.cardCta}
                   >
                     {t("common.reservar")}
-                  </a>
+                  </a> : <Link href={`/tours/${tour.slug}`} className={styles.cardCta}>{t("detalle.consultar")}</Link>}
                 </div>
               </div>
             </article>

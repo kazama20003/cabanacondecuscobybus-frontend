@@ -12,6 +12,7 @@ import { useT, LOCALES } from "@/lib/i18n";
 import { useCrearReserva, useIniciarPagoAdelanto } from "@/hooks/use-reservas";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { guardarReservaInvitado } from "@/lib/reservas-invitado";
+import { canalesReservaPara } from "@/lib/data";
 import { ApiError } from "@/lib/api";
 import type { Moneda, PagoAdelantoApi, PasajeroEntrada, ReservaApi } from "@/lib/api";
 
@@ -26,6 +27,8 @@ const campo: CSSProperties = {
   fontFamily: "inherit",
 };
 const label: CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 };
+const monedasDisponibles = (process.env.NEXT_PUBLIC_MONEDAS_HABILITADAS ?? "PEN,USD")
+  .split(",").map((valor) => valor.trim().toUpperCase()).filter((valor): valor is Moneda => valor === "PEN" || valor === "USD");
 
 const pasajeroVacio = (): PasajeroEntrada => ({
   nombres: "",
@@ -40,15 +43,17 @@ export default function CheckoutPage() {
   const { idioma } = useIdioma();
   const router = useRouter();
   const { items, total, totalLineas, limpiar, quitar } = useCarrito();
+  const canalOnlineHabilitado = items.every((item) => canalesReservaPara(item.tipoServicio, item.esEvento).includes("ONLINE"));
   const { data: perfil } = useMiPerfil();
   const crearReserva = useCrearReserva();
   const iniciarPago = useIniciarPagoAdelanto();
 
-  const [moneda, setMoneda] = useState<Moneda>("PEN");
+  const [moneda, setMoneda] = useState<Moneda>(monedasDisponibles[0] ?? "PEN");
   const [correoContacto, setCorreo] = useState("");
   const [telefonoWhatsApp, setTelefono] = useState("");
   const [paisResidencia, setPais] = useState("");
   const [codigoPromocion, setCupon] = useState("");
+  const [aceptaPoliticas, setAceptaPoliticas] = useState(false);
   const [pasajerosPorItem, setPasajeros] = useState<Record<string, PasajeroEntrada[]>>({});
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -97,6 +102,31 @@ export default function CheckoutPage() {
     ),
   );
   const formularioOk = totalLineas > 0 && contactoOk && pasajerosOk && !enviando;
+  const enlacesPoliticas = [
+    { nombre: "Términos de compra", href: process.env.NEXT_PUBLIC_URL_TERMINOS },
+    { nombre: "Privacidad", href: process.env.NEXT_PUBLIC_URL_PRIVACIDAD },
+    { nombre: "Cancelaciones", href: process.env.NEXT_PUBLIC_URL_CANCELACIONES },
+  ];
+  const politicasConfiguradas = enlacesPoliticas.every((item) => Boolean(item.href)) &&
+    (process.env.NODE_ENV !== "production" || Boolean(process.env.NEXT_PUBLIC_VERSION_POLITICAS));
+  const versionPoliticas = process.env.NEXT_PUBLIC_VERSION_POLITICAS ?? "dev-sin-version";
+  const textoPoliticas: Record<string, { acepta: string; falta: string; terminos: string; privacidad: string; cancelaciones: string; vence: string }> = {
+    es: { acepta: "He leído y acepto las políticas de compra, privacidad y cancelación.", falta: "El checkout requiere configurar los enlaces de términos, privacidad y cancelaciones.", terminos: "Términos de compra", privacidad: "Privacidad", cancelaciones: "Cancelaciones", vence: "Mantendremos tus asientos hasta" },
+    en: { acepta: "I have read and accept the purchase, privacy, and cancellation policies.", falta: "Checkout requires configured terms, privacy, and cancellation links.", terminos: "Purchase terms", privacidad: "Privacy", cancelaciones: "Cancellations", vence: "Your seats are held until" },
+    fr: { acepta: "J’ai lu et j’accepte les politiques d’achat, de confidentialité et d’annulation.", falta: "Le paiement nécessite les liens configurés vers les conditions, la confidentialité et les annulations.", terminos: "Conditions d’achat", privacidad: "Confidentialité", cancelaciones: "Annulations", vence: "Vos places sont réservées jusqu’au" },
+    it: { acepta: "Ho letto e accetto le condizioni di acquisto, privacy e cancellazione.", falta: "Per il pagamento occorre configurare i link alle condizioni, alla privacy e alle cancellazioni.", terminos: "Condizioni di acquisto", privacidad: "Privacy", cancelaciones: "Cancellazioni", vence: "I posti sono riservati fino al" },
+    pt: { acepta: "Li e aceito as políticas de compra, privacidade e cancelamento.", falta: "O checkout exige links configurados para compra, privacidade e cancelamento.", terminos: "Termos de compra", privacidad: "Privacidade", cancelaciones: "Cancelamentos", vence: "Seus lugares ficam reservados até" },
+    zh: { acepta: "我已阅读并接受购买、隐私和取消政策。", falta: "结账前必须配置购买、隐私和取消政策链接。", terminos: "购买条款", privacidad: "隐私", cancelaciones: "取消政策", vence: "座位保留至" },
+    ja: { acepta: "購入、プライバシー、キャンセルの各ポリシーを読み、同意します。", falta: "購入、プライバシー、キャンセルの各ポリシーURLを設定してください。", terminos: "購入条件", privacidad: "プライバシー", cancelaciones: "キャンセル", vence: "座席の確保期限" },
+    ru: { acepta: "Я прочитал(а) и принимаю правила покупки, конфиденциальности и отмены.", falta: "Для оформления настройте ссылки на правила покупки, конфиденциальности и отмены.", terminos: "Условия покупки", privacidad: "Конфиденциальность", cancelaciones: "Отмена", vence: "Места удерживаются до" },
+    de: { acepta: "Ich habe die Kauf-, Datenschutz- und Stornierungsbedingungen gelesen und akzeptiere sie.", falta: "Für den Checkout müssen Links zu Kauf-, Datenschutz- und Stornierungsbedingungen hinterlegt sein.", terminos: "Kaufbedingungen", privacidad: "Datenschutz", cancelaciones: "Stornierung", vence: "Deine Plätze sind reserviert bis" },
+  };
+  const legal = textoPoliticas[idioma] ?? textoPoliticas.es;
+  const enlacesConEtiqueta = enlacesPoliticas.map((item, i) => ({
+    ...item,
+    nombre: [legal.terminos, legal.privacidad, legal.cancelaciones][i],
+  }));
+  const formularioCompleto = formularioOk && aceptaPoliticas && politicasConfiguradas && canalOnlineHabilitado;
 
   const enviar = async () => {
     if (!formularioOk) return;
@@ -114,6 +144,8 @@ export default function CheckoutPage() {
           moneda,
           pasajeros: pasajerosDe(item.salidaId, item.pasajeros),
           codigoPromocion: codigoPromocion.trim() || undefined,
+          aceptaPoliticas,
+          versionPoliticas,
         });
         creadas.push({ reserva, item });
         if (reserva.tokenGestionInvitado) {
@@ -167,6 +199,7 @@ export default function CheckoutPage() {
                   <span style={{ display: "block", marginBottom: 6, color: "var(--muted)", fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>{item.tipoServicio === "TRANSPORTE" ? t("nav.transporte") : item.esEvento ? t("nav.eventos") : t("nav.tours")}</span>
                   <strong style={{ display: "block", fontSize: 17 }}>{item.titulo}</strong>
                   <span style={{ display: "block", marginTop: 5, color: "var(--muted)", fontSize: 13 }}>{fmtFecha(item.fechaHoraSalida)} · {reserva.codigo}</span>
+                  {reserva.expiraEn && <span style={{ display: "block", marginTop: 5, color: "var(--muted)", fontSize: 12 }}>{legal.vence} {fmtFecha(reserva.expiraEn)}</span>}
                 </div>
                 <Link href={`/reserva/${reserva.codigo}`} style={{ flex: "0 0 auto", padding: "10px 14px", borderRadius: 7, background: "var(--btn-bg)", color: "var(--btn-fg)", fontSize: 13, fontWeight: 650, textDecoration: "none" }}>{t("checkout.verReserva")}</Link>
               </article>
@@ -187,6 +220,7 @@ export default function CheckoutPage() {
           <p style={{ margin: "0 0 24px", color: "var(--muted)", lineHeight: 1.6 }}>
             Tu reserva <strong style={{ color: "var(--fg)" }}>{reservaCreada.codigo}</strong> quedó registrada. El pago se confirmará únicamente cuando llegue el IPN firmado de Izipay.
           </p>
+          {reservaCreada.expiraEn && <p style={{ margin: "0 0 20px", color: "var(--muted)", fontSize: 14 }}>{legal.vence} <strong>{fmtFecha(reservaCreada.expiraEn)}</strong>.</p>}
           {pago ? (
             <IzipayForm
               formToken={pago.formToken}
@@ -232,7 +266,7 @@ export default function CheckoutPage() {
           <section>
             <h2 style={{ margin: "0 0 12px", fontSize: 18, fontWeight: 600 }}>{t("checkout.moneda")}</h2>
             <div style={{ display: "flex", gap: 10 }}>
-              {(["PEN", "USD"] as Moneda[]).map((m) => (
+              {monedasDisponibles.map((m) => (
                 <button
                   key={m}
                   type="button"
@@ -322,6 +356,14 @@ export default function CheckoutPage() {
           {error && (
             <p role="alert" style={{ margin: 0, color: "#c0392b", fontSize: 14 }}>{error}</p>
           )}
+          {!canalOnlineHabilitado && <p role="status" style={{ margin: 0, color: "var(--muted)", fontSize: 13 }}>Las reservas se coordinan por WhatsApp; vuelve a la ficha del servicio para contactar a la agencia.</p>}
+          <section aria-label="Políticas de compra">
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, lineHeight: 1.55 }}>
+              <input type="checkbox" checked={aceptaPoliticas} onChange={(e) => setAceptaPoliticas(e.target.checked)} disabled={!politicasConfiguradas} style={{ marginTop: 3 }} />
+              <span>{legal.acepta}<br />{enlacesConEtiqueta.map((item, index) => item.href ? <span key={item.nombre}>{index > 0 ? " · " : ""}<a href={item.href} target="_blank" rel="noopener noreferrer">{item.nombre}</a></span> : null)}</span>
+            </label>
+            {!politicasConfiguradas && <p role="status" style={{ margin: "8px 0 0", color: "#9a6700", fontSize: 12 }}>{legal.falta}</p>}
+          </section>
         </form>
 
         {/* Resumen */}
@@ -343,12 +385,12 @@ export default function CheckoutPage() {
           <button
             type="button"
             onClick={() => void enviar()}
-            disabled={!formularioOk}
+            disabled={!formularioCompleto}
             style={{
               width: "100%",
               border: "none",
-              cursor: formularioOk ? "pointer" : "not-allowed",
-              opacity: formularioOk ? 1 : 0.55,
+              cursor: formularioCompleto ? "pointer" : "not-allowed",
+              opacity: formularioCompleto ? 1 : 0.55,
               background: "var(--btn-bg)",
               color: "var(--btn-fg)",
               padding: "13px 18px",

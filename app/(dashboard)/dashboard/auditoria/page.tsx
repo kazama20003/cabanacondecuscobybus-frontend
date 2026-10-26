@@ -39,6 +39,7 @@ const ENTIDADES: { valor: EntidadAuditoria | "TODAS"; nombre: string }[] = [
   { valor: "PROMOCION", nombre: "Promociones" },
   { valor: "USUARIO", nombre: "Usuarios" },
   { valor: "PAGO", nombre: "Pagos" },
+  { valor: "RESERVA", nombre: "Reservas" },
 ];
 
 const COLOR_ACCION: Record<
@@ -50,6 +51,9 @@ const COLOR_ACCION: Record<
   ELIMINAR: "destructive",
   DESACTIVAR: "destructive",
   CONFIRMAR: "default",
+  CONFIRMAR_PAGO_MANUAL: "default",
+  SOLICITUD_CANCELACION: "destructive",
+  IPN_PAGO_RESERVA_NO_VIGENTE: "destructive",
 };
 
 function fechaLegible(iso: string) {
@@ -219,7 +223,7 @@ export default function PaginaAuditoria() {
                         </TableCell>
                         <TableCell>
                           <Badge variant={COLOR_ACCION[r.accion] ?? "outline"}>
-                            {r.accion.toLowerCase()}
+                            {r.accion.replaceAll("_", " ").toLowerCase()}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useIdioma, type LangCode } from "@/components/lang-provider";
+import { IDIOMAS_HABILITADOS, useIdioma, type LangCode } from "@/components/lang-provider";
 
 /* Banderas SVG (los emoji de bandera no se ven en Windows) */
 function FlagPE({ size = 16 }: { size?: number }) {
@@ -139,7 +139,8 @@ export default function LangSwitcher({
     setOpen(false);
   };
 
-  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+  const idiomasDisponibles = LANGS.filter((item) => IDIOMAS_HABILITADOS.includes(item.code));
+  const current = idiomasDisponibles.find((l) => l.code === lang) ?? idiomasDisponibles[0];
 
   return (
     <div ref={rootRef} style={{ position: "relative" }}>
@@ -191,7 +192,7 @@ export default function LangSwitcher({
             zIndex: 60,
           }}
         >
-          {LANGS.map(({ code, label, Flag }) => (
+          {idiomasDisponibles.map(({ code, label, Flag }) => (
             <button
               key={code}
               onClick={() => pick(code)}

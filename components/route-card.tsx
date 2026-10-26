@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { TransportRoute } from "@/lib/data";
-import { CONTACT } from "@/lib/data";
+import { canalesReservaPara, CONTACT } from "@/lib/data";
 
 /* Fila interactiva de ruta: al pasar el cursor se resalta la card, el video
    de la ruta se reproduce en lugar de la foto y aparece el CTA de reserva. */
@@ -36,6 +36,7 @@ export default function RouteCard({
   };
 
   const href = `/transporte/${r.slug}`;
+  const whatsappHabilitado = canalesReservaPara("TRANSPORTE").includes("WHATSAPP");
   const wa = `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(
     `Hola, quiero reservar la ruta ${r.from} → ${r.to}`
   )}`;
@@ -186,9 +187,9 @@ export default function RouteCard({
             />
           )}
           <a
-            href={wa}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={whatsappHabilitado ? wa : href}
+            target={whatsappHabilitado ? "_blank" : undefined}
+            rel={whatsappHabilitado ? "noopener noreferrer" : undefined}
             onClick={(e) => e.stopPropagation()}
             style={{
               position: "absolute",
@@ -206,7 +207,7 @@ export default function RouteCard({
               transition: "opacity .25s ease, transform .25s ease",
             }}
           >
-            Reservar
+            {whatsappHabilitado ? "Reservar" : "Ver ruta"}
           </a>
         </div>
         <span style={{ fontSize: 14, fontWeight: 700 }}>

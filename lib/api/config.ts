@@ -71,6 +71,7 @@ export const endpoints = {
     verInvitado: (codigo: string) => `/reservas/${codigo}`,
     iniciarPagoAdelanto: (codigo: string) => `/reservas/${codigo}/iniciar-pago-adelanto`,
     comprobanteSaldo: (codigo: string) => `/reservas/${codigo}/comprobantes-saldo`,
+    solicitudesGestion: (codigo: string) => `/reservas/${codigo}/solicitudes-gestion`,
   },
   pagos: {
     listarAdministracion: "/reservas/administracion/pagos",

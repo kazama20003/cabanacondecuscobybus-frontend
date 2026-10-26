@@ -7,10 +7,20 @@ export const LOGO_URL =
 export const CONTACT = {
   email: "reservas@incatravelperu.com",
   phone: "+51 984 123 456",
-  whatsapp: "51984123456",
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_RESERVAS ?? "51984123456",
   address: "Portal de Panes 123, Plaza de Armas, Cusco",
   city: "Cusco, Perú",
 };
+export const CANALES_RESERVA = (process.env.NEXT_PUBLIC_CANALES_RESERVA ?? "ONLINE,WHATSAPP")
+  .split(",").map((canal) => canal.trim().toUpperCase()).filter(Boolean);
+export function canalesReservaPara(tipo: "TRANSPORTE" | "TOUR", esEvento = false) {
+  const variable = esEvento
+    ? process.env.NEXT_PUBLIC_CANALES_RESERVA_EVENTOS
+    : tipo === "TOUR"
+      ? process.env.NEXT_PUBLIC_CANALES_RESERVA_TOURS
+      : process.env.NEXT_PUBLIC_CANALES_RESERVA_TRANSPORTES;
+  return (variable ?? CANALES_RESERVA.join(",")).split(",").map((canal) => canal.trim().toUpperCase()).filter(Boolean);
+}
 
 /* ---------- media URLs (Cloudinary) ---------- */
 export const MEDIA_VIDEO =

@@ -6,6 +6,7 @@ import { useCarrito } from "@/components/cart-provider";
 import { useIdioma } from "@/components/lang-provider";
 import { useT, LOCALES } from "@/lib/i18n";
 import type { SalidaApi, TipoServicio } from "@/lib/api";
+import { canalesReservaPara, CONTACT } from "@/lib/data";
 
 const VENDIBLES = ["A_LA_VENTA", "PENDIENTE_DE_MINIMO", "CONFIRMADA"];
 
@@ -40,6 +41,8 @@ export default function AddToCart({
   const { idioma } = useIdioma();
   const { agregar } = useCarrito();
   const [ahora] = useState(() => Date.now());
+  const canales = canalesReservaPara(tipoServicio, esEvento);
+  const onlineHabilitado = canales.includes("ONLINE");
 
   const vendibles = salidas
     .filter(
@@ -58,6 +61,20 @@ export default function AddToCart({
       <p style={{ margin: 0, fontSize: 14, color: "var(--muted)" }}>
         {t("reservar.sinSalidas")}
       </p>
+    );
+  }
+
+  if (!onlineHabilitado) {
+    if (!canales.includes("WHATSAPP")) return null;
+    return (
+      <a
+        href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`Hola, quisiera consultar una reserva para ${titulo}.`)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ display: "inline-flex", minHeight: 44, alignItems: "center", justifyContent: "center", padding: "10px 16px", borderRadius: 8, background: "var(--btn-bg)", color: "var(--btn-fg)", fontWeight: 650, textDecoration: "none" }}
+      >
+        {t("common.reservarWhatsapp")}
+      </a>
     );
   }
 
