@@ -4,17 +4,17 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/native-ui/card";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";

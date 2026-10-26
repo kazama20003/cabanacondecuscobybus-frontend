@@ -4,18 +4,18 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/native-ui/card";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
+import { Skeleton } from "@/components/native-ui/skeleton";
+import { Textarea } from "@/components/native-ui/textarea";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useDefinirItinerario, useTour } from "@/hooks/use-catalogo";

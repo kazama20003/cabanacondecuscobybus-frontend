@@ -3,20 +3,20 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeftIcon, CheckIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/components/native-ui/card";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
+import { Skeleton } from "@/components/native-ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/native-ui/tabs";
+import { Textarea } from "@/components/native-ui/textarea";
 import {
   CampoLista,
   aListaItems,

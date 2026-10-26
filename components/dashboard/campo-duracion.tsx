@@ -1,7 +1,7 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
 
 /* Entrada de duración en horas y minutos; el valor se maneja en minutos totales. */
 export function CampoDuracion({

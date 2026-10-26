@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import { SearchIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/native-ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+} from "@/components/native-ui/card";
+import { Checkbox } from "@/components/native-ui/checkbox";
+import { Input } from "@/components/native-ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/native-ui/select";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import {
   Table,
@@ -28,7 +28,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/native-ui/table";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { useActualizarUsuario, useUsuarios } from "@/hooks/use-usuarios";
 import type { RolUsuario } from "@/lib/api";

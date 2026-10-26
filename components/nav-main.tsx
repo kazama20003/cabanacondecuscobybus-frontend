@@ -1,13 +1,13 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/native-ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/native-ui/sidebar"
 import { CirclePlusIcon, MailIcon } from "lucide-react"
 
 export function NavMain({

@@ -14,14 +14,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/native-ui/sidebar"
 import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
 
 const data = {
   user: {
-    name: "shadcn",
+    name: "Inca Travel Peru",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
   navMain: [
     {

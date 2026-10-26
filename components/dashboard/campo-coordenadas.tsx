@@ -1,7 +1,7 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
 
 /* Un solo campo donde se pega directo lo que copia Google Maps:
    "-13.562564244226659, -72.6910262052409" → separa lat y lng. */

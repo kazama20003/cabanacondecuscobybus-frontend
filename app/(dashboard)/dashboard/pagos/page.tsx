@@ -16,15 +16,15 @@ import {
   ShieldCheckIcon,
   WalletCardsIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/native-ui/card";
 import { useConfirmarPago, usePagosAdministracion } from "@/hooks/use-pagos";
 import type { EstadoPago, MetodoPago, PagoAdminApi } from "@/lib/api";
 

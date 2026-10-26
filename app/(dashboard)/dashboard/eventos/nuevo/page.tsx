@@ -8,11 +8,11 @@ import { TituloSeccion } from "@/components/dashboard/titulo-seccion";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/native-ui/button";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/native-ui/card";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
+import { Textarea } from "@/components/native-ui/textarea";
 import { useCrearEventoEspecial } from "@/hooks/use-catalogo";
 import type { ContenidoEntrada, MedioEntrada } from "@/lib/api";
 

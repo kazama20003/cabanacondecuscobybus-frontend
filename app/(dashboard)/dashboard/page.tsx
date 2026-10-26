@@ -13,22 +13,22 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis } from "recharts";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/native-ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/dashboard/charting";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/native-ui/table";
 import {
   usePlantillasSalida,
   useSalidasAdmin,

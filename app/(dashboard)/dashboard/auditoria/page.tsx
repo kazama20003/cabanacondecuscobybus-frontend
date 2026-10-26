@@ -2,22 +2,22 @@
 
 import { Fragment, useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon, HistoryIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/native-ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/native-ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/native-ui/select";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/native-ui/table";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import { useAuditoria } from "@/hooks/use-auditoria";
 import type { EntidadAuditoria } from "@/lib/api";

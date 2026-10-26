@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/native-ui/button";
 import type { Paginado } from "@/lib/api";
 
 /* Paginación estándar para todas las tablas del panel. */

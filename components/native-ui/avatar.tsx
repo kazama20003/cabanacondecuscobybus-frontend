@@ -1,19 +1,22 @@
 "use client"
 
 import * as React from "react"
-import { Avatar as AvatarPrimitive } from "radix-ui"
-
 import { cn } from "@/lib/utils"
+
+type AvatarContextValue = { loaded: boolean; setLoaded: (loaded: boolean) => void; size: "default" | "sm" | "lg" };
+const AvatarContext = React.createContext<AvatarContextValue | null>(null)
 
 function Avatar({
   className,
   size = "default",
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root> & {
+}: React.ComponentProps<"span"> & {
   size?: "default" | "sm" | "lg"
 }) {
+  const [loaded, setLoaded] = React.useState(false)
   return (
-    <AvatarPrimitive.Root
+    <AvatarContext.Provider value={{ loaded, setLoaded, size }}>
+    <span
       data-slot="avatar"
       data-size={size}
       className={cn(
@@ -21,22 +24,28 @@ function Avatar({
         className
       )}
       {...props}
-    />
+    >
+      {props.children}
+    </span>
+    </AvatarContext.Provider>
   )
 }
 
 function AvatarImage({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+}: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const context = React.useContext(AvatarContext)
   return (
-    <AvatarPrimitive.Image
+    <img
       data-slot="avatar-image"
       className={cn(
         "aspect-square size-full rounded-full object-cover",
         className
       )}
       {...props}
+      onLoad={(event) => { context?.setLoaded(true); props.onLoad?.(event) }}
+      onError={(event) => { context?.setLoaded(false); props.onError?.(event) }}
     />
   )
 }
@@ -44,9 +53,11 @@ function AvatarImage({
 function AvatarFallback({
   className,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+}: React.ComponentProps<"span">) {
+  const context = React.useContext(AvatarContext)
+  if (context?.loaded) return null
   return (
-    <AvatarPrimitive.Fallback
+    <span
       data-slot="avatar-fallback"
       className={cn(
         "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
