@@ -193,6 +193,7 @@ export default function TourPage() {
             <div style={{ marginBottom: 20 }}>
               <AddToCart
                 tipoServicio="TOUR"
+                esEvento={tour.esEvento}
                 slug={slug}
                 titulo={heading}
                 imagen={tour.imagenes?.[0]?.url}
