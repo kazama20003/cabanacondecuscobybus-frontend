@@ -19,9 +19,10 @@ export const servicioReservas = {
       query: { token },
     }),
 
-  iniciarPagoAdelanto: (codigo: string) =>
+  iniciarPagoAdelanto: (codigo: string, token?: string) =>
     solicitar<PagoAdelantoApi>(endpoints.reservas.iniciarPagoAdelanto(codigo), {
       metodo: "POST",
+      query: { token },
     }),
 
   registrarComprobanteSaldo: (

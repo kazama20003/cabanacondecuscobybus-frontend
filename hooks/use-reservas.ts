@@ -26,7 +26,8 @@ export function useReservaInvitado(codigo: string, token: string) {
 
 export function useIniciarPagoAdelanto() {
   return useMutation({
-    mutationFn: (codigo: string) => servicioReservas.iniciarPagoAdelanto(codigo),
+    mutationFn: (params: { codigo: string; token?: string }) =>
+      servicioReservas.iniciarPagoAdelanto(params.codigo, params.token),
   });
 }
 

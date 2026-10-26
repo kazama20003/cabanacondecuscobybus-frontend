@@ -129,7 +129,7 @@ export default function CheckoutPage() {
   const formularioCompleto = formularioOk && aceptaPoliticas && politicasConfiguradas && canalOnlineHabilitado;
 
   const enviar = async () => {
-    if (!formularioOk) return;
+    if (!formularioCompleto) return;
     setEnviando(true);
     setError(null);
     const creadas: { reserva: ReservaApi; item: ItemCarrito }[] = [];
@@ -156,7 +156,10 @@ export default function CheckoutPage() {
         limpiar();
         setReservaCreada(creadas[0].reserva);
         try {
-          setPago(await iniciarPago.mutateAsync(creadas[0].reserva.codigo));
+          setPago(await iniciarPago.mutateAsync({
+            codigo: creadas[0].reserva.codigo,
+            token: creadas[0].reserva.tokenGestionInvitado,
+          }));
         } catch (e) {
           setError(e instanceof ApiError ? e.message : t("reserva.errorPago"));
         }
