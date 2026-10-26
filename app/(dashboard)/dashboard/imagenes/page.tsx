@@ -15,15 +15,14 @@ export default function PaginaImagenes() {
         <CardHeader>
           <CardTitle>Imágenes</CardTitle>
           <CardDescription>
-            Las imágenes y videos se cargan de forma segura a Cloudinary desde
+            Las imágenes y videos del catálogo se guardan en Google Cloud Storage desde
             los formularios de rutas, tours y promociones. Al eliminar un medio
             antes de guardar, también se elimina su recurso remoto.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            Requiere CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y
-            CLOUDINARY_API_SECRET en el backend.
+            Requiere GCS_BUCKET_MEDIA y credenciales ADC o una cuenta de servicio con acceso al bucket en el backend.
           </p>
         </CardContent>
       </Card>

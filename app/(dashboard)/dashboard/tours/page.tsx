@@ -136,7 +136,7 @@ export default function PaginaTours() {
                           onClick={() =>
                             toast.warning("¿Eliminar este tour?", {
                               description:
-                                "También se eliminarán todos sus medios de Cloudinary.",
+                                "También se eliminarán los medios de su almacenamiento.",
                               duration: Infinity,
                               cancel: { label: "Cancelar", onClick: () => {} },
                               action: {

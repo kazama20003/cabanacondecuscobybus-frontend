@@ -135,7 +135,7 @@ export default function PaginaTransportes() {
                           onClick={() =>
                             toast.warning("¿Eliminar esta ruta?", {
                               description:
-                                "También se eliminarán todos sus medios de Cloudinary.",
+                                "También se eliminarán los medios de su almacenamiento.",
                               duration: Infinity,
                               cancel: { label: "Cancelar", onClick: () => {} },
                               action: {

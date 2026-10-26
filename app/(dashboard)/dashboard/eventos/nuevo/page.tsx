@@ -110,7 +110,7 @@ export default function NuevoEventoEspecial() {
                     <Textarea required aria-label={`Descripción del punto ${indice + 1}`} rows={2} placeholder="Qué verá o hará el viajero en este punto." value={punto.descripcion} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, descripcion: e.target.value } : item))} />
                     <div className="grid grid-cols-2 gap-2"><Input type="number" min="0" inputMode="numeric" aria-label={`Minutos desde la salida del punto ${indice + 1}`} placeholder="Minutos desde salida" value={punto.minutosDesdeSalida} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, minutosDesdeSalida: e.target.value } : item))} /><Input type="number" min="0" inputMode="numeric" aria-label={`Duración estimada del punto ${indice + 1}`} placeholder="Duración de etapa (min)" value={punto.duracionEstimadaMinutos} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, duracionEstimadaMinutos: e.target.value } : item))} /></div>
                     <div className="grid grid-cols-2 gap-2"><Input type="number" step="any" aria-label={`Latitud del punto ${indice + 1}`} placeholder="Latitud (opcional)" value={punto.latitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, latitud: e.target.value } : item))} /><Input type="number" step="any" aria-label={`Longitud del punto ${indice + 1}`} placeholder="Longitud (opcional)" value={punto.longitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, longitud: e.target.value } : item))} /></div>
-                    <div className="rounded-lg border bg-background p-3"><CampoMedios categoria="tours" medios={punto.medios} onCambiar={(medios) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, medios } : item))} /></div>
+                    <div className="rounded-lg border bg-background p-3"><CampoMedios categoria="eventos" medios={punto.medios} onCambiar={(medios) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, medios } : item))} /></div>
                   </div>
                 ))}
               </div>
@@ -128,7 +128,7 @@ export default function NuevoEventoEspecial() {
           <Card>
             <CardHeader><TituloSeccion paso="3" titulo="Fotos y videos" icono={<ImageIcon />} descripcion="Selecciona una portada y añade medios para mostrar la celebración." /></CardHeader>
             <CardContent className="grid gap-2">
-              <CampoMedios categoria="tours" medios={medios} onCambiar={(lista) => { setMedios(lista); if (lista.length) setErrorMedios(""); }} />
+              <CampoMedios categoria="eventos" medios={medios} onCambiar={(lista) => { setMedios(lista); if (lista.length) setErrorMedios(""); }} />
               {errorMedios && <p role="alert" className="text-destructive text-sm">{errorMedios}</p>}
             </CardContent>
           </Card>

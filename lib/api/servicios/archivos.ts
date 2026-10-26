@@ -3,10 +3,10 @@ import { tokenStorage } from "../cliente";
 import type { CargaArchivo } from "../tipos";
 
 export const servicioArchivos = {
-  /** Sube el archivo al backend para que Cloudinary nunca exponga credenciales al navegador. */
+  /** Sube el archivo al backend para mantener las credenciales de almacenamiento solo en el backend. */
   async subir(
     archivo: File,
-    categoria: "transportes" | "tours" | "promociones" | "comprobantes",
+    categoria: "transportes" | "tours" | "eventos" | "promociones" | "comprobantes",
   ): Promise<CargaArchivo> {
     const datos = new FormData();
     datos.append("archivo", archivo);
@@ -25,7 +25,7 @@ export const servicioArchivos = {
   async eliminar(
     clave: string,
     tipo: "IMAGEN" | "VIDEO",
-    categoria: "transportes" | "tours" | "promociones" | "comprobantes",
+    categoria: "transportes" | "tours" | "eventos" | "promociones" | "comprobantes",
   ) {
     const url = new URL(`${apiConfig.baseUrl}${endpoints.uploads.subir(categoria)}`);
     url.searchParams.set("clave", clave);

@@ -12,8 +12,8 @@
   background: var(--bg);
 }
 .brandNav { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.logoLink { display: flex; flex: 0 0 auto; align-items: center; margin-right: 8px; }
-.logo { display: block; width: auto; height: 34px; border-radius: 8px; }
+.logoLink { display: flex; flex: 0 0 48px; align-items: center; justify-content: center; width: 48px; max-width: 48px; height: 36px; margin-right: 8px; overflow: hidden; }
+.logo { display: block; flex: 0 0 auto; width: auto; max-width: 48px; height: 34px; max-height: 34px; object-fit: contain; border-radius: 8px; }
 .nav { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
 .navLink,.actionPill { display: flex; align-items: center; gap: 6px; border-radius: 3px; background: var(--pill-bg); color: var(--pill-fg); text-decoration: none; }
 .navLink { padding: 7px 11px; }
@@ -29,8 +29,8 @@
 @media (max-width: 760px) {
   .header { display: grid; grid-template-areas: "logo actions" "nav nav"; grid-template-columns: auto minmax(0, 1fr); gap: 6px 8px; margin-inline: -24px; padding: 7px 12px; }
   .brandNav { display: contents; }
-  .logoLink { grid-area: logo; margin: 0; }
-  .logo { height: 29px; }
+  .logoLink { grid-area: logo; flex-basis: 40px; width: 40px; max-width: 40px; height: 31px; margin: 0; }
+  .logo { max-width: 40px; height: 29px; max-height: 29px; }
   .nav { grid-area: nav; flex-wrap: nowrap; gap: 5px; width: 100%; overflow-x: auto; padding: 0 0 2px; scrollbar-width: none; }
   .nav::-webkit-scrollbar { display: none; }
   .navLink { flex: 0 0 auto; gap: 4px; padding: 5px 6px; font-size: 10px; white-space: nowrap; }
