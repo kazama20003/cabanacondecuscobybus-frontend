@@ -29,7 +29,7 @@ export default function SiteHeader() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const pathname = usePathname();
   const t = useT();
-  const { totalLineas } = useCarrito();
+  const { totalLineas, hidratado } = useCarrito();
 
   useEffect(() => {
     const saved = (localStorage.getItem("inca-theme") as "light" | "dark") || "light";
@@ -115,7 +115,7 @@ export default function SiteHeader() {
           style={{ ...navPill, padding: "7px 10px", position: "relative", display: "flex", alignItems: "center" }}
         >
           <ShoppingCart size={16} strokeWidth={2} />
-          {totalLineas > 0 && (
+          {hidratado && totalLineas > 0 && (
             <span
               style={{
                 position: "absolute",

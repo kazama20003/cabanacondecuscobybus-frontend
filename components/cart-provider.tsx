@@ -12,6 +12,7 @@ import type { Moneda, TipoServicio } from "@/lib/api";
 export interface ItemCarrito {
   salidaId: string;
   tipoServicio: TipoServicio;
+  esEvento?: boolean;
   slug: string;
   titulo: string;
   fechaHoraSalida: string;
@@ -23,6 +24,7 @@ export interface ItemCarrito {
 
 type CarritoContexto = {
   items: ItemCarrito[];
+  hidratado: boolean;
   agregar: (item: ItemCarrito) => void;
   quitar: (salidaId: string) => void;
   fijarPasajeros: (salidaId: string, pasajeros: number) => void;
@@ -94,6 +96,7 @@ export function CarritoProvider({ children }: { children: React.ReactNode }) {
 
   const valor: CarritoContexto = {
     items,
+    hidratado,
     agregar,
     quitar,
     fijarPasajeros,

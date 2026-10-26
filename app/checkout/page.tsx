@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import IzipayForm from "@/components/izipay-form";
 import PageShell from "@/components/page-shell";
-import { useCarrito } from "@/components/cart-provider";
+import { useCarrito, type ItemCarrito } from "@/components/cart-provider";
 import { useIdioma } from "@/components/lang-provider";
 import { useT, LOCALES } from "@/lib/i18n";
 import { useCrearReserva, useIniciarPagoAdelanto } from "@/hooks/use-reservas";
@@ -39,7 +39,7 @@ export default function CheckoutPage() {
   const t = useT();
   const { idioma } = useIdioma();
   const router = useRouter();
-  const { items, total, totalLineas, limpiar } = useCarrito();
+  const { items, total, totalLineas, limpiar, quitar } = useCarrito();
   const { data: perfil } = useMiPerfil();
   const crearReserva = useCrearReserva();
   const iniciarPago = useIniciarPagoAdelanto();
@@ -53,6 +53,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [reservaCreada, setReservaCreada] = useState<ReservaApi | null>(null);
+  const [reservasCreadas, setReservasCreadas] = useState<{ reserva: ReservaApi; item: ItemCarrito }[]>([]);
   const [pago, setPago] = useState<PagoAdelantoApi | null>(null);
 
   // Prellena contacto con el perfil si hay sesión (solo al llegar el perfil).
@@ -101,7 +102,7 @@ export default function CheckoutPage() {
     if (!formularioOk) return;
     setEnviando(true);
     setError(null);
-    const creadas: ReservaApi[] = [];
+    const creadas: { reserva: ReservaApi; item: ItemCarrito }[] = [];
     try {
       for (const item of items) {
         const reserva = await crearReserva.mutateAsync({
@@ -114,24 +115,30 @@ export default function CheckoutPage() {
           pasajeros: pasajerosDe(item.salidaId, item.pasajeros),
           codigoPromocion: codigoPromocion.trim() || undefined,
         });
-        creadas.push(reserva);
+        creadas.push({ reserva, item });
         if (reserva.tokenGestionInvitado) {
           guardarReservaInvitado(reserva.codigo, reserva.tokenGestionInvitado);
         }
       }
-      limpiar();
       if (creadas.length === 1) {
-        setReservaCreada(creadas[0]);
+        limpiar();
+        setReservaCreada(creadas[0].reserva);
         try {
-          setPago(await iniciarPago.mutateAsync(creadas[0].codigo));
+          setPago(await iniciarPago.mutateAsync(creadas[0].reserva.codigo));
         } catch (e) {
           setError(e instanceof ApiError ? e.message : t("reserva.errorPago"));
         }
         return;
       }
-      router.push(`/reserva/${creadas[0].codigo}`);
+      limpiar();
+      setReservasCreadas(creadas);
+      setEnviando(false);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : t("checkout.errorGenerico"));
+      if (creadas.length > 0) {
+        setReservasCreadas(creadas);
+        creadas.forEach(({ item }) => quitar(item.salidaId));
+      }
       setEnviando(false);
     }
   };
@@ -144,6 +151,32 @@ export default function CheckoutPage() {
     ],
     [t],
   );
+
+  if (reservasCreadas.length > 0) {
+    return (
+      <PageShell>
+        <div style={{ maxWidth: 760, padding: "56px 0 80px" }}>
+          <p style={{ margin: "0 0 8px", color: "var(--muted)", fontSize: 13, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>{t("checkout.reservasCreadas")}</p>
+          <h1 style={{ margin: "0 0 14px", fontSize: "clamp(34px, 5vw, 56px)", fontWeight: 400, letterSpacing: "-.05em" }}>{t("checkout.reservasCreadas")}</h1>
+          <p style={{ margin: "0 0 24px", color: "var(--muted)", lineHeight: 1.65 }}>{t("checkout.reservasSeparadas")}</p>
+          {error && <p role="alert" style={{ margin: "0 0 18px", padding: 14, border: "1px solid #b42318", borderRadius: 8, color: "#b42318", fontSize: 14 }}>{error}</p>}
+          <div style={{ display: "grid", gap: 12 }}>
+            {reservasCreadas.map(({ reserva, item }) => (
+              <article key={reserva.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 18, padding: 18, border: "1px solid var(--line)", borderRadius: 10, background: "var(--card)" }}>
+                <div style={{ minWidth: 0 }}>
+                  <span style={{ display: "block", marginBottom: 6, color: "var(--muted)", fontSize: 11, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>{item.tipoServicio === "TRANSPORTE" ? t("nav.transporte") : item.esEvento ? t("nav.eventos") : t("nav.tours")}</span>
+                  <strong style={{ display: "block", fontSize: 17 }}>{item.titulo}</strong>
+                  <span style={{ display: "block", marginTop: 5, color: "var(--muted)", fontSize: 13 }}>{fmtFecha(item.fechaHoraSalida)} · {reserva.codigo}</span>
+                </div>
+                <Link href={`/reserva/${reserva.codigo}`} style={{ flex: "0 0 auto", padding: "10px 14px", borderRadius: 7, background: "var(--btn-bg)", color: "var(--btn-fg)", fontSize: 13, fontWeight: 650, textDecoration: "none" }}>{t("checkout.verReserva")}</Link>
+              </article>
+            ))}
+          </div>
+          {totalLineas > 0 && <Link href="/checkout" style={{ display: "inline-block", marginTop: 22, fontSize: 14, fontWeight: 650 }}>{t("carrito.irCheckout")} →</Link>}
+        </div>
+      </PageShell>
+    );
+  }
 
   if (reservaCreada) {
     return (

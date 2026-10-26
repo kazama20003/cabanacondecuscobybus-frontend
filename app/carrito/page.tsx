@@ -6,123 +6,91 @@ import ImageSlot from "@/components/image-slot";
 import { useCarrito } from "@/components/cart-provider";
 import { useIdioma } from "@/components/lang-provider";
 import { useT, LOCALES } from "@/lib/i18n";
+import { CalendarDays, ShoppingBag, Trash2 } from "lucide-react";
+import styles from "./carrito.module.css";
 
 export default function CarritoPage() {
   const t = useT();
   const { idioma } = useIdioma();
-  const { items, quitar, fijarPasajeros, total, totalLineas } = useCarrito();
+  const { items, quitar, fijarPasajeros, total, totalLineas, totalPasajeros, hidratado } = useCarrito();
 
   const fmtFecha = (iso: string) =>
     new Date(iso).toLocaleString(LOCALES[idioma], { dateStyle: "medium", timeStyle: "short" });
 
   return (
     <PageShell>
-      <h1
-        style={{
-          fontSize: "clamp(36px, 4.6vw, 64px)",
-          lineHeight: 1.06,
-          letterSpacing: "-0.03em",
-          fontWeight: 400,
-          margin: "48px 0 32px",
-        }}
-      >
-        {t("carrito.titulo")}
-      </h1>
-
-      {totalLineas === 0 ? (
-        <div style={{ padding: "24px 0 80px" }}>
-          <p style={{ margin: "0 0 16px", color: "var(--muted)", fontSize: 15 }}>{t("carrito.vacio")}</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 14, fontWeight: 600 }}>
-            <Link href="/transporte" style={{ background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "10px 16px", borderRadius: 8 }}>
-              {t("carrito.verTransporte")}
-            </Link>
-            <Link href="/tours" style={{ padding: "10px 16px", borderRadius: 8, border: "1px solid var(--line)" }}>
-              {t("carrito.verTours")}
-            </Link>
+      <main className={styles.page}>
+        <header className={styles.heading}>
+          <div>
+            <span className={styles.eyebrow}>{t("nav.transporte")} · {t("nav.tours")} · {t("nav.eventos")}</span>
+            <h1 className={styles.title}>{t("carrito.titulo")}</h1>
           </div>
-        </div>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 320px", gap: 40, alignItems: "start", paddingBottom: 80 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {items.map((item) => (
-              <div
-                key={item.salidaId}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "96px minmax(0, 1fr)",
-                  gap: 16,
-                  background: "var(--card)",
-                  borderRadius: 14,
-                  padding: 14,
-                }}
-              >
-                <div style={{ position: "relative", width: 96, height: 96 }}>
-                  <ImageSlot radius={10} src={item.imagen} placeholder={item.titulo} />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <strong style={{ fontSize: 15.5, letterSpacing: "-0.01em" }}>{item.titulo}</strong>
-                    <button
-                      type="button"
-                      onClick={() => quitar(item.salidaId)}
-                      style={{ border: "none", background: "none", color: "var(--muted)", cursor: "pointer", fontSize: 13, fontWeight: 600 }}
-                    >
-                      {t("carrito.quitar")}
-                    </button>
-                  </div>
-                  <span style={{ fontSize: 13, color: "var(--muted)" }}>{fmtFecha(item.fechaHoraSalida)}</span>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 4, flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 13, color: "var(--muted)" }}>{t("reservar.pasajeros")}</span>
-                      <button
-                        type="button"
-                        aria-label="-"
-                        onClick={() => fijarPasajeros(item.salidaId, item.pasajeros - 1)}
-                        style={{ width: 32, height: 32, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--fg)", borderRadius: 8, cursor: "pointer", fontWeight: 700 }}
-                      >
-                        −
-                      </button>
-                      <span style={{ minWidth: 20, textAlign: "center", fontWeight: 600 }}>{item.pasajeros}</span>
-                      <button
-                        type="button"
-                        aria-label="+"
-                        onClick={() => fijarPasajeros(item.salidaId, item.pasajeros + 1)}
-                        style={{ width: 32, height: 32, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--fg)", borderRadius: 8, cursor: "pointer", fontWeight: 700 }}
-                      >
-                        +
-                      </button>
+          {hidratado && totalLineas > 0 && <span className={styles.count}>{totalLineas} · {totalPasajeros} {t("reservar.pasajeros").toLocaleLowerCase(idioma)}</span>}
+        </header>
+
+        {!hidratado ? <div className={styles.loading} aria-label={t("carrito.titulo")} /> : totalLineas === 0 ? (
+          <section className={styles.empty}>
+            <div className={styles.emptyMark}><ShoppingBag size={24} strokeWidth={1.5} /></div>
+            <h2 className={styles.emptyTitle}>{t("carrito.vacio")}</h2>
+            <p className={styles.emptyText}>{t("nav.transporte")} · {t("nav.tours")} · {t("nav.eventos")}</p>
+            <div className={styles.emptyLinks}>
+              <Link href="/transporte" className={`${styles.emptyLink} ${styles.emptyLinkPrimary}`}>{t("carrito.verTransporte")}</Link>
+              <Link href="/tours" className={styles.emptyLink}>{t("carrito.verTours")}</Link>
+              <Link href="/eventos" className={styles.emptyLink}>{t("nav.eventos")}</Link>
+            </div>
+          </section>
+        ) : (
+          <div className={styles.layout}>
+            <section className={styles.items} aria-label={t("carrito.titulo")}>
+              {items.map((item) => {
+                const detalle = item.tipoServicio === "TRANSPORTE" ? `/transporte/${item.slug}` : `/tours/${item.slug}`;
+                const categoria = item.tipoServicio === "TRANSPORTE" ? t("nav.transporte") : item.esEvento ? t("nav.eventos") : t("nav.tours");
+                const totalPEN = new Intl.NumberFormat(LOCALES[idioma], { maximumFractionDigits: 2 }).format(item.precioPen * item.pasajeros);
+                const totalUSD = new Intl.NumberFormat(LOCALES[idioma], { maximumFractionDigits: 2 }).format(item.precioUsd * item.pasajeros);
+                return (
+                  <article key={item.salidaId} className={styles.item}>
+                    <Link href={detalle} className={styles.image} aria-label={item.titulo}>
+                      <ImageSlot radius={8} src={item.imagen} placeholder={item.titulo} />
+                    </Link>
+                    <div className={styles.itemContent}>
+                      <div className={styles.itemTop}>
+                        <div>
+                          <span className={styles.category}>{categoria}</span>
+                          <Link href={detalle} className={styles.itemTitle}>{item.titulo}</Link>
+                          <Link href={detalle} className={styles.detailsLink}>{item.tipoServicio === "TRANSPORTE" ? t("common.verRuta") : t("carrito.verDetalle")} →</Link>
+                        </div>
+                        <button type="button" onClick={() => quitar(item.salidaId)} className={styles.remove} aria-label={`${t("carrito.quitar")} ${item.titulo}`}>
+                          <Trash2 size={15} aria-hidden="true" /> <span>{t("carrito.quitar")}</span>
+                        </button>
+                      </div>
+                      <div className={styles.date}><CalendarDays size={15} aria-hidden="true" /><time dateTime={item.fechaHoraSalida}>{fmtFecha(item.fechaHoraSalida)}</time></div>
+                      <div className={styles.itemBottom}>
+                        <div className={styles.quantity}>
+                          <span>{t("reservar.pasajeros")}</span>
+                          <button type="button" aria-label="−" onClick={() => fijarPasajeros(item.salidaId, item.pasajeros - 1)}>−</button>
+                          <strong>{item.pasajeros}</strong>
+                          <button type="button" aria-label="+" onClick={() => fijarPasajeros(item.salidaId, item.pasajeros + 1)}>+</button>
+                        </div>
+                        <div className={styles.price}>S/ {totalPEN}<br />US$ {totalUSD}</div>
+                      </div>
                     </div>
-                    <span style={{ fontSize: 14, fontWeight: 600 }}>
-                      S/ {item.precioPen * item.pasajeros} · US$ {item.precioUsd * item.pasajeros}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </article>
+                );
+              })}
+            </section>
 
-          <aside style={{ background: "var(--card)", borderRadius: 14, padding: "24px 22px", position: "sticky", top: 90 }}>
-            <h2 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 600 }}>{t("carrito.resumen")}</h2>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 8 }}>
-              <span style={{ color: "var(--muted)" }}>{t("carrito.totalPen")}</span>
-              <strong>S/ {total("PEN")}</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 20 }}>
-              <span style={{ color: "var(--muted)" }}>{t("carrito.totalUsd")}</span>
-              <strong>US$ {total("USD")}</strong>
-            </div>
-            <p style={{ margin: "0 0 18px", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.5 }}>
-              {t("carrito.notaMoneda")}
-            </p>
-            <Link
-              href="/checkout"
-              style={{ display: "block", textAlign: "center", background: "var(--btn-bg)", color: "var(--btn-fg)", padding: "12px 18px", borderRadius: 8, fontSize: 14.5, fontWeight: 600 }}
-            >
-              {t("carrito.irCheckout")}
-            </Link>
-          </aside>
-        </div>
-      )}
+            <aside className={styles.summary}>
+              <h2 className={styles.summaryTitle}>{t("carrito.resumen")} · {totalLineas}</h2>
+              <div className={styles.summaryRow}><span>{t("carrito.totalPen")}</span><strong>S/ {new Intl.NumberFormat(LOCALES[idioma], { maximumFractionDigits: 2 }).format(total("PEN"))}</strong></div>
+              <div className={styles.summaryRow}><span>{t("carrito.totalUsd")}</span><strong>US$ {new Intl.NumberFormat(LOCALES[idioma], { maximumFractionDigits: 2 }).format(total("USD"))}</strong></div>
+              <div className={styles.summaryTotal}><span>{t("reservar.pasajeros")}</span><span>{totalPasajeros}</span></div>
+              <p className={styles.note}>{t("carrito.notaMoneda")}</p>
+              <Link href="/checkout" className={styles.checkout}>{t("carrito.irCheckout")}</Link>
+              <Link href="/tours" className={styles.continue}>← {t("carrito.verTours")}</Link>
+            </aside>
+          </div>
+        )}
+      </main>
     </PageShell>
   );
 }

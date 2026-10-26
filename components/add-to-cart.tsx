@@ -23,12 +23,14 @@ const campo: CSSProperties = {
 /** Selector de salida + pasajeros que agrega la salida elegida al carrito. */
 export default function AddToCart({
   tipoServicio,
+  esEvento,
   slug,
   titulo,
   imagen,
   salidas,
 }: {
   tipoServicio: TipoServicio;
+  esEvento?: boolean;
   slug: string;
   titulo: string;
   imagen?: string;
@@ -71,6 +73,7 @@ export default function AddToCart({
     agregar({
       salidaId: salida.id,
       tipoServicio,
+      esEvento,
       slug,
       titulo,
       fechaHoraSalida: salida.fechaHoraSalida,
