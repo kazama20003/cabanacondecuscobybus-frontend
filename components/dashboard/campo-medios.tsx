@@ -8,7 +8,7 @@ import { Label } from "@/components/native-ui/label";
 import { servicioArchivos } from "@/lib/api";
 import type { MedioEntrada } from "@/lib/api";
 
-/* El backend carga los medios a Cloudinary y devuelve la clave para su limpieza. */
+/* Los medios del catálogo se guardan en Google Cloud Storage desde el backend. */
 export function CampoMedios({
   categoria,
   medios,
@@ -16,7 +16,7 @@ export function CampoMedios({
   soloImagenes = false,
   maximo,
 }: {
-  categoria: "transportes" | "tours" | "promociones";
+  categoria: "transportes" | "tours" | "eventos" | "promociones";
   medios: MedioEntrada[];
   onCambiar: (medios: MedioEntrada[]) => void;
   soloImagenes?: boolean;
@@ -137,7 +137,7 @@ export function CampoMedios({
         </ul>
       )}
       <p className="text-muted-foreground text-xs">
-        {soloImagenes ? "JPG, PNG o WebP." : "JPG, PNG, WebP, MP4, WebM o MOV."} Se almacenan de forma segura en Cloudinary.
+        {soloImagenes ? "JPG, PNG o WebP." : "JPG, PNG, WebP, MP4, WebM o MOV."} Se almacenan en Google Cloud Storage.
       </p>
     </div>
   );

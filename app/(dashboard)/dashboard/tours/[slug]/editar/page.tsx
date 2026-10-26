@@ -283,7 +283,7 @@ export default function PaginaEditarTour({
               <CardTitle>Fotos y videos</CardTitle>
               <CardDescription>
                 Obligatorio: al menos una imagen o un video principal. Al guardar
-                se eliminan de Cloudinary los medios que quites.
+                se eliminan del almacenamiento los medios que quites.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-2">
