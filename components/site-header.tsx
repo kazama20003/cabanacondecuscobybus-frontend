@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect -- lectura de tema desde localStorage al montar */
 
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart } from "lucide-react";
@@ -9,13 +9,7 @@ import { LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
 import { useCarrito } from "@/components/cart-provider";
 import { useT } from "@/lib/i18n";
-
-const navPill: CSSProperties = {
-  background: "var(--pill-bg)",
-  color: "var(--pill-fg)",
-  borderRadius: 3,
-  padding: "7px 11px",
-};
+import styles from "@/components/site-header.module.css";
 
 const NAV = [
   { clave: "nav.transporte", href: "/transporte", Icon: Bus },
@@ -50,52 +44,24 @@ export default function SiteHeader() {
   };
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "12px 24px",
-        margin: "0 -24px",
-        flexWrap: "wrap",
-        gap: 8,
-        background: "var(--bg)",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+    <header className={styles.header}>
+      <div className={styles.brandNav}>
         <Link
           href="/"
           aria-label="Inca Travel Peru — inicio"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginRight: 8,
-          }}
+          className={styles.logoLink}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={LOGO_URL}
-            alt="Inca Travel Peru"
-            style={{ height: 34, width: "auto", display: "block", borderRadius: 8 }}
-          />
+          <img src={LOGO_URL} alt="Inca Travel Peru" className={styles.logo} />
         </Link>
-        <nav style={{ display: "flex", gap: 5, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", flexWrap: "wrap" }}>
+        <nav className={styles.nav}>
           {NAV.map(({ clave, href, Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link
                 key={clave}
                 href={href}
-                style={{
-                  ...navPill,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  ...(active ? { background: "var(--fg)", color: "var(--bg)" } : {}),
-                }}
+                className={`${styles.navLink} ${active ? styles.active : ""}`}
               >
                 <Icon size={15} strokeWidth={2} />
                 {t(clave)}
@@ -104,15 +70,15 @@ export default function SiteHeader() {
           })}
         </nav>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em" }}>
-        <Link href="/contacto" style={{ ...navPill, padding: "7px 12px", display: "flex", alignItems: "center", gap: 6 }}>
+      <div className={styles.actions}>
+        <Link href="/contacto" aria-label={t("header.contacto")} className={`${styles.actionPill} ${styles.contactLink}`}>
           <Phone size={15} strokeWidth={2} />
-          {t("header.contacto")}
+          <span>{t("header.contacto")}</span>
         </Link>
         <Link
           href="/carrito"
           aria-label={t("carrito.titulo")}
-          style={{ ...navPill, padding: "7px 10px", position: "relative", display: "flex", alignItems: "center" }}
+          className={`${styles.actionPill} ${styles.cartLink}`}
         >
           <ShoppingCart size={16} strokeWidth={2} />
           {hidratado && totalLineas > 0 && (
@@ -140,37 +106,18 @@ export default function SiteHeader() {
         </Link>
         <a
           href="/login"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "7px 13px",
-            borderRadius: 3,
-            background: "var(--btn-bg)",
-            color: "var(--btn-fg)",
-          }}
+          aria-label={t("header.login")}
+          className={styles.loginButton}
         >
           <LogIn size={15} strokeWidth={2} />
-          {t("header.login")}
+          <span>{t("header.login")}</span>
         </a>
-        <LangSwitcher />
+        <div className={styles.language}><LangSwitcher /></div>
         <button
           onClick={toggleTheme}
           title={t("header.tema")}
           aria-label={t("header.tema")}
-          style={{
-            height: 30,
-            width: 30,
-            border: "none",
-            background: "transparent",
-            color: "var(--fg)",
-            cursor: "pointer",
-            fontSize: 17,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 0,
-          }}
+          className={styles.themeButton}
         >
           {theme === "dark" ? "☀" : "☾"}
         </button>

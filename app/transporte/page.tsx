@@ -104,7 +104,7 @@ export default function TransportePage() {
         </section>
 
         <section className={pageStyles.routeBoard} aria-labelledby="route-board-title">
-          <div className={pageStyles.boardHeading}><div><span className={pageStyles.sectionKicker}>{t("transporte.intro").split(".")[0]}</span><h2 id="route-board-title">{t("transporte.rutasHorarios")}</h2></div><p>{t("transporte.preciosNota")}</p></div>
+          <div className={pageStyles.boardHeading}><div><span className={pageStyles.sectionKicker}>{t("nav.transporte")}</span><h2 id="route-board-title">{t("transporte.rutasHorarios")}</h2></div><p>{t("transporte.preciosNota")}</p></div>
           <div className={pageStyles.boardLabels} aria-hidden="true"><span>Ruta</span><span>{t("ficha.duracion")}</span><span>{t("home.salidas")}</span><span>{t("common.desde")}</span><span /></div>
           {isLoading && <p className={pageStyles.emptyState} role="status">{t("lista.cargandoRutas")}</p>}
           {isError && <p className={pageStyles.emptyState} role="alert">{t("lista.errorRutas")}</p>}

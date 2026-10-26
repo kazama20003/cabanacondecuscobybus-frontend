@@ -1,0 +1,52 @@
+.header {
+  position: sticky;
+  z-index: 50;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: auto;
+  margin: 0 -24px;
+  padding: 12px 24px;
+  background: var(--bg);
+}
+.brandNav { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.logoLink { display: flex; flex: 0 0 auto; align-items: center; margin-right: 8px; }
+.logo { display: block; width: auto; height: 34px; border-radius: 8px; }
+.nav { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
+.navLink,.actionPill { display: flex; align-items: center; gap: 6px; border-radius: 3px; background: var(--pill-bg); color: var(--pill-fg); text-decoration: none; }
+.navLink { padding: 7px 11px; }
+.active { background: var(--fg); color: var(--bg); }
+.actions { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
+.actionPill { padding: 7px 10px; }
+.contactLink { padding-inline: 12px; }
+.cartLink { position: relative; }
+.loginButton { display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 3px; background: var(--btn-bg); color: var(--btn-fg); text-decoration: none; }
+.language { display: flex; align-items: center; }
+.themeButton { display: flex; width: 30px; height: 30px; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; color: var(--fg); cursor: pointer; font-size: 17px; }
+
+@media (max-width: 760px) {
+  .header { display: grid; grid-template-areas: "logo actions" "nav nav"; grid-template-columns: auto minmax(0, 1fr); gap: 6px 8px; margin-inline: -24px; padding: 7px 12px; }
+  .brandNav { display: contents; }
+  .logoLink { grid-area: logo; margin: 0; }
+  .logo { height: 29px; }
+  .nav { grid-area: nav; flex-wrap: nowrap; gap: 5px; width: 100%; overflow-x: auto; padding: 0 0 2px; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .navLink { flex: 0 0 auto; gap: 4px; padding: 5px 6px; font-size: 10px; white-space: nowrap; }
+  .navLink svg { width: 13px; height: 13px; }
+  .actions { grid-area: actions; justify-self: end; gap: 4px; font-size: 12px; }
+  .actionPill { width: 31px; height: 31px; justify-content: center; padding: 0; }
+  .contactLink span,.loginButton span { display: none; }
+  .actionPill svg,.loginButton svg { width: 15px; height: 15px; }
+  .loginButton { width: 31px; height: 31px; justify-content: center; padding: 0; }
+  .language { max-width: 62px; overflow: hidden; }
+  .themeButton { width: 27px; height: 31px; font-size: 15px; }
+}
+
+@media (max-width: 360px) {
+  .header { padding-inline: 9px; }
+  .navLink { padding-inline: 5px; font-size: 9px; }
+  .actions { gap: 3px; }
+  .language { max-width: 55px; }
+}
