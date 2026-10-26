@@ -11,24 +11,24 @@ import {
   MapIcon,
   RepeatIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/native-ui/card";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/native-ui/select";
+import { Separator } from "@/components/native-ui/separator";
 import {
   useCrearPlantilla,
   useCrearSalida,

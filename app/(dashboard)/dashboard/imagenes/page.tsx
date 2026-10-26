@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/native-ui/card";
 
 export default function PaginaImagenes() {
   return (

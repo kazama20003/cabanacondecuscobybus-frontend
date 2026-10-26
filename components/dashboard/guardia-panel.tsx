@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { tokenStorage } from "@/lib/api";
 

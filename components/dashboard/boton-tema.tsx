@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MoonIcon, SunIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/native-ui/button";
 
 /* Alterna el mismo data-theme que usa el sitio público (localStorage 'inca-theme'). */
 export function BotonTema() {

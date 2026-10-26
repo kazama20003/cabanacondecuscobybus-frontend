@@ -1,7 +1,7 @@
 import { AdminSidebar } from "@/components/dashboard/admin-sidebar";
 import { GuardiaPanel } from "@/components/dashboard/guardia-panel";
 import { PanelHeader } from "@/components/dashboard/panel-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/native-ui/sidebar";
 
 export default function DashboardLayout({
   children,

@@ -7,9 +7,9 @@ import {
   PlusIcon,
   Trash2Icon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/native-ui/button";
+import { Input } from "@/components/native-ui/input";
+import { Label } from "@/components/native-ui/label";
 
 /**
  * Editor de lista de ítems (uno por línea al persistir).

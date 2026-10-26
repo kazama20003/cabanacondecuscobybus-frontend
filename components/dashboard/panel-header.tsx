@@ -11,9 +11,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "@/components/native-ui/breadcrumb";
+import { Separator } from "@/components/native-ui/separator";
+import { SidebarTrigger } from "@/components/native-ui/sidebar";
 
 /** Etiqueta legible por cada segmento conocido de la ruta. */
 const ETIQUETAS: Record<string, string> = {

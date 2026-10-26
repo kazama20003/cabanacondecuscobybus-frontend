@@ -3,17 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon, Trash2Icon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/native-ui/card";
+import { Checkbox } from "@/components/native-ui/checkbox";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/native-ui/table";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import {

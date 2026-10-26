@@ -3,24 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/native-ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/native-ui/select";
+import { Input } from "@/components/native-ui/input";
+import { Skeleton } from "@/components/native-ui/skeleton";
 import {
   Table,
   TableBody,
@@ -28,8 +28,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/components/native-ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/native-ui/tabs";
 import { Paginacion } from "@/components/dashboard/paginacion";
 import {
   useActualizarPlantilla,

@@ -29,7 +29,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/native-ui/sidebar";
 import { useMiPerfil } from "@/hooks/use-auth";
 import { avatarStorage } from "@/lib/api";
 import { LOGO_URL } from "@/lib/data";

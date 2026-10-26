@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import { FilmIcon, ImageIcon, Loader2Icon, Trash2Icon, UploadIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/native-ui/badge";
+import { Button } from "@/components/native-ui/button";
+import { Label } from "@/components/native-ui/label";
 import { servicioArchivos } from "@/lib/api";
 import type { MedioEntrada } from "@/lib/api";
 

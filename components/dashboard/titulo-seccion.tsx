@@ -1,4 +1,4 @@
-import { CardDescription, CardTitle } from "@/components/ui/card";
+import { CardDescription, CardTitle } from "@/components/native-ui/card";
 
 /** Encabezado de sección de formulario: número en círculo + icono + título. */
 export function TituloSeccion({
