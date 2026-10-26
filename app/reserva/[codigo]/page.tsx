@@ -79,7 +79,7 @@ export default function ReservaPage() {
   const pagar = async () => {
     setErrorPago(null);
     try {
-      const datos = await iniciarPago.mutateAsync(codigo);
+      const datos = await iniciarPago.mutateAsync({ codigo, token: token ?? undefined });
       setPago(datos);
     } catch (e) {
       setErrorPago(e instanceof ApiError ? e.message : t("reserva.errorPago"));
