@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
+import { useLayoutEffect } from "react";
 import { cn } from "@/lib/utils";
 import { NativeSlot } from "@/components/native-ui/native-slot";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
 
-type MenuContextValue = { open: boolean; setOpen: (open: boolean) => void };
+type MenuContextValue = { open: boolean; setOpen: (open: boolean) => void; triggerRef: React.RefObject<HTMLButtonElement | null>; contentRef: React.RefObject<HTMLDivElement | null> };
 const MenuContext = React.createContext<MenuContextValue | null>(null);
 const useMenu = () => React.useContext(MenuContext);
 
@@ -14,26 +16,60 @@ function DropdownMenu({ children, open: controlledOpen, onOpenChange, ...props }
   const open = controlledOpen ?? localOpen;
   const setOpen = (next: boolean) => { if (controlledOpen === undefined) setLocalOpen(next); onOpenChange?.(next); };
   const ref = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     if (!open) return;
-    const close = (event: PointerEvent) => { if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false); };
+    const close = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (ref.current?.contains(target) || contentRef.current?.contains(target)) return;
+      setOpen(false);
+    };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
     document.addEventListener("pointerdown", close);
     document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", escape); };
   }, [open]);
-  return <MenuContext.Provider value={{ open, setOpen }}><div ref={ref} data-slot="dropdown-menu" className="relative inline-block" {...props}>{children}</div></MenuContext.Provider>;
+  return <MenuContext.Provider value={{ open, setOpen, triggerRef, contentRef }}><div ref={ref} data-slot="dropdown-menu" className="relative inline-block" {...props}>{children}</div></MenuContext.Provider>;
 }
 function DropdownMenuPortal({ children }: { children?: React.ReactNode }) { return <>{children}</>; }
 function DropdownMenuTrigger({ asChild, className, children, onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
   const menu = useMenu();
-  const triggerProps = { ...props, "data-slot": "dropdown-menu-trigger", "aria-haspopup": "menu" as const, "aria-expanded": menu?.open, className, onClick: (event: React.MouseEvent<HTMLButtonElement>) => { onClick?.(event); menu?.setOpen(!menu.open); } };
+  const triggerProps = { ...props, ref: menu?.triggerRef, "data-slot": "dropdown-menu-trigger", "aria-haspopup": "menu" as const, "aria-expanded": menu?.open, className, onClick: (event: React.MouseEvent<HTMLButtonElement>) => { onClick?.(event); menu?.setOpen(!menu.open); } };
   return asChild ? <NativeSlot {...triggerProps}>{children as React.ReactElement}</NativeSlot> : <button type="button" {...triggerProps}>{children}</button>;
 }
-function DropdownMenuContent({ className, children, align = "start", sideOffset: _sideOffset, side: _side, ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: "start" | "center" | "end"; side?: "top" | "right" | "bottom" | "left"; sideOffset?: number }) {
+function DropdownMenuContent({ className, children, align = "start", sideOffset = 4, side = "bottom", ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: "start" | "center" | "end"; side?: "top" | "right" | "bottom" | "left"; sideOffset?: number }) {
   const menu = useMenu();
-  if (!menu?.open) return null;
-  return <div role="menu" data-slot="dropdown-menu-content" data-align={align} className={cn("absolute right-0 z-50 mt-1 min-w-40 overflow-hidden rounded-2xl bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10", className)} {...props}>{children}</div>;
+  const [mounted, setMounted] = React.useState(false);
+  const [position, setPosition] = React.useState<React.CSSProperties | null>(null);
+  React.useEffect(() => setMounted(true), []);
+  useLayoutEffect(() => {
+    if (!menu?.open || !mounted || !menu.triggerRef.current || !menu.contentRef.current) return;
+    const update = () => {
+      const trigger = menu.triggerRef.current?.getBoundingClientRect();
+      const content = menu.contentRef.current?.getBoundingClientRect();
+      if (!trigger || !content) return;
+      const gap = sideOffset;
+      const width = content.width;
+      const height = content.height;
+      let left = align === "end" ? trigger.right - width : align === "center" ? trigger.left + (trigger.width - width) / 2 : trigger.left;
+      let top = trigger.bottom + gap;
+      if (side === "right") { left = trigger.right + gap; top = align === "end" ? trigger.bottom - height : align === "center" ? trigger.top + (trigger.height - height) / 2 : trigger.top; }
+      else if (side === "left") { left = trigger.left - width - gap; top = align === "end" ? trigger.bottom - height : trigger.top; }
+      else if (side === "top") top = trigger.top - height - gap;
+      if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8;
+      if (left < 8) left = 8;
+      if (top + height > window.innerHeight - 8) top = trigger.top - height - gap;
+      if (top < 8) top = Math.min(window.innerHeight - height - 8, trigger.bottom + gap);
+      setPosition({ position: "fixed", left, top, zIndex: 100, maxHeight: `calc(100vh - 16px)`, overflowY: "auto", "--radix-dropdown-menu-trigger-width": `${trigger.width}px` } as React.CSSProperties);
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => { window.removeEventListener("resize", update); window.removeEventListener("scroll", update, true); };
+  }, [menu?.open, mounted, side, align, sideOffset, children]);
+  if (!menu?.open || !mounted) return null;
+  return createPortal(<div ref={menu.contentRef} role="menu" data-slot="dropdown-menu-content" data-align={align} style={position ?? { position: "fixed", visibility: "hidden" }} className={cn("min-w-40 overflow-y-auto rounded-2xl bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10", className)} {...props}>{children}</div>, document.body);
 }
 function DropdownMenuGroup({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) { return <div role="group" data-slot="dropdown-menu-group" className={className} {...props} />; }
 function DropdownMenuItem({ className, inset, variant = "default", onClick, onSelect, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { inset?: boolean; variant?: "default" | "destructive"; onSelect?: (event: Event) => void }) {
