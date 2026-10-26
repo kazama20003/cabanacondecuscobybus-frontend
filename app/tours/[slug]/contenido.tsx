@@ -78,6 +78,7 @@ export default function TourPage() {
   const precio = precioDesde(salidas);
   const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
   const portada = tour.imagenes?.[0];
+  const imagenesGaleria = (tour.imagenes ?? []).filter((medio) => medio.tipo !== "VIDEO");
   const esEvento = Boolean(tour.esEvento);
   const locale = idioma === "ja" ? "ja-JP" : idioma === "en" ? "en-US" : idioma === "pt" ? "pt-BR" : idioma === "fr" ? "fr-FR" : idioma === "it" ? "it-IT" : idioma === "ru" ? "ru-RU" : "es-PE";
   const fechaTemporada = (value?: string | null) => {
@@ -160,21 +161,36 @@ export default function TourPage() {
           {itinerarios.length === 0 ? (
             <p className={styles.detailIntro}>El orden de las visitas, los horarios y los accesos se confirman según la fecha y las condiciones de operación. Consulta los detalles antes de reservar.</p>
           ) : (
+            <>
+            <div className={styles.itineraryOverview}>
+              <span className={styles.sectionEyebrow}>Punto de encuentro</span>
+              <strong>{itinerarios[0]?.titulo}</strong>
+              <p>El recorrido comienza en este punto. Confirma la hora exacta y la ubicación de encuentro en tu reserva; el orden y los horarios de las actividades pueden variar según el programa local.</p>
+            </div>
             <ol className={styles.itinerary}>
-              {itinerarios.map((it) => (
+              {itinerarios.map((it, index) => {
+                const mediosPropios = it.imagenes ?? [];
+                const imagenGaleria = imagenesGaleria.filter((medio) => medio.url !== portada?.url)[index];
+                const mediosVisibles = mediosPropios.length ? mediosPropios : imagenGaleria ? [imagenGaleria] : [];
+                return (
                 <li key={it.id} className={styles.itineraryItem}>
+                  <span className={styles.itineraryStepLabel}>{index === 0 ? "Inicio del recorrido" : `Parada ${index}`}</span>
                   <div className={styles.itineraryStageHead}>
                     <strong>{it.titulo}</strong>
                     <div className={styles.itineraryStageMeta}>
                       {formatoTiempoRelativo(it.minutosDesdeSalida) && <span>{formatoTiempoRelativo(it.minutosDesdeSalida)}</span>}
                       {formatearDuracion(it.duracionEstimadaMinutos ?? undefined) && <span>Duración: {formatearDuracion(it.duracionEstimadaMinutos ?? undefined)}</span>}
+                      {it.latitud != null && it.longitud != null && <a href={`https://www.google.com/maps/search/?api=1&query=${it.latitud},${it.longitud}`} target="_blank" rel="noopener noreferrer">Ver ubicación</a>}
                     </div>
                   </div>
                   {it.descripcion && <div className={styles.itineraryDescription}>{it.descripcion}</div>}
-                  {it.imagenes?.length ? <div className={styles.itineraryMediaGrid}>{it.imagenes.map((medio) => <div key={medio.clave ?? medio.url} className={styles.itineraryMedia}><ImageSlot radius={8} src={medio.tipo === "VIDEO" ? undefined : medio.url} video={medio.tipo === "VIDEO" ? medio.url : undefined} placeholder={medio.textoAlterno ?? it.titulo} /></div>)}</div> : null}
+                  {mediosVisibles.length > 0 && <div className={styles.itineraryMediaGrid}>{mediosVisibles.map((medio) => <div key={medio.clave ?? medio.url} className={styles.itineraryMedia}><ImageSlot radius={8} src={medio.tipo === "VIDEO" ? undefined : medio.url} video={medio.tipo === "VIDEO" ? medio.url : undefined} placeholder={medio.textoAlterno ?? it.titulo} /></div>)}</div>}
+                  {mediosPropios.length === 0 && imagenGaleria && <p className={styles.itineraryMediaNote}>Imagen de la galería de esta experiencia; es referencial para esta parada.</p>}
                 </li>
-              ))}
+                );
+              })}
             </ol>
+            </>
           )}
         </div>
         <div>
