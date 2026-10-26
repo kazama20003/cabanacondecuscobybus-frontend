@@ -25,5 +25,59 @@
 .emptyState { margin: 0; padding: 40px 18px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 .travelNote { display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 18px; margin: 96px 0 30px; padding: 26px; border-radius: 10px; background: var(--card); }.noteIcon { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: 50%; }.travelNote h2 { margin: 6px 0 3px; font-size: 22px; font-weight: 550; letter-spacing: -.03em; }.travelNote p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }.travelNote > a { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-radius: 5px; background: var(--btn-bg); color: var(--btn-fg); font-size: 11px; font-weight: 650; text-decoration: none; }
 @media (max-width: 1050px) { .routeRow { grid-template-columns: 24px minmax(260px, 1.7fr) minmax(80px, .5fr) minmax(105px, .65fr) 75px 96px; gap: 13px; padding: 15px 12px; }.boardLabels { grid-template-columns: minmax(280px, 1.7fr) minmax(80px, .5fr) minmax(105px, .65fr) 75px 96px; gap: 13px; padding-inline: 12px; }.routePrice small:last-child { display: none; }.routeAction { padding-inline: 8px; } }
-@media (max-width: 760px) { .transportHero { grid-template-columns: 1fr; gap: 26px; min-height: unset; padding: 32px 0; }.heroCopy h1 { font-size: clamp(46px, 12vw, 76px); }.heroRoute { min-height: 210px; }.routeFinder { grid-template-columns: 1fr 28px 1fr; gap: 12px; margin-bottom: 40px; padding: 15px; }.finderHeading { grid-column: 1 / -1; padding: 0 0 10px; border: 0; border-bottom: 1px solid var(--line); }.resultCount { grid-column: 1 / -1; grid-row: 3; display: flex; align-items: baseline; justify-content: flex-end; gap: 8px; padding: 9px 0 0; border: 0; }.boardHeading { align-items: start; flex-direction: column; gap: 9px; }.boardHeading > p { text-align: left; }.boardLabels { display: none; }.routeRow { grid-template-columns: 25px minmax(0, 1fr) minmax(72px, .35fr); gap: 10px 12px; min-height: 0; padding: 18px 6px; }.routePath { grid-column: 2 / -1; grid-row: 1; }.routeDuration { grid-column: 2; grid-row: 2; }.routeDeparture { grid-column: 3; grid-row: 2; }.routePrice { grid-column: 2; grid-row: 3; }.routeAction { grid-column: 3; grid-row: 3; }.routeNumber { grid-column: 1; grid-row: 1; }.routeInfo { padding-top: 8px; border-top: 1px solid var(--line); }.routePrice { padding-top: 8px; border-top: 1px solid var(--line); }.travelNote { grid-template-columns: 42px 1fr; gap: 14px; margin-top: 60px; padding: 20px 16px; }.noteIcon { width: 42px; height: 42px; }.travelNote > a { grid-column: 2; justify-self: start; margin-top: 4px; } }
-@media (max-width: 460px) { .routeFinder { grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr); gap: 8px; }.filterField select { padding-inline: 8px; font-size: 11px; }.routePath { grid-template-columns: minmax(0,1fr) 28px minmax(0,1fr); gap: 7px; }.routeNode { gap: 6px; }.routeNode strong { font-size: 12px; }.routeConnector span { max-width: 28px; overflow: hidden; font-size: 0; }.routeConnector span svg { width: 13px; }.routeInfo > strong { font-size: 11px; }.routePrice strong { font-size: 15px; } }
+@media (max-width: 760px) {
+  .transportHero { grid-template-columns: 1fr; gap: 22px; min-height: unset; padding: 28px 0 30px; }
+  .eyebrow { margin-bottom: 16px; }
+  .heroCopy h1 { max-width: 620px; font-size: clamp(40px, 10.5vw, 62px); line-height: .94; letter-spacing: -.07em; }
+  .heroCopy > p { margin-top: 16px; font-size: 13px; line-height: 1.6; }
+  .heroRoute { min-height: 170px; }
+  .heroRouteLine { top: 28%; left: 24%; width: 54%; }
+  .heroPoint { top: 28%; left: 16%; }
+  .heroPointEnd { top: 21%; right: 14%; left: auto; }
+  .routeFinder { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 38px; padding: 16px; }
+  .finderHeading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 0 0 11px; border: 0; border-bottom: 1px solid var(--line); }
+  .finderHeading strong { text-align: right; }
+  .filterField { gap: 6px; }
+  .filterField select { min-height: 46px; font-size: 14px; }
+  .finderArrow { height: 4px; transform: rotate(90deg); }
+  .resultCount { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 10px 0 0; border: 0; border-top: 1px solid var(--line); }
+  .resultCount strong { font-size: 20px; }
+  .boardHeading { align-items: start; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+  .boardHeading h2 { font-size: 32px; }
+  .boardHeading > p { text-align: left; font-size: 11px; }
+  .boardLabels { display: none; }
+  .routeRow { position: relative; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 13px 12px; min-height: 0; margin: 0 0 12px; padding: 16px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+  .routeRow:hover { background: var(--card); }
+  .routeNumber { position: absolute; top: 12px; right: 13px; padding: 0; }
+  .routePath { grid-column: 1 / -1; grid-row: 1; grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr); gap: 7px; min-height: 52px; padding-right: 32px; }
+  .routeNode { gap: 7px; }
+  .routeNode strong { font-size: 13px; }
+  .routeNode small { font-size: 8px; }
+  .routeConnector span { min-width: 22px; height: 22px; padding: 0 3px; font-size: 8px; }
+  .stopList { margin-left: 16px; font-size: 10px; }
+  .routeDuration { grid-column: 1; grid-row: 2; }
+  .routeDeparture { grid-column: 2; grid-row: 2; }
+  .routeInfo { gap: 5px; min-height: 54px; padding: 9px 0 0; border-top: 1px solid var(--line); }
+  .infoLabel { gap: 5px; font-size: 9px; }
+  .infoLabel svg { width: 12px; height: 12px; }
+  .routeInfo > strong { overflow-wrap: anywhere; font-size: 11px; line-height: 1.35; }
+  .routeInfo > small { font-size: 9px; }
+  .routePrice { grid-column: 1; grid-row: 3; gap: 3px; padding-top: 8px; border-top: 1px solid var(--line); }
+  .routePrice small { font-size: 8px; }
+  .routePrice strong { font-size: 16px; }
+  .routeAction { grid-column: 2; grid-row: 3; min-height: 42px; align-self: end; padding: 8px; font-size: 11px; }
+  .travelNote { grid-template-columns: 40px minmax(0, 1fr); gap: 13px; margin-top: 52px; padding: 18px 14px; }
+  .noteIcon { width: 40px; height: 40px; }
+  .travelNote h2 { font-size: 19px; }
+  .travelNote p { font-size: 11px; }
+  .travelNote > a { grid-column: 1 / -1; justify-self: stretch; justify-content: space-between; min-height: 44px; margin: 2px 0 0; }
+}
+@media (max-width: 380px) {
+  .transportPage { margin-inline: -4px; }
+  .heroCopy h1 { font-size: 39px; }
+  .routeFinder { padding: 13px; }
+  .routeRow { gap: 11px 9px; padding: 14px 11px; }
+  .routePath { grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 5px; }
+  .routeNode strong { font-size: 12px; }
+  .routeConnector span { min-width: 20px; height: 20px; }
+}
