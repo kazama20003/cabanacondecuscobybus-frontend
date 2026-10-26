@@ -6,7 +6,7 @@ import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
 import AddToCart from "@/components/add-to-cart";
-import { CONTACT } from "@/lib/data";
+import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTour } from "@/hooks/use-catalogo";
@@ -217,14 +217,14 @@ export default function TourPage() {
               />
             </div>
             <div className={styles.bookingActions}>
-              <a
+              {canalesReservaPara("TOUR", tour.esEvento).includes("WHATSAPP") && <a
                 href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(`${t("wa.tourInfo")}${heading}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.cardCta}
               >
                 {t("common.reservarWhatsapp")}
-              </a>
+              </a>}
               <Link href="/contacto" className={styles.secondaryCta}>
                 {t("detalle.consultar")}
               </Link>

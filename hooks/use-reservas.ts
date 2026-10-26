@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { claves, servicioReservas } from "@/lib/api";
-import type { ComprobanteSaldoEntrada } from "@/lib/api";
+import type { ComprobanteSaldoEntrada, SolicitudGestionReservaEntrada } from "@/lib/api";
 
 export function useCrearReserva() {
   return useMutation({ mutationFn: servicioReservas.crear });
@@ -42,5 +42,15 @@ export function useRegistrarComprobanteSaldo() {
         params.token,
         params.datos,
       ),
+  });
+}
+
+export function useSolicitarGestionReserva() {
+  return useMutation({
+    mutationFn: (params: {
+      codigo: string;
+      token: string | undefined;
+      datos: SolicitudGestionReservaEntrada;
+    }) => servicioReservas.solicitarGestion(params.codigo, params.token, params.datos),
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect -- lectura de token/sesión al montar */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import {
   useReservaInvitado,
   useMisReservas,
   useIniciarPagoAdelanto,
+  useSolicitarGestionReserva,
 } from "@/hooks/use-reservas";
 import { obtenerTokenInvitado } from "@/lib/reservas-invitado";
 import { tokenStorage, ApiError } from "@/lib/api";
@@ -33,6 +34,11 @@ export default function ReservaPage() {
   const [pago, setPago] = useState<PagoAdelantoApi | null>(null);
   const [errorPago, setErrorPago] = useState<string | null>(null);
   const [confirmandoPago, setConfirmandoPago] = useState(() => searchParams.get("confirmando") === "1");
+  const [tipoSolicitud, setTipoSolicitud] = useState<"CANCELACION" | "REPROGRAMACION">("CANCELACION");
+  const [motivoSolicitud, setMotivoSolicitud] = useState("");
+  const [fechaPreferida, setFechaPreferida] = useState("");
+  const [respuestaSolicitud, setRespuestaSolicitud] = useState("");
+  const [errorSolicitud, setErrorSolicitud] = useState("");
 
   useEffect(() => {
     setToken(obtenerTokenInvitado(codigo));
@@ -42,6 +48,7 @@ export default function ReservaPage() {
   const invitado = useReservaInvitado(codigo, token ?? "");
   const mias = useMisReservas(logueado && !token);
   const iniciarPago = useIniciarPagoAdelanto();
+  const solicitarGestion = useSolicitarGestionReserva();
 
   const reserva: ReservaApi | undefined =
     invitado.data ?? mias.data?.find((r) => r.codigo === codigo);
@@ -113,6 +120,28 @@ export default function ReservaPage() {
   const simbolo = moneda === "USD" ? "US$" : "S/";
   const pasajeros = Array.isArray(reserva.pasajeros) ? reserva.pasajeros.length : num(reserva.cantidadPasajeros);
   const puedePagar = estado === "PENDIENTE_PAGO";
+  const puedeSolicitarCambio = !["CANCELADA", "COMPLETADA", "VENCIDA"].includes(estado);
+  const enviarSolicitudGestion = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorSolicitud("");
+    setRespuestaSolicitud("");
+    try {
+      const resultado = await solicitarGestion.mutateAsync({
+        codigo,
+        token: token ?? undefined,
+        datos: {
+          tipo: tipoSolicitud,
+          motivo: motivoSolicitud,
+          fechaPreferida: tipoSolicitud === "REPROGRAMACION" && fechaPreferida ? new Date(`${fechaPreferida}T12:00:00`).toISOString() : undefined,
+        },
+      });
+      setRespuestaSolicitud(resultado.mensaje);
+      setMotivoSolicitud("");
+      setFechaPreferida("");
+    } catch (error) {
+      setErrorSolicitud(error instanceof ApiError ? error.message : "No se pudo enviar la solicitud. Intenta nuevamente.");
+    }
+  };
 
   const fila = (etiqueta: string, valor: string) => (
     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14, padding: "8px 0", borderTop: "1px solid var(--line)" }}>
@@ -181,6 +210,28 @@ export default function ReservaPage() {
             <p style={{ margin: "12px 0 0", fontSize: 13, color: "var(--muted)", lineHeight: 1.55 }}>
               {t("reserva.invitadoNota")}
             </p>
+          )}
+          {puedeSolicitarCambio && (token || logueado) && (
+            <section style={{ marginTop: 22, paddingTop: 18, borderTop: "1px solid var(--line)" }}>
+              <h3 style={{ margin: "0 0 8px", fontSize: 15, fontWeight: 650 }}>Cambios o cancelación</h3>
+              <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.5 }}>
+                Envía una solicitud. La reserva no cambia hasta que administración la revise según la política publicada.
+                {process.env.NEXT_PUBLIC_URL_CANCELACIONES && <> {" "}<a href={process.env.NEXT_PUBLIC_URL_CANCELACIONES} target="_blank" rel="noopener noreferrer">Ver política</a></>}
+              </p>
+              <form onSubmit={(event) => void enviarSolicitudGestion(event)} style={{ display: "grid", gap: 9 }}>
+                <select aria-label="Tipo de solicitud" value={tipoSolicitud} onChange={(event) => setTipoSolicitud(event.target.value as "CANCELACION" | "REPROGRAMACION")} style={{ width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--fg)" }}>
+                  <option value="CANCELACION">Solicitar cancelación</option>
+                  <option value="REPROGRAMACION">Solicitar cambio de fecha</option>
+                </select>
+                {tipoSolicitud === "REPROGRAMACION" && <input aria-label="Fecha preferida" type="date" value={fechaPreferida} onChange={(event) => setFechaPreferida(event.target.value)} style={{ width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--fg)" }} />}
+                <textarea aria-label="Motivo" value={motivoSolicitud} onChange={(event) => setMotivoSolicitud(event.target.value)} required maxLength={1000} rows={3} placeholder="Cuéntanos el motivo" style={{ width: "100%", padding: 9, borderRadius: 7, border: "1px solid var(--line)", background: "var(--bg)", color: "var(--fg)", resize: "vertical" }} />
+                {errorSolicitud && <p role="alert" style={{ margin: 0, color: "#b42318", fontSize: 12 }}>{errorSolicitud}</p>}
+                {respuestaSolicitud && <p role="status" style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>{respuestaSolicitud}</p>}
+                <button type="submit" disabled={solicitarGestion.isPending} style={{ border: "1px solid var(--line)", borderRadius: 7, padding: "9px 12px", background: "var(--bg)", color: "var(--fg)", fontWeight: 600, cursor: solicitarGestion.isPending ? "wait" : "pointer" }}>
+                  {solicitarGestion.isPending ? "Enviando…" : "Enviar solicitud"}
+                </button>
+              </form>
+            </section>
           )}
         </aside>
       </div>

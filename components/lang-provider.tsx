@@ -16,6 +16,11 @@ export const IDIOMAS = [
 ] as const;
 
 export type LangCode = (typeof IDIOMAS)[number];
+export const IDIOMAS_HABILITADOS: readonly LangCode[] = (() => {
+  const configurados = (process.env.NEXT_PUBLIC_IDIOMAS_SITIO ?? "es,en,fr,it,pt,zh,ja,ru,de")
+    .split(",").map((valor) => valor.trim()).filter((valor): valor is LangCode => IDIOMAS.includes(valor as LangCode));
+  return [...new Set(["es" as LangCode, ...configurados])];
+})();
 
 const CLAVE_STORAGE = "inca-lang";
 
@@ -37,13 +42,14 @@ export function IdiomaProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const guardado = localStorage.getItem(CLAVE_STORAGE) as LangCode | null;
-      if (guardado && IDIOMAS.includes(guardado)) setIdiomaState(guardado);
+      if (guardado && IDIOMAS_HABILITADOS.includes(guardado)) setIdiomaState(guardado);
     } catch {
       /* localStorage no disponible */
     }
   }, []);
 
   const setIdioma = (code: LangCode) => {
+    if (!IDIOMAS_HABILITADOS.includes(code)) return;
     setIdiomaState(code);
     try {
       localStorage.setItem(CLAVE_STORAGE, code);

@@ -287,11 +287,21 @@ export type EntidadAuditoria =
   | "PLANTILLA_SALIDA"
   | "PROMOCION"
   | "USUARIO"
-  | "PAGO";
+  | "PAGO"
+  | "RESERVA";
 
 export interface AuditoriaApi {
   id: string;
-  accion: "CREAR" | "ACTUALIZAR" | "ELIMINAR" | "DESACTIVAR" | "CONFIRMAR";
+  accion:
+    | "CREAR"
+    | "ACTUALIZAR"
+    | "ELIMINAR"
+    | "DESACTIVAR"
+    | "CONFIRMAR"
+    | "CONFIRMAR_PAGO_MANUAL"
+    | "IPN_PAGO_RESERVA_NO_VIGENTE"
+    | "SOLICITUD_CANCELACION"
+    | "SOLICITUD_REPROGRAMACION";
   entidad: EntidadAuditoria;
   entidadId: string | null;
   descripcion: string;
@@ -429,6 +439,8 @@ export interface CrearReservaEntrada {
   moneda: Moneda;
   pasajeros: PasajeroEntrada[];
   codigoPromocion?: string;
+  aceptaPoliticas: boolean;
+  versionPoliticas: string;
 }
 
 /* Respuesta de POST /reservas/:codigo/iniciar-pago-adelanto */
@@ -445,6 +457,7 @@ export interface ReservaApi {
   id: string;
   codigo: string;
   estado: string;
+  expiraEn?: string;
   tokenGestionInvitado?: string;
   montoTotal?: number;
   montoAdelanto?: number;
@@ -455,6 +468,12 @@ export interface ComprobanteSaldoEntrada {
   codigoOperacion: string;
   urlComprobante: string;
   metodo: MetodoPago;
+}
+
+export interface SolicitudGestionReservaEntrada {
+  tipo: "CANCELACION" | "REPROGRAMACION";
+  motivo: string;
+  fechaPreferida?: string;
 }
 
 export interface PagoAdminApi {

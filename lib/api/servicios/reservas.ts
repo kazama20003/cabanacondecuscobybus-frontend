@@ -5,6 +5,7 @@ import type {
   CrearReservaEntrada,
   PagoAdelantoApi,
   ReservaApi,
+  SolicitudGestionReservaEntrada,
 } from "../tipos";
 
 export const servicioReservas = {
@@ -29,6 +30,17 @@ export const servicioReservas = {
     datos: ComprobanteSaldoEntrada,
   ) =>
     solicitar<unknown>(endpoints.reservas.comprobanteSaldo(codigo), {
+      metodo: "POST",
+      cuerpo: datos,
+      query: { token },
+    }),
+
+  solicitarGestion: (
+    codigo: string,
+    token: string | undefined,
+    datos: SolicitudGestionReservaEntrada,
+  ) =>
+    solicitar<{ recibida: boolean; mensaje: string }>(endpoints.reservas.solicitudesGestion(codigo), {
       metodo: "POST",
       cuerpo: datos,
       query: { token },
