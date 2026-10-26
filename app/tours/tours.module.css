@@ -93,11 +93,16 @@
 .sectionTitle { margin: 0 0 26px; font-size: clamp(30px, 4vw, 52px); font-weight: 400; letter-spacing: -.055em; line-height: 1; }
 .itinerary { margin: 0; padding: 0; list-style: none; }
 .itinerary { position: relative; padding-left: 27px; }
+.itineraryOverview { display: grid; gap: 7px; margin: 0 0 20px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.itineraryOverview strong { font-size: 17px; }
+.itineraryOverview p { max-width: 680px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
 .itinerary::before { position: absolute; top: 20px; bottom: 20px; left: 9px; width: 1px; background: var(--line); content: ""; }
 .itineraryItem { position: relative; margin: 0 0 14px; padding: 20px 22px 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); line-height: 1.5; }
 .itineraryItem::before { position: absolute; top: 25px; left: -27px; width: 9px; height: 9px; border: 2px solid var(--fg); border-radius: 50%; background: var(--fg); box-shadow: 0 0 0 4px var(--bg); content: ""; }
+.itineraryStepLabel { display: inline-flex; margin-bottom: 8px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .itineraryItem strong { font-size: 16px; font-weight: 650; }
 .itineraryDescription { max-width: 660px; margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.7; text-wrap: pretty; }
+.itineraryMediaNote { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
 .itineraryStageHead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 18px; }
 .itineraryStageMeta { display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: 12px; }
 .itineraryStageMeta span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; }
