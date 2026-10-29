@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { Badge } from "@/components/native-ui/badge";
@@ -78,6 +78,12 @@ const colorEstado: Record<
 export default function PaginaSalidas() {
   const [tipo, setTipo] = useState<"TRANSPORTE" | "TOUR">("TRANSPORTE");
   const [pagina, setPagina] = useState(1);
+  useEffect(() => {
+    const solicitado = new URLSearchParams(window.location.search).get("tipo");
+    if (solicitado !== "TRANSPORTE" && solicitado !== "TOUR") return;
+    const id = window.setTimeout(() => setTipo(solicitado), 0);
+    return () => window.clearTimeout(id);
+  }, []);
   const {
     data: resultado,
     isLoading,
