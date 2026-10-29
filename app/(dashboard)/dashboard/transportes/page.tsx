@@ -25,6 +25,7 @@ import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import { useEliminarTransporte, useTransportes } from "@/hooks/use-catalogo";
 import { toast } from "sonner";
+import { ControlOrdenCatalogo } from "@/components/dashboard/control-orden-catalogo";
 
 export default function PaginaTransportes() {
   const [pagina, setPagina] = useState(1);
@@ -79,11 +80,12 @@ export default function PaginaTransportes() {
                   <TableHead>Slug</TableHead>
                   <TableHead>Salidas</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Orden público</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transportes.map((t) => (
+                {transportes.map((t, index) => (
                   <TableRow key={t.id}>
                     <TableCell>
                       <div className="relative h-11 w-11">
@@ -112,6 +114,9 @@ export default function PaginaTransportes() {
                       <Badge variant={t.activo ? "default" : "secondary"}>
                         {t.activo ? "Activo" : "Inactivo"}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <ControlOrdenCatalogo id={t.id} tipo="TRANSPORTE" posicion={(pagina - 1) * 10 + index + 1} primero={pagina === 1 && index === 0} ultimo={(pagina - 1) * 10 + index + 1 === (resultado?.total ?? 0)} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

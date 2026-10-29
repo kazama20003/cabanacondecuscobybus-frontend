@@ -22,6 +22,7 @@ export const endpoints = {
     eventosAdmin: "/administracion/eventos",
     crearEventoEspecial: "/administracion/eventos",
     actualizarEstadoEvento: (id: string) => `/administracion/eventos/${id}/estado`,
+    reordenar: (id: string) => `/administracion/catalogo/${id}/orden`,
     crearTransporte: "/administracion/transportes",
     crearTour: "/administracion/tours",
     actualizarTransporte: (id: string) => `/administracion/transportes/${id}`,

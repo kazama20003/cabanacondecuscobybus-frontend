@@ -71,6 +71,12 @@ export const servicioCatalogo = {
       cuerpo: { activo },
     }),
 
+  reordenar: (id: string, tipo: "TRANSPORTE" | "TOUR" | "EVENTO", direccion: "ARRIBA" | "ABAJO") =>
+    solicitar<{ id: string; ordenCatalogo: number }>(endpoints.catalogo.reordenar(id), {
+      metodo: "PUT",
+      cuerpo: { tipo, direccion },
+    }),
+
   crearTour: (datos: CrearTourEntrada) =>
     solicitar<TourApi>(endpoints.catalogo.crearTour, {
       metodo: "POST",

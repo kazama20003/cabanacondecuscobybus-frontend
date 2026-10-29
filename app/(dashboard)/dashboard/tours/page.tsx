@@ -25,12 +25,14 @@ import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import { useEliminarTour, useTours } from "@/hooks/use-catalogo";
 import { toast } from "sonner";
+import { ControlOrdenCatalogo } from "@/components/dashboard/control-orden-catalogo";
 
 export default function PaginaTours() {
   const [pagina, setPagina] = useState(1);
   const { data: resultado, isLoading, isError, error } = useTours({
     pagina,
     porPagina: 10,
+    esEvento: false,
   });
   const tours = resultado?.datos ?? [];
   const eliminar = useEliminarTour();
@@ -77,11 +79,12 @@ export default function PaginaTours() {
                   <TableHead>Slug</TableHead>
                   <TableHead>Salidas</TableHead>
                   <TableHead>Estado</TableHead>
+                  <TableHead>Orden público</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {tours.map((tour) => (
+                {tours.map((tour, index) => (
                   <TableRow key={tour.id}>
                     <TableCell>
                       <div className="relative h-11 w-11">
@@ -113,6 +116,9 @@ export default function PaginaTours() {
                       <Badge variant={tour.activo ? "default" : "secondary"}>
                         {tour.activo ? "Activo" : "Inactivo"}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <ControlOrdenCatalogo id={tour.id} tipo="TOUR" posicion={(pagina - 1) * 10 + index + 1} primero={pagina === 1 && index === 0} ultimo={(pagina - 1) * 10 + index + 1 === (resultado?.total ?? 0)} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
