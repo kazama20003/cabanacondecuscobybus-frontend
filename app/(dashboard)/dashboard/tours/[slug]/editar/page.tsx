@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/native-ui/skeleton";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
+import { PreciosServicio } from "@/components/dashboard/precios-servicio";
 import { useActualizarTour, useDefinirItinerario, useTour } from "@/hooks/use-catalogo";
 import type { ContenidoEntrada, ImagenApi, MedioEntrada } from "@/lib/api";
 
@@ -52,6 +53,8 @@ export default function PaginaEditarTour({
 
   useEffect(() => {
     if (!tour || listo) return;
+    // El formulario se hidrata una sola vez cuando llega el registro remoto.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCampos({
       destinoNombre: textoDe(tour.destinoNombre),
       destinoLatitud: textoDe(tour.destinoLatitud),
@@ -165,6 +168,7 @@ export default function PaginaEditarTour({
               <Button type="button" variant="outline" asChild><Link href={`/dashboard/tours/${slug}/traducciones`}>Traducciones</Link></Button>
             </CardContent>
           </Card>
+          <PreciosServicio tipo="TOUR" servicioId={String(tour.id)} />
           <Card>
             <CardHeader>
               <CardTitle>{esEvento ? "Editar evento turístico" : "Editar tour"}</CardTitle>

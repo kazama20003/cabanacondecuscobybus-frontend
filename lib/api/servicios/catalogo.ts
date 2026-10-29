@@ -119,7 +119,7 @@ export const servicioCatalogo = {
       cuerpo: { items },
     }),
 
-  salidasAdmin: (filtros?: ParametrosPagina & { tipo?: "TRANSPORTE" | "TOUR" }) =>
+  salidasAdmin: (filtros?: ParametrosPagina & { tipo?: "TRANSPORTE" | "TOUR"; servicioId?: string }) =>
     solicitar<Paginado<SalidaAdminApi>>(endpoints.catalogo.salidasAdmin, {
       query: filtros,
     }),

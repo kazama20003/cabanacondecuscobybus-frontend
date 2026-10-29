@@ -204,7 +204,7 @@ export function useDefinirItinerario() {
 }
 
 export function useSalidasAdmin(
-  filtros?: ParametrosPagina & { tipo?: "TRANSPORTE" | "TOUR" },
+  filtros?: ParametrosPagina & { tipo?: "TRANSPORTE" | "TOUR"; servicioId?: string },
 ) {
   return useQuery({
     queryKey: ["salidas-admin", filtros ?? {}],

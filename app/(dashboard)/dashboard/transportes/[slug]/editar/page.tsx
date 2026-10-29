@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/native-ui/skeleton";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
+import { PreciosServicio } from "@/components/dashboard/precios-servicio";
 import { useActualizarTransporte, useTransporte } from "@/hooks/use-catalogo";
 import type { ContenidoEntrada, ImagenApi, MedioEntrada } from "@/lib/api";
 
@@ -50,6 +51,8 @@ export default function PaginaEditarTransporte({
 
   useEffect(() => {
     if (!transporte || listo) return;
+    // El formulario se hidrata una sola vez cuando llega el registro remoto.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCampos({
       origenNombre: textoDe(transporte.origenNombre),
       origenLatitud: textoDe(transporte.origenLatitud),
@@ -132,6 +135,7 @@ export default function PaginaEditarTransporte({
               <Button type="button" variant="outline" asChild><Link href={`/dashboard/transportes/${slug}/traducciones`}>Traducciones</Link></Button>
             </CardContent>
           </Card>
+          <PreciosServicio tipo="TRANSPORTE" servicioId={String(transporte.id)} />
           <Card>
             <CardHeader>
               <CardTitle>Información para viajeros</CardTitle>
