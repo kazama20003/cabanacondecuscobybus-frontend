@@ -192,7 +192,7 @@ export default function PaginaSalidas() {
                   const nombre = s.transporte
                     ? `${s.transporte.origenNombre} → ${s.transporte.destinoNombre}`
                     : (s.tour?.destinoNombre ?? "—");
-                  const llena = s.ocupados >= s.capacidad;
+                  const llena = s.capacidad != null && s.ocupados >= s.capacidad;
                   const servicioInactivo =
                     s.transporte?.activo === false || s.tour?.activo === false;
                   return (
@@ -233,7 +233,7 @@ export default function PaginaSalidas() {
                             llena ? "text-destructive font-semibold" : ""
                           }
                         >
-                          {s.ocupados}/{s.capacidad}
+                          {s.capacidad == null ? `${s.ocupados} · coordinar cupos` : `${s.ocupados}/${s.capacidad}`}
                         </span>
                         <span className="text-muted-foreground ml-2 inline-flex items-center gap-1 text-xs">
                           mín.

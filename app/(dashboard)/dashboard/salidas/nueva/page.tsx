@@ -167,7 +167,7 @@ export default function PaginaNuevaSalida() {
     e.preventDefault();
     if (!opciones.some((opcion) => opcion.id === campos.servicioId)) return;
     const base = {
-      capacidad: Number(campos.capacidad),
+      capacidad: campos.capacidad ? Number(campos.capacidad) : null,
       minimoPasajeros: campos.minimoPasajeros
         ? Number(campos.minimoPasajeros)
         : undefined,
@@ -208,7 +208,6 @@ export default function PaginaNuevaSalida() {
   const servicioElegido = opciones.find((o) => o.id === campos.servicioId);
   const listoParaEnviar =
     servicioElegido &&
-    campos.capacidad &&
     campos.precioPen &&
     campos.precioUsd &&
     (modo === "UNICA"
@@ -512,10 +511,9 @@ export default function PaginaNuevaSalida() {
                 />
                 <div className="grid gap-4 pl-11 sm:grid-cols-2">
                   <div className="grid gap-2">
-                    <Label htmlFor="capacidad">Capacidad</Label>
+                    <Label htmlFor="capacidad">Capacidad (opcional)</Label>
                     <Input
                       id="capacidad"
-                      required
                       type="number"
                       min={1}
                       placeholder="20"
@@ -524,6 +522,7 @@ export default function PaginaNuevaSalida() {
                         setCampos((c) => ({ ...c, capacidad: e.target.value }))
                       }
                     />
+                    <p className="text-muted-foreground text-xs">Déjala vacía para coordinar los cupos internamente, sin límite en el sistema.</p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="minimo">Mínimo pasajeros</Label>
@@ -658,7 +657,7 @@ export default function PaginaNuevaSalida() {
             <div className="flex justify-between gap-2">
               <span className="text-muted-foreground">Capacidad</span>
               <span className="font-medium">
-                {campos.capacidad || "—"}
+                {campos.capacidad || "Cupos por coordinar"}
                 {campos.minimoPasajeros
                   ? ` (mín. ${campos.minimoPasajeros})`
                   : ""}

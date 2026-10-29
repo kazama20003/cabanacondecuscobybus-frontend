@@ -136,7 +136,9 @@ export default function PaginaResumen() {
     (s) => new Date(s.fechaHoraSalida).getTime() < ahora + 7 * DIA_MS,
   );
   const asientosVendidos = proximas.reduce((n, s) => n + s.ocupados, 0);
-  const asientosTotales = proximas.reduce((n, s) => n + s.capacidad, 0);
+  const salidasConCupoFinito = proximas.filter((s) => s.capacidad !== null);
+  const asientosVendidosConCupoFinito = salidasConCupoFinito.reduce((n, s) => n + s.ocupados, 0);
+  const asientosTotales = salidasConCupoFinito.reduce((n, s) => n + (s.capacidad ?? 0), 0);
   const horariosActivos = (plantillas.data ?? []).filter((p) => p.activo);
   const cargandoSalidas = salidasTransporte.isLoading || salidasTour.isLoading;
 
@@ -164,16 +166,16 @@ export default function PaginaResumen() {
   });
 
   const datosOcupacion = [
-    { nombre: "vendidos", valor: asientosVendidos, fill: "var(--chart-1)" },
+    { nombre: "vendidos", valor: asientosVendidosConCupoFinito, fill: "var(--chart-1)" },
     {
       nombre: "libres",
-      valor: Math.max(0, asientosTotales - asientosVendidos),
+      valor: Math.max(0, asientosTotales - asientosVendidosConCupoFinito),
       fill: "var(--chart-5)",
     },
   ];
   const porcentajeOcupacion =
     asientosTotales > 0
-      ? Math.round((asientosVendidos / asientosTotales) * 100)
+      ? Math.round((asientosVendidosConCupoFinito / asientosTotales) * 100)
       : 0;
 
   return (
@@ -217,7 +219,7 @@ export default function PaginaResumen() {
         <TarjetaKpi
           etiqueta="Asientos vendidos"
           valor={asientosVendidos}
-          detalle={`de ${asientosTotales} disponibles`}
+          detalle={proximas.some((s) => s.capacidad === null) ? "Cupos coordinados internamente" : `de ${asientosTotales} disponibles`}
           icono={<UsersIcon />}
           cargando={cargandoSalidas}
         />
@@ -370,7 +372,7 @@ export default function PaginaResumen() {
                   {proximas.slice(0, 8).map((s) => {
                     const porcentaje = Math.min(
                       100,
-                      Math.round((s.ocupados / s.capacidad) * 100),
+                      s.capacidad == null ? 0 : Math.round((s.ocupados / s.capacidad) * 100),
                     );
                     return (
                       <TableRow key={s.id}>
@@ -385,14 +387,14 @@ export default function PaginaResumen() {
                         </TableCell>
                         <TableCell className="min-w-36">
                           <div className="flex items-center gap-2">
-                            <div className="bg-muted h-2 w-20 overflow-hidden rounded-full">
+                            {s.capacidad != null && <div className="bg-muted h-2 w-20 overflow-hidden rounded-full">
                               <div
                                 className="bg-chart-1 h-full rounded-full"
                                 style={{ width: `${porcentaje}%` }}
                               />
-                            </div>
+                            </div>}
                             <span className="text-muted-foreground text-xs">
-                              {s.ocupados}/{s.capacidad}
+                              {s.capacidad == null ? `${s.ocupados} · coordinar cupos` : `${s.ocupados}/${s.capacidad}`}
                             </span>
                           </div>
                         </TableCell>
