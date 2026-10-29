@@ -44,6 +44,7 @@ export type TransportRoute = {
   duration: string;
   distance: string;
   priceFrom: number; // PEN
+  priceUsdFrom?: number;
   departures: string[]; // horarios de salida
   frequency: string;
   vehicle: string;

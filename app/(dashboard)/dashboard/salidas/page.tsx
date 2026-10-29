@@ -188,7 +188,7 @@ export default function PaginaSalidas() {
                   <TableHead>Servicio</TableHead>
                   <TableHead>Fecha y hora</TableHead>
                   <TableHead>Ocupación</TableHead>
-                  <TableHead>Precio S/</TableHead>
+                  <TableHead>Precio S/ · US$</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="w-56">Cambiar estado</TableHead>
                 </TableRow>
@@ -261,7 +261,7 @@ export default function PaginaSalidas() {
                           />
                         </span>
                       </TableCell>
-                      <TableCell>S/ {s.precioPen}</TableCell>
+                      <TableCell>S/ {s.precioPen} · US$ {s.precioUsd}</TableCell>
                       <TableCell>
                         <Badge variant={colorEstado[s.estado]}>
                           {ESTADOS.find((e) => e.valor === s.estado)?.nombre ??
@@ -350,7 +350,7 @@ function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
                 <TableHead>Días</TableHead>
                 <TableHead>Hora</TableHead>
                 <TableHead>Vigencia</TableHead>
-                <TableHead>Precio S/</TableHead>
+                <TableHead>Precio S/ · US$</TableHead>
                 <TableHead>Salidas</TableHead>
                 <TableHead>Activo</TableHead>
                 <TableHead className="w-24" />
@@ -376,7 +376,7 @@ function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
                       {" → "}
                       {p.fechaHasta ? p.fechaHasta.slice(0, 10) : "indefinida"}
                     </TableCell>
-                    <TableCell>S/ {p.precioPen}</TableCell>
+                    <TableCell>S/ {p.precioPen} · US$ {p.precioUsd}</TableCell>
                     <TableCell>{generadas}</TableCell>
                     <TableCell>
                       <Button

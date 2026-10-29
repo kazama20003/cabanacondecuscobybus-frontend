@@ -1,14 +1,13 @@
 "use client";
 
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useCarrito } from "@/components/cart-provider";
 import { useIdioma } from "@/components/lang-provider";
 import { useT, LOCALES } from "@/lib/i18n";
 import type { SalidaApi, TipoServicio } from "@/lib/api";
 import { canalesReservaPara, CONTACT } from "@/lib/data";
-
-const VENDIBLES = ["A_LA_VENTA", "PENDIENTE_DE_MINIMO", "CONFIRMADA"];
+import { salidasFuturasReservables } from "@/lib/precios";
 
 const campo: CSSProperties = {
   width: "100%",
@@ -40,17 +39,20 @@ export default function AddToCart({
   const t = useT();
   const { idioma } = useIdioma();
   const { agregar } = useCarrito();
-  const [ahora] = useState(() => Date.now());
+  const [ahora, setAhora] = useState(0);
+  useEffect(() => {
+    const actualizarAhora = () => setAhora(Date.now());
+    actualizarAhora();
+    const intervalo = window.setInterval(actualizarAhora, 60_000);
+    return () => window.clearInterval(intervalo);
+  }, []);
   const canales = canalesReservaPara(tipoServicio, esEvento);
   const onlineHabilitado = canales.includes("ONLINE");
 
-  const vendibles = salidas
-    .filter(
-      (s) =>
-        VENDIBLES.includes(s.estado) &&
-        new Date(s.fechaHoraSalida).getTime() > ahora,
-    )
-    .sort((a, b) => a.fechaHoraSalida.localeCompare(b.fechaHoraSalida));
+  const vendibles = useMemo(
+    () => ahora > 0 ? salidasFuturasReservables(salidas, ahora) : [],
+    [ahora, salidas],
+  );
 
   const [salidaId, setSalidaId] = useState(vendibles[0]?.id ?? "");
   const [pasajeros, setPasajeros] = useState(1);

@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useTransportes } from "@/hooks/use-catalogo";
 import type { SalidaApi, TransporteApi } from "@/lib/api/tipos";
+import { preciosDesdeSalidas } from "@/lib/precios";
 import pageStyles from "./transporte.module.css";
 
 const estadosReservables = new Set(["A_LA_VENTA", "PENDIENTE_DE_MINIMO", "CONFIRMADA"]);
@@ -36,7 +37,7 @@ function formatoSalida(fecha: string, idioma: string): string {
 
 function RutaFila({ item, index, idioma, t }: { item: TransporteApi; index: number; idioma: string; t: ReturnType<typeof useT> }) {
   const salidas = salidasFuturas(item.salidas);
-  const precios = salidas.map((salida) => Number(salida.precioPen)).filter((precio) => Number.isFinite(precio) && precio > 0);
+  const precio = preciosDesdeSalidas(salidas);
   const paradas = [...(item.paradas ?? [])].sort((a, b) => a.orden - b.orden);
   const duracionEstimada = item.duracionMinutos ?? (typeof item.duracionMinutosEstimada === "number" ? item.duracionMinutosEstimada : undefined);
   const duracion = formatearDuracion(duracionEstimada);
@@ -60,7 +61,7 @@ function RutaFila({ item, index, idioma, t }: { item: TransporteApi; index: numb
       </div>
       <div className={pageStyles.routePrice}>
         <small>{t("common.desde")}</small>
-        {precios.length ? <strong>S/ {Math.min(...precios)}</strong> : <strong>—</strong>}
+        {precio ? <><strong>S/ {precio.pen}</strong><small>US$ {precio.usd}</small></> : <strong>—</strong>}
       </div>
       <Link href={href} className={pageStyles.routeAction}>{t("common.verRuta")}<ArrowRight size={16} /></Link>
     </article>

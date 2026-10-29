@@ -7,7 +7,8 @@ import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useT } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useTours } from "@/hooks/use-catalogo";
-import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
+import type { TourApi, TraduccionApi } from "@/lib/api/tipos";
+import { preciosDesdeSalidas } from "@/lib/precios";
 import styles from "./tours.module.css";
 
 /** El listado trae todas las traducciones publicadas; elige la del idioma activo, con respaldo en español. */
@@ -22,13 +23,6 @@ function formatearDuracion(minutos?: number): string | null {
   const h = Math.floor(minutos / 60);
   const m = minutos % 60;
   return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ") || null;
-}
-
-function precioDesde(salidas?: SalidaApi[]): number | null {
-  if (!salidas || salidas.length === 0) return null;
-  const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
-  if (precios.length === 0) return null;
-  return Math.min(...precios);
 }
 
 function tituloTour(t: TourApi, idioma: string): string {
@@ -66,7 +60,7 @@ export default function ToursPage() {
           const tr = traduccionDe(tour, idioma);
           const titulo = tituloTour(tour, idioma);
           const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
-          const precio = precioDesde(tour.salidas);
+          const precio = preciosDesdeSalidas(tour.salidas);
           return (
             <article key={tour.slug} className={`${styles.card} ${index === 0 ? styles.featuredCard : ""}`}>
               <Link href={`/tours/${tour.slug}`} className={styles.cardImageLink} aria-label={titulo}>
@@ -89,7 +83,7 @@ export default function ToursPage() {
                 )}
                 <div className={styles.cardBottom}>
                   {precio != null ? (
-                    <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio}</strong>
+                    <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio.pen} · US$ {precio.usd}</strong>
                   ) : (
                     <span />
                   )}

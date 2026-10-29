@@ -450,7 +450,7 @@ export default function PaginaResumen() {
                     </p>
                   </div>
                   <Badge className="shrink-0" variant="secondary">
-                    S/ {p.precioPen}
+                    S/ {p.precioPen} · US$ {p.precioUsd}
                   </Badge>
                 </div>
               ))}

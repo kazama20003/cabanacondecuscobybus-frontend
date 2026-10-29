@@ -71,6 +71,7 @@ export default function CheckoutPage() {
 
   const fmtFecha = (iso: string) =>
     new Date(iso).toLocaleString(LOCALES[idioma], { dateStyle: "medium", timeStyle: "short" });
+  const fmtMonto = (monto: number) => new Intl.NumberFormat(LOCALES[idioma], { maximumFractionDigits: 2 }).format(monto);
 
   // Los pasajeros se derivan en render: el estado guarda solo lo editado y se
   // completa con formularios vacíos hasta la cantidad del carrito.
@@ -375,14 +376,22 @@ export default function CheckoutPage() {
           {items.map((item) => (
             <div key={item.salidaId} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 13.5, marginBottom: 8 }}>
               <span style={{ color: "var(--muted)" }}>{item.titulo} × {item.pasajeros}</span>
-              <span style={{ whiteSpace: "nowrap" }}>
-                {moneda === "USD" ? `US$ ${item.precioUsd * item.pasajeros}` : `S/ ${item.precioPen * item.pasajeros}`}
+              <span style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+                {moneda === "USD" ? `US$ ${fmtMonto(item.precioUsd * item.pasajeros)}` : `S/ ${fmtMonto(item.precioPen * item.pasajeros)}`}
+                <small style={{ display: "block", color: "var(--muted)", fontSize: 11 }}>
+                  {moneda === "USD" ? `S/ ${fmtMonto(item.precioPen * item.pasajeros)}` : `US$ ${fmtMonto(item.precioUsd * item.pasajeros)}`}
+                </small>
               </span>
             </div>
           ))}
           <div style={{ borderTop: "1px solid var(--line)", margin: "12px 0", paddingTop: 12, display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 700 }}>
             <span>{t("carrito.resumen")}</span>
-            <span>{moneda === "USD" ? `US$ ${total("USD")}` : `S/ ${total("PEN")}`}</span>
+            <span style={{ textAlign: "right" }}>
+              {moneda === "USD" ? `US$ ${fmtMonto(total("USD"))}` : `S/ ${fmtMonto(total("PEN"))}`}
+              <small style={{ display: "block", color: "var(--muted)", fontSize: 11, fontWeight: 400 }}>
+                {moneda === "USD" ? `S/ ${fmtMonto(total("PEN"))}` : `US$ ${fmtMonto(total("USD"))}`}
+              </small>
+            </span>
           </div>
           <p style={{ margin: "0 0 16px", fontSize: 12.5, color: "var(--muted)", lineHeight: 1.5 }}>{t("checkout.notaMontos")}</p>
           <button
