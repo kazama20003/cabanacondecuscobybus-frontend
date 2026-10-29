@@ -12,6 +12,7 @@ import { Paginacion } from "@/components/dashboard/paginacion";
 import ImageSlot from "@/components/image-slot";
 import { useActualizarEstadoEvento, useEventosAdmin } from "@/hooks/use-catalogo";
 import type { TourApi } from "@/lib/api";
+import { ControlOrdenCatalogo } from "@/components/dashboard/control-orden-catalogo";
 
 function titulo(evento: TourApi) {
   return evento.traducciones?.find((item) => item.idioma === "es")?.titulo ??
@@ -121,6 +122,9 @@ export default function PaginaEventosEspeciales() {
                       <span className="inline-flex items-center gap-1.5"><CalendarDaysIcon className="size-3.5" />{fecha(evento.temporadaInicio)} – {fecha(evento.temporadaFin)}</span>
                       <span className="inline-flex items-center gap-1.5"><ImageIcon className="size-3.5" />{evento.imagenes?.length ?? 0} medios · {evento.salidas?.length ?? 0} salidas</span>
                     </div>
+                    <div className="mt-3 border-t pt-3">
+                      <ControlOrdenCatalogo id={evento.id} tipo="EVENTO" posicion={(pagina - 1) * 10 + eventos.indexOf(evento) + 1} primero={pagina === 1 && eventos.indexOf(evento) === 0} ultimo={(pagina - 1) * 10 + eventos.indexOf(evento) + 1 === (data?.total ?? 0)} />
+                    </div>
                     <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
                       <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/editar`}>Editar evento</Link></Button>
                       <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/itinerario`}>Itinerario y multimedia</Link></Button>
@@ -136,10 +140,10 @@ export default function PaginaEventosEspeciales() {
             <div className="hidden overflow-x-auto md:block">
               <Table>
                 <TableHeader><TableRow>
-                  <TableHead>Evento</TableHead><TableHead>Temporada</TableHead><TableHead>Multimedia</TableHead><TableHead>Salidas</TableHead><TableHead>Estado</TableHead><TableHead className="text-right">Acciones</TableHead>
+                  <TableHead>Evento</TableHead><TableHead>Temporada</TableHead><TableHead>Multimedia</TableHead><TableHead>Salidas</TableHead><TableHead>Estado</TableHead><TableHead>Orden público</TableHead><TableHead className="text-right">Acciones</TableHead>
                 </TableRow></TableHeader>
                 <TableBody>
-                  {eventos.map((evento) => {
+                  {eventos.map((evento, index) => {
                     const media = evento.imagenes?.[0];
                     const estado = estadoTemporada(evento);
                     return (
@@ -158,6 +162,7 @@ export default function PaginaEventosEspeciales() {
                         <TableCell><span className="inline-flex items-center gap-1.5 text-sm"><ImageIcon className="size-4" />{evento.imagenes?.length ?? 0}</span></TableCell>
                         <TableCell>{evento.salidas?.length ?? 0}</TableCell>
                         <TableCell><Badge variant={estado === "En temporada" ? "default" : estado === "Temporada pasada" ? "secondary" : "outline"}>{evento.activo === false ? "Inactivo" : estado}</Badge></TableCell>
+                        <TableCell><ControlOrdenCatalogo id={evento.id} tipo="EVENTO" posicion={(pagina - 1) * 10 + index + 1} primero={pagina === 1 && index === 0} ultimo={(pagina - 1) * 10 + index + 1 === (data?.total ?? 0)} /></TableCell>
                         <TableCell>
                           <div className="flex min-w-52 justify-end gap-2">
                             <Button variant="outline" size="sm" asChild><Link href={`/dashboard/tours/${evento.slug}/editar`}>Editar</Link></Button>

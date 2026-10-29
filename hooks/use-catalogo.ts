@@ -88,6 +88,18 @@ export function useActualizarEstadoEvento() {
   });
 }
 
+export function useReordenarCatalogo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { id: string; tipo: "TRANSPORTE" | "TOUR" | "EVENTO"; direccion: "ARRIBA" | "ABAJO" }) =>
+      servicioCatalogo.reordenar(params.id, params.tipo, params.direccion),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: claves.catalogo.todas });
+      queryClient.invalidateQueries({ queryKey: ["eventos"] });
+    },
+  });
+}
+
 export function useTour(slug: string, idioma?: string) {
   return useQuery({
     queryKey: [...claves.catalogo.tour(slug), idioma ?? "es"],
