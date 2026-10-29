@@ -6,7 +6,7 @@ export const servicioArchivos = {
   /** Sube el archivo al backend para mantener las credenciales de almacenamiento solo en el backend. */
   async subir(
     archivo: File,
-    categoria: "transportes" | "tours" | "eventos" | "promociones" | "comprobantes",
+    categoria: "transportes" | "tours" | "eventos" | "promociones",
   ): Promise<CargaArchivo> {
     const datos = new FormData();
     datos.append("archivo", archivo);
@@ -25,7 +25,7 @@ export const servicioArchivos = {
   async eliminar(
     clave: string,
     tipo: "IMAGEN" | "VIDEO",
-    categoria: "transportes" | "tours" | "eventos" | "promociones" | "comprobantes",
+    categoria: "transportes" | "tours" | "eventos" | "promociones",
   ) {
     const url = new URL(`${apiConfig.baseUrl}${endpoints.uploads.subir(categoria)}`);
     url.searchParams.set("clave", clave);
