@@ -103,9 +103,9 @@ export default function CheckoutPage() {
   );
   const formularioOk = totalLineas > 0 && contactoOk && pasajerosOk && !enviando;
   const enlacesPoliticas = [
-    { nombre: "Términos de compra", href: process.env.NEXT_PUBLIC_URL_TERMINOS },
-    { nombre: "Privacidad", href: process.env.NEXT_PUBLIC_URL_PRIVACIDAD },
-    { nombre: "Cancelaciones", href: process.env.NEXT_PUBLIC_URL_CANCELACIONES },
+    { nombre: "Términos de compra", href: process.env.NEXT_PUBLIC_URL_TERMINOS || "/terminos" },
+    { nombre: "Privacidad", href: process.env.NEXT_PUBLIC_URL_PRIVACIDAD || "/privacidad" },
+    { nombre: "Cancelaciones", href: process.env.NEXT_PUBLIC_URL_CANCELACIONES || "/cancelaciones" },
   ];
   const politicasConfiguradas = enlacesPoliticas.every((item) => Boolean(item.href)) &&
     (process.env.NODE_ENV !== "production" || Boolean(process.env.NEXT_PUBLIC_VERSION_POLITICAS));

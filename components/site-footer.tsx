@@ -72,6 +72,11 @@ export default function SiteFooter() {
           <FooterLink glyph="✆" label={t("header.contacto")} href="/contacto" />
           <FooterLink glyph="≡" label={t("home.transporteTuristico")} href="/transporte" />
         </FooterColumn>
+        <FooterColumn title="Políticas">
+          <FooterLink glyph="§" label="Términos del servicio" href="/terminos" />
+          <FooterLink glyph="◉" label="Privacidad" href="/privacidad" />
+          <FooterLink glyph="↻" label="Cambios y cancelaciones" href="/cancelaciones" />
+        </FooterColumn>
       </div>
 
       <div

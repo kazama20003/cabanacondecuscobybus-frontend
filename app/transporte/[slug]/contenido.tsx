@@ -7,6 +7,7 @@ import { CameraIcon, Clock3Icon, MapPinIcon, RouteIcon } from "lucide-react";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
+import CondicionesServicio from "@/components/condiciones-servicio";
 import AddToCart from "@/components/add-to-cart";
 import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
@@ -166,6 +167,7 @@ export default function RoutePage() {
           </div>
         </aside>
       </section>
+      <CondicionesServicio tipo="transporte" />
     </PageShell>
   );
 }
