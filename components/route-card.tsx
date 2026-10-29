@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { TransportRoute } from "@/lib/data";
 import { canalesReservaPara, CONTACT } from "@/lib/data";
+import { useT } from "@/lib/i18n";
 
 /* Fila interactiva de ruta: al pasar el cursor se resalta la card, el video
    de la ruta se reproduce en lugar de la foto y aparece el CTA de reserva. */
@@ -19,6 +20,7 @@ export default function RouteCard({
   compact?: boolean;
 }) {
   const router = useRouter();
+  const t = useT();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hover, setHover] = useState(false);
 
@@ -210,9 +212,11 @@ export default function RouteCard({
             {whatsappHabilitado ? "Reservar" : "Ver ruta"}
           </a>
         </div>
-        <span style={{ fontSize: 14, fontWeight: 700 }}>
-          Desde S/ {r.priceFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>por persona</span>
-        </span>
+        {r.priceFrom > 0 && r.priceUsdFrom != null ? (
+          <span style={{ fontSize: 14, fontWeight: 700 }}>
+            {t("common.desde")} S/ {r.priceFrom} · US$ {r.priceUsdFrom} <span style={{ color: "var(--muted)", fontWeight: 400 }}>{t("common.porPersona")}</span>
+          </span>
+        ) : <span style={{ fontSize: 13, color: "var(--muted)" }}>{t("common.consultar")}</span>}
       </div>
     </div>
   );

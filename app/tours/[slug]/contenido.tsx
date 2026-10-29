@@ -11,7 +11,8 @@ import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTour } from "@/hooks/use-catalogo";
-import type { TourApi, TraduccionApi, SalidaApi, ItinerarioApi } from "@/lib/api/tipos";
+import type { TourApi, TraduccionApi, ItinerarioApi } from "@/lib/api/tipos";
+import { preciosDesdeSalidas } from "@/lib/precios";
 import styles from "../tours.module.css";
 
 function traduccionDe(item: TourApi | undefined): TraduccionApi | undefined {
@@ -32,13 +33,6 @@ function formatoTiempoRelativo(minutos?: number | null): string | null {
   const horas = Math.floor(minutos / 60);
   const resto = minutos % 60;
   return `Aprox. ${horas ? `${horas} h` : ""}${horas && resto ? " " : ""}${resto ? `${resto} min` : horas ? "" : "0 min"} desde la salida`;
-}
-
-function precioDesde(salidas?: SalidaApi[]): number | null {
-  if (!salidas || salidas.length === 0) return null;
-  const precios = salidas.map((s) => Number(s.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
-  if (precios.length === 0) return null;
-  return Math.min(...precios);
 }
 
 export default function TourPage() {
@@ -76,7 +70,7 @@ export default function TourPage() {
   const intro = tr?.resumen || tr?.descripcion || "";
   const dur = formatearDuracion(tour.duracionMinutos as number | undefined);
   const salidas = tour.salidas ?? [];
-  const precio = precioDesde(salidas);
+  const precio = preciosDesdeSalidas(salidas);
   const itinerarios = [...(tour.itinerarios ?? [])].sort((a: ItinerarioApi, b: ItinerarioApi) => a.orden - b.orden);
   const portada = tour.imagenes?.[0];
   const imagenesGaleria = (tour.imagenes ?? []).filter((medio) => medio.tipo !== "VIDEO");
@@ -97,7 +91,7 @@ export default function TourPage() {
     esEvento && temporada ? { label: t("eventos.temporada"), value: temporada } : null,
     dur ? { label: t("ficha.duracion"), value: dur } : null,
     destino ? { label: t("ficha.destino"), value: destino } : null,
-    precio != null ? { label: t("ficha.precio"), value: `${t("common.desde")} S/ ${precio} ${t("detalle.pp")}` } : null,
+    precio ? { label: t("ficha.precio"), value: `${t("common.desde")} S/ ${precio.pen} · US$ ${precio.usd} ${t("detalle.pp")}` } : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
   return (
@@ -201,10 +195,10 @@ export default function TourPage() {
             <p>{tr.queLlevar}</p>
           </section>}
           <div className={styles.bookingCard} id="reservar">
-            {precio != null && (
+            {precio && (
               <>
                 <div className={styles.factLabel}>{t("detalle.precioPersona")}</div>
-                <div className={styles.bookingPrice}>{t("common.desde")} S/ {precio}</div>
+                <div className={styles.bookingPrice}>{t("common.desde")} S/ {precio.pen}<small style={{ display: "block", fontSize: 17, letterSpacing: 0, color: "var(--muted)" }}>US$ {precio.usd} {t("detalle.pp")}</small></div>
               </>
             )}
             <div style={{ marginBottom: 20 }}>

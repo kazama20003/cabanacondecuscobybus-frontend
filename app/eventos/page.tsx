@@ -7,19 +7,14 @@ import ImageSlot from "@/components/image-slot";
 import { useT, LOCALES } from "@/lib/i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useEventos } from "@/hooks/use-catalogo";
-import type { TourApi, TraduccionApi, SalidaApi } from "@/lib/api/tipos";
+import type { TourApi, TraduccionApi } from "@/lib/api/tipos";
+import { preciosDesdeSalidas } from "@/lib/precios";
 import styles from "./eventos.module.css";
 
 function traduccionDe(item: TourApi, idioma: string): TraduccionApi | undefined {
   const arr = item.traducciones as TraduccionApi[] | undefined;
   if (!Array.isArray(arr) || arr.length === 0) return undefined;
   return arr.find((x) => x.idioma === idioma) ?? arr.find((x) => x.idioma === "es") ?? arr[0];
-}
-
-function precioDesde(salidas?: SalidaApi[]): number | null {
-  if (!salidas?.length) return null;
-  const precios = salidas.map((salida) => Number(salida.precioPen)).filter((n) => Number.isFinite(n) && n > 0);
-  return precios.length ? Math.min(...precios) : null;
 }
 
 function tituloEvento(item: TourApi, idioma: string): string {
@@ -105,7 +100,7 @@ export default function EventosPage() {
                 const tr = traduccionDe(evento, idioma);
                 const titulo = tituloEvento(evento, idioma);
                 const fecha = fechaEvento(evento, locale);
-                const precio = precioDesde(evento.salidas);
+                const precio = preciosDesdeSalidas(evento.salidas);
                 const portada = evento.imagenes?.[0];
                 const puntos = evento.itinerarios?.map((punto) => punto.tituloI18n?.[idioma] || punto.titulo).filter(Boolean) ?? [];
                 const destino = (evento.destinoNombre as string | undefined) || "Perú";
@@ -143,7 +138,7 @@ export default function EventosPage() {
                       )}
 
                       <div className={styles.cardBottom}>
-                        {precio != null ? <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio}</strong> : <span className={styles.priceNote}>{t("eventos.programaPendiente")}</span>}
+                        {precio ? <strong className={styles.cardPrice}>{t("common.desde")} S/ {precio.pen} · US$ {precio.usd}</strong> : <span className={styles.priceNote}>{t("eventos.programaPendiente")}</span>}
                         <Link
                           className={styles.cardCta}
                           href={`/tours/${evento.slug}#reservar`}

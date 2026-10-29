@@ -16,6 +16,7 @@ import { useToursSeed, useDestinations } from "@/lib/data-i18n";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTours, useTransportes } from "@/hooks/use-catalogo";
+import { preciosDesdeSalidas } from "@/lib/precios";
 import type { SalidaApi, TourApi, TraduccionApi, TransporteApi } from "@/lib/api";
 
 function duracionTexto(min?: number): string {
@@ -23,14 +24,6 @@ function duracionTexto(min?: number): string {
   const h = Math.floor(min / 60);
   const m = min % 60;
   return [h > 0 ? `${h}h` : null, m > 0 ? `${m}m` : null].filter(Boolean).join(" ");
-}
-
-function precioMin(salidas?: SalidaApi[]): number | null {
-  if (!salidas?.length) return null;
-  const precios = salidas
-    .map((s) => Number(s.precioPen))
-    .filter((n) => Number.isFinite(n) && n > 0);
-  return precios.length ? Math.min(...precios) : null;
 }
 
 function horariosSalida(salidas?: SalidaApi[]): string[] {
@@ -60,6 +53,7 @@ function elegirTr(
 /** Mapea un transporte de la API al shape que consume RouteCard/el aside. */
 function aRuta(t: TransporteApi, idioma: string): TransportRoute {
   const tr = elegirTr(t.traducciones as TraduccionApi[] | undefined, idioma);
+  const precio = preciosDesdeSalidas(t.salidas);
   return {
     slug: t.slug,
     from: t.origenNombre,
@@ -74,7 +68,8 @@ function aRuta(t: TransporteApi, idioma: string): TransportRoute {
     vehicle: "",
     departures: horariosSalida(t.salidas),
     frequency: "",
-    priceFrom: precioMin(t.salidas) ?? 0,
+    priceFrom: precio?.pen ?? 0,
+    priceUsdFrom: precio?.usd,
     image: t.imagenes?.[0]?.url ?? "",
     stops: [],
     highlights: [],
@@ -98,12 +93,14 @@ export default function Home() {
   const toursLista = toursApi?.datos?.length
     ? (toursApi.datos as TourApi[]).map((tour) => {
         const tr = elegirTr(tour.traducciones as TraduccionApi[] | undefined, idioma);
+        const precio = preciosDesdeSalidas(tour.salidas);
         return {
           slug: tour.slug,
           name: tr?.titulo || (tour.nombre as string) || (tour.destinoNombre as string) || tour.slug,
           location: (tour.destinoNombre as string) ?? "",
           duration: duracionTexto(tour.duracionMinutos as number | undefined),
-          priceFrom: precioMin(tour.salidas) ?? 0,
+          priceFrom: precio?.pen ?? 0,
+          priceUsdFrom: precio?.usd,
           image: tour.imagenes?.[0]?.url ?? "",
         };
       })
@@ -113,6 +110,7 @@ export default function Home() {
         location: tr.location,
         duration: tr.duration,
         priceFrom: tr.priceFrom,
+        priceUsdFrom: undefined,
         image: tr.image,
       }));
 
@@ -291,10 +289,11 @@ export default function Home() {
                 </p>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "0 0 12px" }}>
                   <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{t("common.desde")}</span>
-                  <span style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em" }}>
-                    S/ {ruta.priceFrom}
-                  </span>
-                  <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{t("common.porPersona")}</span>
+                  {ruta.priceFrom > 0 && ruta.priceUsdFrom != null ? <>
+                    <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em" }}>S/ {ruta.priceFrom}</span>
+                    <span style={{ fontSize: 14, color: "var(--muted)" }}>· US$ {ruta.priceUsdFrom}</span>
+                    <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{t("common.porPersona")}</span>
+                  </> : <span style={{ fontSize: 13, color: "var(--muted)" }}>{t("common.consultar")}</span>}
                 </div>
                 <div style={{ position: "relative", width: "100%", height: 200 }}>
                   <ImageSlot radius={10} src={ruta.image} placeholder={`${ruta.from} → ${ruta.to}`} />
@@ -313,7 +312,7 @@ export default function Home() {
                       boxShadow: "0 2px 10px rgba(0,0,0,.18)",
                     }}
                   >
-                    {t("common.desde")} S/ {ruta.priceFrom}
+                    {ruta.priceFrom > 0 && ruta.priceUsdFrom != null ? `${t("common.desde")} S/ ${ruta.priceFrom} · US$ ${ruta.priceUsdFrom}` : t("common.consultar")}
                   </span>
                   {ruta.departures.length > 0 && (
                     <span
@@ -466,7 +465,7 @@ export default function Home() {
                 {tour.location && <span style={{ color: "var(--muted)" }}>/ {tour.location}</span>}
                 <br />
                 <span style={{ color: "var(--muted)", fontSize: 12.5 }}>
-                  {[tour.duration, tour.priceFrom ? `${t("common.desde").toLowerCase()} S/ ${tour.priceFrom}` : null].filter(Boolean).join(" · ")}
+                  {[tour.duration, tour.priceFrom && tour.priceUsdFrom != null ? `${t("common.desde").toLowerCase()} S/ ${tour.priceFrom} · US$ ${tour.priceUsdFrom}` : null].filter(Boolean).join(" · ")}
                 </span>
               </div>
             </Link>
