@@ -144,7 +144,7 @@ export default function RoutePage() {
                 <li key={parada.id} className={styles.routeStage}>
                   <div className={styles.routeStageHead}>
                     <strong className={styles.routeStageTitle}>{parada.nombre}</strong>
-                    <span className={styles.routeStageTime}><MapPinIcon size={14} color="#d97706" />{formatearTiempoDeRuta(parada.minutos) ?? "Punto de referencia"}</span>
+                    <span className={styles.routeStageTime}><MapPinIcon size={14} color="#d97706" />{formatearTiempoDeRuta(parada.minutos ?? undefined) ?? "Punto de referencia"}</span>
                   </div>
                   {parada.descripcion && <p className={styles.routeStageDescription}>{parada.descripcion}</p>}
                   {parada.duracionParadaMinutos > 0 && <span style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, padding: "5px 8px", fontSize: 12, border: "1px solid var(--line)", borderRadius: 99 }}><Clock3Icon size={14} color="#2563eb" />Tiempo de parada: {formatearDuracion(parada.duracionParadaMinutos)}</span>}

@@ -87,7 +87,7 @@ export interface SalidaApi {
   fechaHoraSalida: string;
   precioPen: number;
   precioUsd: number;
-  capacidad: number;
+  capacidad: number | null;
   minimoPasajeros?: number;
   estado: string;
 }
@@ -98,7 +98,7 @@ export interface ParadaApi {
   nombre: string;
   latitud: string | number;
   longitud: string | number;
-  minutos: number;
+  minutos: number | null;
   duracionParadaMinutos: number;
   descripcion: string | null;
   imagenes?: ImagenApi[];
@@ -108,7 +108,7 @@ export interface ParadaEntrada {
   nombre: string;
   latitud: number;
   longitud: number;
-  minutos: number;
+  minutos?: number;
   duracionParadaMinutos?: number;
   descripcion?: string;
   medios?: MedioEntrada[];
@@ -224,7 +224,7 @@ export type ActualizarTourEntrada = Partial<CrearTourEntrada>;
 
 export interface CrearSalidaEntrada {
   fechaHoraSalida: string;
-  capacidad: number;
+  capacidad: number | null;
   minimoPasajeros?: number;
   precioPen: number;
   precioUsd: number;
@@ -240,7 +240,7 @@ export interface PlantillaSalidaApi {
   diasSemana: number[];
   fechaDesde: string;
   fechaHasta: string | null;
-  capacidad: number;
+  capacidad: number | null;
   minimoPasajeros: number;
   precioPen: string | number;
   precioUsd: string | number;
@@ -260,7 +260,7 @@ export interface CrearPlantillaEntrada {
   diasSemana: number[];
   fechaDesde: string;
   fechaHasta?: string;
-  capacidad: number;
+  capacidad: number | null;
   minimoPasajeros?: number;
   precioPen: number;
   precioUsd: number;
@@ -271,7 +271,7 @@ export interface ActualizarPlantillaEntrada {
   diasSemana?: number[];
   fechaDesde?: string;
   fechaHasta?: string | null;
-  capacidad?: number;
+  capacidad?: number | null;
   minimoPasajeros?: number;
   precioPen?: number;
   precioUsd?: number;
@@ -350,7 +350,7 @@ export type EstadoSalida =
 export interface SalidaAdminApi {
   id: string;
   fechaHoraSalida: string;
-  capacidad: number;
+  capacidad?: number | null;
   minimoPasajeros: number;
   precioPen: string | number;
   precioUsd: string | number;
@@ -369,7 +369,7 @@ export interface SalidaAdminApi {
 export interface ActualizarSalidaEntrada {
   estado?: EstadoSalida;
   vehiculoId?: string;
-  capacidad?: number;
+  capacidad?: number | null;
   minimoPasajeros?: number;
   precioPen?: number;
   precioUsd?: number;

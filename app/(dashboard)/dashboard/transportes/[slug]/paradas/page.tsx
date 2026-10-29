@@ -78,7 +78,7 @@ export default function PaginaParadas({
       nombre: p.nombre,
       latitud: String(p.latitud),
       longitud: String(p.longitud),
-      minutos: String(p.minutos),
+      minutos: p.minutos == null ? "" : String(p.minutos),
       duracionParadaMinutos: String(p.duracionParadaMinutos ?? 0),
       descripcion: p.descripcion ?? "",
       medios: p.imagenes?.map(({ url, clave, textoAlterno, tipo }) => ({ url, clave: clave ?? undefined, textoAlterno: textoAlterno ?? undefined, tipo })) ?? [],
@@ -101,7 +101,7 @@ export default function PaginaParadas({
           nombre: f.nombre,
           latitud: Number(f.latitud),
           longitud: Number(f.longitud),
-          minutos: Number(f.minutos),
+          minutos: f.minutos ? Number(f.minutos) : undefined,
           duracionParadaMinutos: f.duracionParadaMinutos
             ? Number(f.duracionParadaMinutos)
             : 0,
@@ -204,7 +204,7 @@ export default function PaginaParadas({
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <CampoDuracion
-                    etiqueta="Tiempo desde la salida"
+                    etiqueta="Tiempo desde la salida (opcional)"
                     minutosTotales={fila.minutos}
                     onCambiar={(v) => cambiar(i, "minutos", v)}
                   />
