@@ -5,6 +5,7 @@ import { notFound, useParams } from "next/navigation";
 import PageShell from "@/components/page-shell";
 import ImageSlot from "@/components/image-slot";
 import IncluyeNoIncluye from "@/components/incluye-no-incluye";
+import CondicionesServicio from "@/components/condiciones-servicio";
 import AddToCart from "@/components/add-to-cart";
 import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
@@ -236,6 +237,7 @@ export default function TourPage() {
       <section className={styles.includesSection} aria-label="Servicios incluidos">
         <IncluyeNoIncluye incluye={tr?.incluye} noIncluye={tr?.noIncluye} />
       </section>
+      <CondicionesServicio tipo={esEvento ? "evento" : "tour"} />
       </div>
     </PageShell>
   );
