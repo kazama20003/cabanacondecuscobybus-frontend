@@ -1,6 +1,6 @@
 /* Logo oficial — usar en header, panel y donde se pida el logo */
 export const LOGO_URL =
-  "https://res.cloudinary.com/demzflxgq/image/upload/v1781928558/uploads/abu4i78nwkquynyvmppd.png";
+  "https://storage.googleapis.com/incatravelperu-media-site-2026/imagenes/estaticos/legacy-fedb5068a7c863ac824cb44ce3d64f5b637e0d1c6debb2bd8fcc4c2fae1e8d81.png";
 
 /* ---------- Datos del negocio: Inca Travel Peru ---------- */
 
@@ -22,15 +22,15 @@ export function canalesReservaPara(tipo: "TRANSPORTE" | "TOUR", esEvento = false
   return (variable ?? CANALES_RESERVA.join(",")).split(",").map((canal) => canal.trim().toUpperCase()).filter(Boolean);
 }
 
-/* ---------- media URLs (Cloudinary) ---------- */
+/* ---------- media URLs (Google Cloud Storage) ---------- */
 export const MEDIA_VIDEO =
-  "https://res.cloudinary.com/dhkb93mix/video/upload/v1773250748/11929213_1920_1080_60fps_ulvu5b.mp4";
+  "https://storage.googleapis.com/incatravelperu-media-site-2026/videos/estaticos/legacy-7f9dee4c9a8cfb05349821fd59684070d17f25dfa4f651c45e9e84f98d8dd16d.mp4";
 export const MEDIA_IMAGE =
-  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211023/big-ca579d84d7d5736a2999e621892f1a44_upjf05.jpg";
+  "https://storage.googleapis.com/incatravelperu-media-site-2026/imagenes/estaticos/legacy-1419674d8974144502bb655f8a6acc87f5a923945956c56e4fa3a9a0ea8959d7.jpg";
 export const IMG_SAN_LAZARO =
-  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211023/the-san-lazaro-neighborhood-the-oldest-in-arequipa-272_nac7bs.jpg";
+  "https://storage.googleapis.com/incatravelperu-media-site-2026/imagenes/estaticos/legacy-c431a656babaa0876fb8fade78873010cf6eb15ffd506da27d7fc70f099b33e5.jpg";
 export const IMG_TEMPLO =
-  "https://res.cloudinary.com/dhkb93mix/image/upload/v1786211022/arequipa-peru-temple-7186-main_uxvqws.jpg";
+  "https://storage.googleapis.com/incatravelperu-media-site-2026/imagenes/estaticos/legacy-295685160b5fcd1d358cd1d1602dc08c67261db7c4fff3d0d87f51529b83ceb5.jpg";
 export const PHOTOS = [MEDIA_IMAGE, IMG_SAN_LAZARO, IMG_TEMPLO];
 
 /* ---------- Transporte turístico (producto principal) ---------- */

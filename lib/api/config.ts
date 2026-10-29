@@ -48,7 +48,7 @@ export const endpoints = {
     plantillaSalida: (id: string) => `/administracion/plantillas-salida/${id}`,
   },
   uploads: {
-    subir: (categoria: "transportes" | "tours" | "eventos" | "promociones" | "comprobantes") =>
+    subir: (categoria: "transportes" | "tours" | "eventos" | "promociones") =>
       `/administracion/uploads/${categoria}`,
   },
   usuarios: {
