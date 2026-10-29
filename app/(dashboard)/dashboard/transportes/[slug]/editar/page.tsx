@@ -13,13 +13,14 @@ import {
   CardTitle,
 } from "@/components/native-ui/card";
 import { Input } from "@/components/native-ui/input";
+import { Textarea } from "@/components/native-ui/textarea";
 import { Label } from "@/components/native-ui/label";
 import { Skeleton } from "@/components/native-ui/skeleton";
 import { CampoCoordenadas } from "@/components/dashboard/campo-coordenadas";
 import { CampoDuracion } from "@/components/dashboard/campo-duracion";
 import { CampoMedios } from "@/components/dashboard/campo-medios";
 import { useActualizarTransporte, useTransporte } from "@/hooks/use-catalogo";
-import type { ImagenApi, MedioEntrada } from "@/lib/api";
+import type { ContenidoEntrada, ImagenApi, MedioEntrada } from "@/lib/api";
 
 const textoDe = (valor: unknown) => (valor == null ? "" : String(valor));
 
@@ -43,6 +44,7 @@ export default function PaginaEditarTransporte({
     duracionMinutosEstimada: "",
   });
   const [medios, setMedios] = useState<MedioEntrada[]>([]);
+  const [contenido, setContenido] = useState<ContenidoEntrada>({ titulo: "", resumen: "", descripcion: "", queLlevar: "", incluye: "", noIncluye: "" });
   const [errorMedios, setErrorMedios] = useState<string | null>(null);
   const [listo, setListo] = useState(false);
 
@@ -57,6 +59,8 @@ export default function PaginaEditarTransporte({
       destinoLongitud: textoDe(transporte.destinoLongitud),
       duracionMinutosEstimada: textoDe(transporte.duracionMinutosEstimada),
     });
+    const traduccion = transporte.traducciones?.find((item) => item.idioma === "es") ?? transporte.traducciones?.[0];
+    setContenido({ titulo: textoDe(traduccion?.titulo), resumen: textoDe(traduccion?.resumen), descripcion: textoDe(traduccion?.descripcion), queLlevar: textoDe(traduccion?.queLlevar), incluye: textoDe(traduccion?.incluye), noIncluye: textoDe(traduccion?.noIncluye) });
     setMedios(
       (transporte.imagenes ?? []).map((imagen: ImagenApi) => ({
         url: imagen.url,
@@ -93,6 +97,7 @@ export default function PaginaEditarTransporte({
           destinoLongitud: Number(campos.destinoLongitud),
           duracionMinutosEstimada: Number(campos.duracionMinutosEstimada),
           medios,
+          contenido: { ...contenido, titulo: contenido.titulo.trim(), resumen: contenido.resumen.trim(), descripcion: contenido.descripcion.trim() },
         },
       },
       { onSuccess: () => router.push("/dashboard/transportes") },
@@ -120,12 +125,32 @@ export default function PaginaEditarTransporte({
       {transporte && (
         <form onSubmit={enviar} className="grid max-w-3xl gap-6">
           <Card>
+            <CardHeader><CardTitle>Más opciones de edición</CardTitle><CardDescription>El itinerario, los precios por salida y las traducciones están en estas secciones.</CardDescription></CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" asChild><Link href={`/dashboard/transportes/${slug}/paradas`}>Paradas e itinerario</Link></Button>
+              <Button type="button" variant="outline" asChild><Link href="/dashboard/salidas?tipo=TRANSPORTE">Salidas y precios</Link></Button>
+              <Button type="button" variant="outline" asChild><Link href={`/dashboard/transportes/${slug}/traducciones`}>Traducciones</Link></Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Información para viajeros</CardTitle>
+              <CardDescription>Textos comerciales de la ruta, incluidos y recomendaciones. Se guardan en español; las otras traducciones se editan en su pantalla.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2"><Label htmlFor="transporte-titulo">Título comercial</Label><Input id="transporte-titulo" value={contenido.titulo} onChange={(e) => setContenido((c) => ({ ...c, titulo: e.target.value }))} /></div>
+              <div className="grid gap-2"><Label htmlFor="transporte-resumen">Resumen</Label><Input id="transporte-resumen" value={contenido.resumen} onChange={(e) => setContenido((c) => ({ ...c, resumen: e.target.value }))} /></div>
+              <div className="grid gap-2"><Label htmlFor="transporte-descripcion">Descripción</Label><Textarea id="transporte-descripcion" rows={5} value={contenido.descripcion} onChange={(e) => setContenido((c) => ({ ...c, descripcion: e.target.value }))} /></div>
+              <div className="grid gap-3 sm:grid-cols-2"><div className="grid gap-2"><Label htmlFor="transporte-incluye">Qué incluye · un concepto por línea</Label><Textarea id="transporte-incluye" rows={4} value={contenido.incluye} onChange={(e) => setContenido((c) => ({ ...c, incluye: e.target.value }))} /></div><div className="grid gap-2"><Label htmlFor="transporte-no-incluye">Qué no incluye · un concepto por línea</Label><Textarea id="transporte-no-incluye" rows={4} value={contenido.noIncluye} onChange={(e) => setContenido((c) => ({ ...c, noIncluye: e.target.value }))} /></div></div>
+              <div className="grid gap-2"><Label htmlFor="transporte-que-llevar">Recomendaciones y qué llevar</Label><Textarea id="transporte-que-llevar" rows={3} value={contenido.queLlevar} onChange={(e) => setContenido((c) => ({ ...c, queLlevar: e.target.value }))} /></div>
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader>
               <CardTitle>Editar ruta</CardTitle>
               <CardDescription>
                 Slug: <span className="font-mono">{textoDe(transporte.slug)}</span>{" "}
-                (no editable). Para textos y traducciones usa el botón
-                "Traducciones" de la lista.
+                (no editable). Para traducciones, usa la sección de traducciones.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">

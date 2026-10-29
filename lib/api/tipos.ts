@@ -123,6 +123,7 @@ export interface TransporteApi {
   imagenes?: ImagenApi[];
   salidas?: SalidaApi[];
   paradas?: ParadaApi[];
+  traducciones?: TraduccionApi[];
   [clave: string]: unknown;
 }
 

@@ -116,7 +116,7 @@ export default function PaginaEditarTour({
           temporadaInicio: esEvento ? temporada.inicio || null : null,
           temporadaFin: esEvento ? temporada.fin || null : null,
           medios,
-          ...(esEvento && { contenido: { ...contenido, titulo: contenido.titulo.trim() } }),
+          contenido: { ...contenido, titulo: contenido.titulo.trim(), resumen: contenido.resumen.trim(), descripcion: contenido.descripcion.trim() },
         },
       });
       if (esEvento) {
@@ -157,6 +157,14 @@ export default function PaginaEditarTour({
 
       {tour && (
         <form onSubmit={enviar} className="grid max-w-3xl gap-6">
+          <Card>
+            <CardHeader><CardTitle>Más opciones de edición</CardTitle><CardDescription>El itinerario, los precios por salida y las traducciones se gestionan aquí.</CardDescription></CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" asChild><Link href={`/dashboard/tours/${slug}/itinerario`}>Itinerario y paradas</Link></Button>
+              <Button type="button" variant="outline" asChild><Link href="/dashboard/salidas?tipo=TOUR">Salidas y precios</Link></Button>
+              <Button type="button" variant="outline" asChild><Link href={`/dashboard/tours/${slug}/traducciones`}>Traducciones</Link></Button>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader>
               <CardTitle>{esEvento ? "Editar evento turístico" : "Editar tour"}</CardTitle>
@@ -237,26 +245,25 @@ export default function PaginaEditarTour({
             </CardContent>
           </Card>
 
-          {esEvento && (
-            <>
+          <>
               <Card>
                 <CardHeader>
                   <CardTitle>Información para viajeros</CardTitle>
-                  <CardDescription>Estos textos aparecen en la ficha pública del evento y se preparan para los idiomas del sitio.</CardDescription>
+                  <CardDescription>Estos textos aparecen en la ficha pública y se preparan para los idiomas del sitio.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
-                  <div className="grid gap-2"><Label htmlFor="event-title">Nombre del evento</Label><Input id="event-title" required maxLength={160} value={contenido.titulo} onChange={(e) => setContenido((c) => ({ ...c, titulo: e.target.value }))} /></div>
-                  <div className="grid gap-2"><Label htmlFor="event-summary">Resumen</Label><Input id="event-summary" required maxLength={240} value={contenido.resumen} onChange={(e) => setContenido((c) => ({ ...c, resumen: e.target.value }))} /></div>
-                  <div className="grid gap-2"><Label htmlFor="event-description">Descripción de la experiencia</Label><Textarea id="event-description" required rows={5} value={contenido.descripcion} onChange={(e) => setContenido((c) => ({ ...c, descripcion: e.target.value }))} /></div>
+                  <div className="grid gap-2"><Label htmlFor="service-title">Nombre del tour o evento</Label><Input id="service-title" maxLength={160} value={contenido.titulo} onChange={(e) => setContenido((c) => ({ ...c, titulo: e.target.value }))} /></div>
+                  <div className="grid gap-2"><Label htmlFor="service-summary">Resumen</Label><Input id="service-summary" maxLength={240} value={contenido.resumen} onChange={(e) => setContenido((c) => ({ ...c, resumen: e.target.value }))} /></div>
+                  <div className="grid gap-2"><Label htmlFor="service-description">Descripción de la experiencia</Label><Textarea id="service-description" rows={5} value={contenido.descripcion} onChange={(e) => setContenido((c) => ({ ...c, descripcion: e.target.value }))} /></div>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="grid gap-2"><Label htmlFor="event-includes">Qué incluye · un concepto por línea</Label><Textarea id="event-includes" rows={4} value={contenido.incluye} onChange={(e) => setContenido((c) => ({ ...c, incluye: e.target.value }))} /></div>
-                    <div className="grid gap-2"><Label htmlFor="event-excludes">Qué no incluye · un concepto por línea</Label><Textarea id="event-excludes" rows={4} value={contenido.noIncluye} onChange={(e) => setContenido((c) => ({ ...c, noIncluye: e.target.value }))} /></div>
+                    <div className="grid gap-2"><Label htmlFor="service-includes">Qué incluye · un concepto por línea</Label><Textarea id="service-includes" rows={4} value={contenido.incluye} onChange={(e) => setContenido((c) => ({ ...c, incluye: e.target.value }))} /></div>
+                    <div className="grid gap-2"><Label htmlFor="service-excludes">Qué no incluye · un concepto por línea</Label><Textarea id="service-excludes" rows={4} value={contenido.noIncluye} onChange={(e) => setContenido((c) => ({ ...c, noIncluye: e.target.value }))} /></div>
                   </div>
-                  <div className="grid gap-2"><Label htmlFor="event-bring">Recomendaciones y qué llevar</Label><Textarea id="event-bring" rows={3} placeholder="Ropa adecuada, altitud, clima y recomendaciones para respetar las costumbres locales." value={contenido.queLlevar} onChange={(e) => setContenido((c) => ({ ...c, queLlevar: e.target.value }))} /></div>
+                  <div className="grid gap-2"><Label htmlFor="service-bring">Recomendaciones y qué llevar</Label><Textarea id="service-bring" rows={3} placeholder="Ropa adecuada, altitud, clima y recomendaciones para respetar las costumbres locales." value={contenido.queLlevar} onChange={(e) => setContenido((c) => ({ ...c, queLlevar: e.target.value }))} /></div>
                 </CardContent>
               </Card>
 
-              <Card>
+              {esEvento && <Card>
                 <CardHeader>
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div><CardTitle>Recorrido y experiencias</CardTitle><CardDescription>Describe las paradas, actividades y lugares que visitará el viajero.</CardDescription></div>
@@ -271,12 +278,12 @@ export default function PaginaEditarTour({
                       <Input id={`event-stop-${indice}`} required placeholder="Punto de encuentro o lugar" value={punto.titulo} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, titulo: e.target.value } : item))} />
                       <Textarea required rows={3} aria-label={`Descripción del punto ${indice + 1}`} placeholder="Qué hará o conocerá el viajero en este punto" value={punto.descripcion} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, descripcion: e.target.value } : item))} />
                       <div className="grid grid-cols-2 gap-2"><Input type="number" step="any" aria-label={`Latitud del punto ${indice + 1}`} placeholder="Latitud (opcional)" value={punto.latitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, latitud: e.target.value } : item))} /><Input type="number" step="any" aria-label={`Longitud del punto ${indice + 1}`} placeholder="Longitud (opcional)" value={punto.longitud} onChange={(e) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, longitud: e.target.value } : item))} /></div>
+                      <CampoMedios categoria="tours" medios={punto.medios ?? []} onCambiar={(medios) => setPuntos((actuales) => actuales.map((item, i) => i === indice ? { ...item, medios } : item))} />
                     </div>
                   ))}
                 </CardContent>
-              </Card>
-            </>
-          )}
+              </Card>}
+          </>
 
           <Card>
             <CardHeader>
