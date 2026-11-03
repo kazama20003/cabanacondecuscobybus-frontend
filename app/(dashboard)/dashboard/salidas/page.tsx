@@ -316,7 +316,12 @@ export default function PaginaSalidas() {
 }
 
 function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
-  const { data: plantillas, isLoading } = usePlantillasSalida(tipo);
+  const [pagina, setPagina] = useState(1);
+  const { data: resultadoPlantillas, isLoading } = usePlantillasSalida(tipo, {
+    pagina,
+    porPagina: 10,
+  });
+  const plantillas = resultadoPlantillas?.datos;
   const actualizar = useActualizarPlantilla();
   const eliminar = useEliminarPlantilla();
 
@@ -425,6 +430,9 @@ function TarjetaPlantillas({ tipo }: { tipo: "TRANSPORTE" | "TOUR" }) {
               })}
             </TableBody>
           </Table>
+        )}
+        {resultadoPlantillas && (
+          <Paginacion resultado={resultadoPlantillas} onCambiarPagina={setPagina} />
         )}
       </CardContent>
     </Card>

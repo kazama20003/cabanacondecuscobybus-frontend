@@ -285,10 +285,14 @@ function invalidarSalidas(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: claves.catalogo.todas });
 }
 
-export function usePlantillasSalida(tipo?: "TRANSPORTE" | "TOUR") {
+export function usePlantillasSalida(
+  tipo?: "TRANSPORTE" | "TOUR",
+  paginacion: ParametrosPagina = { pagina: 1, porPagina: 20 },
+) {
   return useQuery({
-    queryKey: ["plantillas-salida", tipo ?? "TODAS"],
-    queryFn: () => servicioCatalogo.plantillasSalida(tipo),
+    queryKey: ["plantillas-salida", tipo ?? "TODAS", paginacion],
+    queryFn: () => servicioCatalogo.plantillasSalida(tipo, paginacion),
+    placeholderData: keepPreviousData,
   });
 }
 

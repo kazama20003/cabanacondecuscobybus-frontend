@@ -9,5 +9,11 @@ export const servicioAutenticacion = {
       cuerpo: { idToken },
     }),
 
+  cerrarSesion: (tokenRenovacion: string) =>
+    solicitar<{ cerrada: boolean }>(endpoints.autenticacion.cerrarSesion, {
+      metodo: "POST",
+      cuerpo: { tokenRenovacion },
+    }),
+
   miPerfil: () => solicitar<Perfil>(endpoints.autenticacion.miPerfil),
 };

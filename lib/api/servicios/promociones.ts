@@ -9,9 +9,9 @@ import type {
 } from "../tipos";
 
 export const servicioPromociones = {
-  vigentes: (objetivo?: ObjetivoPromocion) =>
-    solicitar<PromocionApi[]>(endpoints.promociones.vigentes, {
-      query: { objetivo },
+  vigentes: (objetivo?: ObjetivoPromocion, paginacion?: ParametrosPagina) =>
+    solicitar<Paginado<PromocionApi>>(endpoints.promociones.vigentes, {
+      query: { objetivo, ...paginacion },
     }),
 
   listar: (filtros?: ParametrosPagina) =>

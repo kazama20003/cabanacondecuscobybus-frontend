@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMiPerfil, useCerrarSesion } from "@/hooks/use-auth";
@@ -16,7 +16,12 @@ export default function PaginaCuenta() {
   const { idioma } = useIdioma();
   const { data: perfil, isLoading, isError } = useMiPerfil();
   const hayToken = typeof window !== "undefined" && !!tokenStorage.obtener();
-  const { data: reservas, isLoading: cargandoReservas } = useMisReservas(hayToken);
+  const [paginaReservas, setPaginaReservas] = useState(1);
+  const { data: reservasPaginadas, isLoading: cargandoReservas } = useMisReservas(
+    hayToken,
+    { pagina: paginaReservas, porPagina: 10 },
+  );
+  const reservas = reservasPaginadas?.datos;
   const cerrarSesion = useCerrarSesion();
 
   useEffect(() => {
@@ -124,12 +129,23 @@ export default function PaginaCuenta() {
             </div>
           );
         })}
+        {reservasPaginadas && reservasPaginadas.totalPaginas > 1 && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
+            <span style={{ color: "var(--muted)", fontSize: 13 }}>
+              Página {reservasPaginadas.pagina} de {reservasPaginadas.totalPaginas} · {reservasPaginadas.total} reservas
+            </span>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button type="button" disabled={paginaReservas <= 1} onClick={() => setPaginaReservas((p) => Math.max(1, p - 1))}>Anterior</button>
+              <button type="button" disabled={paginaReservas >= reservasPaginadas.totalPaginas} onClick={() => setPaginaReservas((p) => Math.min(reservasPaginadas.totalPaginas, p + 1))}>Siguiente</button>
+            </div>
+          </div>
+        )}
       </section>
 
       <button
         type="button"
-        onClick={() => {
-          cerrarSesion();
+        onClick={async () => {
+          await cerrarSesion();
           router.push("/");
         }}
         style={{
