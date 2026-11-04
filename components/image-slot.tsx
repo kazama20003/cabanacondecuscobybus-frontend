@@ -79,7 +79,7 @@ export default function ImageSlot({
         ref={videoRef}
         style={{ ...box, objectFit: "cover" }}
         src={videoCerca ? video : undefined}
-        poster={poster ?? src}
+        poster={poster}
         autoPlay
         loop
         muted

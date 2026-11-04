@@ -227,7 +227,7 @@ export default function Home() {
 
       <div className={styles.heroLayout} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
         <div className={styles.heroMedia} style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
-          <ImageSlot radius={10} src={MEDIA_IMAGE} poster={MEDIA_IMAGE} video={MEDIA_VIDEO} eager placeholder="Video principal" />
+          <ImageSlot radius={10} src={MEDIA_IMAGE} video={MEDIA_VIDEO} eager placeholder="Video principal" />
         </div>
         {/* aside: mismo alto que el video (el contenido absoluto no estira la fila);
             solo esta columna hace scroll interno */}
