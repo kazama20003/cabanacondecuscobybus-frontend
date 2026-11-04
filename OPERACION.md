@@ -4,7 +4,7 @@ Consulta `OPERACION.md` en el backend para el procedimiento operativo completo, 
 
 ## Entorno local
 
-Copia `.env.example` como `.env.local` y completa `NEXT_PUBLIC_API_URL`, políticas, canales, monedas e idiomas habilitados. Los tres enlaces legales y `NEXT_PUBLIC_VERSION_POLITICAS` son obligatorios para poder enviar el checkout. La versión debe coincidir exactamente con `VERSION_POLITICAS` del backend. Canales por categoría: `NEXT_PUBLIC_CANALES_RESERVA_TRANSPORTES`, `NEXT_PUBLIC_CANALES_RESERVA_TOURS` y `NEXT_PUBLIC_CANALES_RESERVA_EVENTOS`; usa `ONLINE`, `WHATSAPP` o ambos. WhatsApp usa `NEXT_PUBLIC_WHATSAPP_RESERVAS`.
+Copia `.env.example` como `.env.local` y completa `NEXT_PUBLIC_API_URL`, políticas, canales, monedas e idiomas habilitados. Los tres enlaces legales y `NEXT_PUBLIC_VERSION_POLITICAS` son obligatorios para poder enviar el checkout. La versión debe coincidir exactamente con `VERSION_POLITICAS` del backend. Canales por categoría: `NEXT_PUBLIC_CANALES_RESERVA_TRANSPORTES`, `NEXT_PUBLIC_CANALES_RESERVA_TOURS` y `NEXT_PUBLIC_CANALES_RESERVA_EVENTOS`; usa `ONLINE`, `WHATSAPP` o ambos. El correo y el teléfono de contacto se centralizan en `lib/data.ts`; los botones de WhatsApp usan el mismo número allí definido.
 
 ## Producción
 

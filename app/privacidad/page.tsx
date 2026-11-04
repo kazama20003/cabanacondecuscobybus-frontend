@@ -6,7 +6,7 @@ const secciones = [
   ["Datos que usamos", "Para responder consultas y gestionar reservas podemos tratar nombre, datos de contacto, país de residencia e información de identificación de los viajeros. Los datos solicitados dependen del servicio y del proceso de reserva."],
   ["Para qué se usan", "Usamos esos datos para cotizar y administrar reservas, coordinar puntos de encuentro, enviar cambios operativos, atender solicitudes y mantener registros de pagos y atención."],
   ["Proveedores necesarios", "Cuando se requiere para completar el servicio, compartimos los datos pertinentes con el operador turístico o transportista y con proveedores de pago o tecnología que procesan la reserva. No se deben ingresar datos completos de tarjetas en formularios de contacto."],
-  ["Conservación y consultas", "Conservamos la información durante el tiempo necesario para atender la reserva, las obligaciones administrativas aplicables y las consultas posteriores. Para solicitar información o corregir tus datos, escribe a reservas@incatravelperu.com."],
+  ["Conservación y consultas", `Conservamos la información durante el tiempo necesario para atender la reserva, las obligaciones administrativas aplicables y las consultas posteriores. Para solicitar información o corregir tus datos, escríbenos a ${CONTACT.email}.`],
 ];
 
 export default function PrivacidadPage() {
