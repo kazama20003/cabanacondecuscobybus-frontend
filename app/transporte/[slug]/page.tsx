@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import {
   obtenerJson,
   recortar,
-  SITE_URL,
+  languageAlternates,
+  requestLanguage,
   tituloTransporte,
+  traduccionEn,
+  urlForPath,
   type TransporteSeo,
 } from "@/lib/seo";
 import TransporteContenido from "./contenido";
@@ -14,28 +17,23 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}`);
+  const idioma = await requestLanguage();
+  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}?idioma=all`);
   if (!transporte) {
-    return { title: "Transporte no encontrado — Inca Travel Peru" };
+    return { title: "Transporte no encontrado", robots: { index: false, follow: false } };
   }
-  const tituloBase = tituloTransporte(transporte);
-  const titulo = slug === "arequipa-cotahuasi"
-    ? "Transporte de Arequipa a Cotahuasi: ruta y reservas"
-    : tituloBase;
-  const descripcion = slug === "arequipa-cotahuasi"
-    ? "Viaja de Arequipa a Cotahuasi, en la provincia de La Unión. Consulta la duración estimada, conoce la Reserva Paisajística y solicita disponibilidad para tu traslado."
-    :
-    recortar(
-      transporte.traducciones?.[0]?.resumen ||
-        transporte.traducciones?.[0]?.descripcion,
-    ) ??
-    `Viaja de ${transporte.origenNombre} a ${transporte.destinoNombre} en transporte turístico con paradas guiadas. Reserva en línea con Inca Travel Peru.`;
-  const url = `${SITE_URL}/transporte/${slug}`;
+  const traduccion = traduccionEn(transporte.traducciones, idioma);
+  const titulo = tituloTransporte(transporte, idioma);
+  const descripcion =
+    recortar(traduccion?.resumen || traduccion?.descripcion) ??
+    `Viaja de ${transporte.origenNombre} a ${transporte.destinoNombre} en transporte turístico. Consulta disponibilidad y reserva en línea con Inca Travel Peru.`;
+  const url = urlForPath(`/transporte/${slug}`, idioma);
+  const idiomasDisponibles = transporte.traducciones?.map((item) => item.idioma) ?? ["es"];
   const imagen = transporte.imagenes?.[0]?.url;
   return {
-    title: `${titulo} — Inca Travel Peru`,
+    title: titulo,
     description: descripcion,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages: languageAlternates(`/transporte/${slug}`, idiomasDisponibles) },
     openGraph: {
       title: titulo,
       description: descripcion,
@@ -55,19 +53,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TransportePage({ params }: Props) {
   const { slug } = await params;
-  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}`);
+  const idioma = await requestLanguage();
+  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}?idioma=all`);
+  const traduccion = transporte ? traduccionEn(transporte.traducciones, idioma) : undefined;
 
   const jsonLd = transporte
     ? {
         "@context": "https://schema.org",
         "@type": "TouristTrip",
-        name: tituloTransporte(transporte),
+        name: tituloTransporte(transporte, idioma),
         description: recortar(
-          transporte.traducciones?.[0]?.resumen ||
-            transporte.traducciones?.[0]?.descripcion,
+          traduccion?.resumen || traduccion?.descripcion,
           300,
         ),
-        url: `${SITE_URL}/transporte/${slug}`,
+        url: urlForPath(`/transporte/${slug}`, idioma),
+        inLanguage: idioma,
         ...(transporte.imagenes?.length
           ? { image: transporte.imagenes.map((medio) => medio.url) }
           : {}),
@@ -87,7 +87,7 @@ export default async function TransportePage({ params }: Props) {
         provider: {
           "@type": "TravelAgency",
           name: "Inca Travel Peru",
-          url: SITE_URL,
+          url: urlForPath("/", idioma),
         },
       }
     : null;

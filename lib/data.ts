@@ -52,6 +52,8 @@ export type TransportRoute = {
   highlights: string[];
   description: string;
   image: string;
+  /** Video propio de esta ruta; nunca se comparte desde un asset global. */
+  video?: string;
 };
 
 export const transportRoutes: TransportRoute[] = [

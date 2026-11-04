@@ -1,11 +1,9 @@
-import type { Metadata } from "next";
 import DestinosContenido from "./contenido";
+import { metadataForListing, requestLanguage } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Destinos — Inca Travel Peru",
-  description:
-    "Descubre los destinos del sur del Perú: Cusco, Machu Picchu, Valle Sagrado, Arequipa, Valle del Colca y Lago Titicaca.",
-};
+export async function generateMetadata() {
+  return metadataForListing(await requestLanguage(), "destinations", "/destinos");
+}
 
 export default function DestinosPage() {
   return <DestinosContenido />;

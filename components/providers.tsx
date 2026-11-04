@@ -5,8 +5,9 @@ import { useState } from "react";
 import { IdiomaProvider } from "@/components/lang-provider";
 import { CarritoProvider } from "@/components/cart-provider";
 import { Toaster } from "@/components/native-ui/sonner";
+import type { LangCode } from "@/lib/language";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({ children, initialLanguage }: { children: React.ReactNode; initialLanguage: LangCode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -17,7 +18,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
   return (
     <QueryClientProvider client={queryClient}>
-      <IdiomaProvider>
+      <IdiomaProvider initialLanguage={initialLanguage}>
         <CarritoProvider>
           {children}
           <Toaster position="top-right" closeButton richColors />

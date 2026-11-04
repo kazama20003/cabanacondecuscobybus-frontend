@@ -11,12 +11,9 @@ import styles from "./route-card.module.css";
    de la ruta se reproduce en lugar de la foto y aparece el CTA de reserva. */
 export default function RouteCard({
   route: r,
-  video,
   compact = false,
 }: {
   route: TransportRoute;
-  /** URL de video a reproducir en hover sobre la foto */
-  video?: string;
   /** true: versión del home (menos columnas de detalle) */
   compact?: boolean;
 }) {
@@ -24,6 +21,7 @@ export default function RouteCard({
   const t = useT();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hover, setHover] = useState(false);
+  const video = r.video;
 
   const onEnter = () => {
     setHover(true);
@@ -156,21 +154,27 @@ export default function RouteCard({
       {/* Col 4: media (foto → video en hover) + precio + CTA */}
       <div className={styles.routeVisual} style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
         <div className={styles.media} style={{ position: "relative", width: "100%", aspectRatio: "3 / 2", borderRadius: 10, overflow: "hidden" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={r.image || undefined}
-            alt={`${r.from} — ${r.to}`}
-            loading="lazy"
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transform: hover ? "scale(1.06)" : "scale(1)",
-              transition: "transform .5s ease",
-            }}
-          />
+          {r.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={r.image}
+              alt={`${r.from} — ${r.to}`}
+              loading="lazy"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transform: hover ? "scale(1.06)" : "scale(1)",
+                transition: "transform .5s ease",
+              }}
+            />
+          ) : (
+            <div aria-label={`Imagen pendiente: ${r.from} a ${r.to}`} style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: 20, background: "var(--card)", color: "var(--muted)", textAlign: "center", fontSize: 14 }}>
+              {r.from} → {r.to}
+            </div>
+          )}
           {video && (
             <video
               ref={videoRef}

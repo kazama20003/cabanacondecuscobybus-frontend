@@ -72,7 +72,8 @@ function aRuta(t: TransporteApi, idioma: string): TransportRoute {
     frequency: "",
     priceFrom: precio?.pen ?? 0,
     priceUsdFrom: precio?.usd,
-    image: t.imagenes?.[0]?.url ?? "",
+    image: t.imagenes?.find((medio) => medio.tipo !== "VIDEO")?.url ?? "",
+    video: t.imagenes?.find((medio) => medio.tipo === "VIDEO")?.url,
     stops: [],
     highlights: [],
   };
@@ -372,7 +373,7 @@ export default function Home() {
             <p style={{ color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
           )}
           {rutas.slice(0, 4).map((r) => (
-            <RouteCard key={r.slug} route={r} video={MEDIA_VIDEO} compact />
+            <RouteCard key={r.slug} route={r} compact />
           ))}
         </div>
       </section>

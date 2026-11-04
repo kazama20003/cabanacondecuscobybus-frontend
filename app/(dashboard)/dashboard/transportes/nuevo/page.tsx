@@ -113,8 +113,8 @@ export default function PaginaNuevaRuta() {
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
-    if (medios.length === 0) {
-      setErrorMedios("Sube al menos una imagen o un video principal.");
+    if (!medios.some((medio) => medio.tipo !== "VIDEO")) {
+      setErrorMedios("Añade al menos una imagen para usarla como portada. El video es opcional.");
       return;
     }
     setErrorMedios(null);
@@ -419,7 +419,7 @@ export default function PaginaNuevaRuta() {
                 paso="4"
                 titulo="Fotos y videos"
                 icono={<ImageIcon />}
-                descripcion="Lo que verá el turista en la página de la ruta. Obligatorio: al menos una imagen o un video principal."
+                descripcion="Añade una imagen de portada y, si tienes, un video propio de esta ruta. Cada medio queda asociado a este transporte."
               />
             </CardHeader>
             <CardContent className="grid gap-2">
