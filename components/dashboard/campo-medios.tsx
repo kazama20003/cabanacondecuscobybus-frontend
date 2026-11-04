@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FilmIcon, ImageIcon, Loader2Icon, Trash2Icon, UploadIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, FilmIcon, ImageIcon, Loader2Icon, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/native-ui/badge";
 import { Button } from "@/components/native-ui/button";
 import { Label } from "@/components/native-ui/label";
@@ -22,7 +22,8 @@ export function CampoMedios({
   soloImagenes?: boolean;
   maximo?: number;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const imagenesRef = useRef<HTMLInputElement>(null);
+  const videosRef = useRef<HTMLInputElement>(null);
   const [subiendo, setSubiendo] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,27 +45,32 @@ export function CampoMedios({
       setError(e instanceof Error ? e.message : "No se pudo subir el archivo");
     } finally {
       setSubiendo(0);
-      if (inputRef.current) inputRef.current.value = "";
+      if (imagenesRef.current) imagenesRef.current.value = "";
+      if (videosRef.current) videosRef.current.value = "";
     }
   };
+
+  const mover = (indice: number, desplazamiento: -1 | 1) => {
+    const destino = indice + desplazamiento;
+    if (destino < 0 || destino >= medios.length) return;
+    const ordenados = [...medios];
+    [ordenados[indice], ordenados[destino]] = [ordenados[destino], ordenados[indice]];
+    onCambiar(ordenados);
+  };
+
+  const primeraImagen = medios.findIndex((medio) => medio.tipo !== "VIDEO");
 
   return (
     <div className="grid gap-2">
       <Label>Imágenes y videos</Label>
-      <input
-        ref={inputRef}
-        type="file"
-        hidden
-        multiple
-        accept={soloImagenes ? "image/jpeg,image/png,image/webp" : "image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime"}
-        onChange={(e) => subirArchivos(e.target.files)}
-      />
-      <div>
+      <input ref={imagenesRef} type="file" hidden multiple accept="image/jpeg,image/png,image/webp" onChange={(e) => subirArchivos(e.target.files)} />
+      {!soloImagenes && <input ref={videosRef} type="file" hidden multiple accept="video/mp4,video/webm,video/quicktime" onChange={(e) => subirArchivos(e.target.files)} />}
+      <div className="flex flex-wrap gap-2">
         <Button
           type="button"
           variant="outline"
           disabled={subiendo > 0 || (maximo !== undefined && medios.length >= maximo)}
-          onClick={() => inputRef.current?.click()}
+          onClick={() => imagenesRef.current?.click()}
         >
           {subiendo > 0 ? (
             <>
@@ -73,12 +79,20 @@ export function CampoMedios({
             </>
           ) : (
             <>
-              <UploadIcon />
-              Subir imágenes o videos
+              <ImageIcon />
+              Añadir imágenes
             </>
           )}
         </Button>
+        {!soloImagenes && <Button type="button" variant="outline" disabled={subiendo > 0 || (maximo !== undefined && medios.length >= maximo)} onClick={() => videosRef.current?.click()}>
+          {subiendo > 0 ? <Loader2Icon className="animate-spin" /> : <FilmIcon />}
+          Añadir videos
+        </Button>}
       </div>
+
+      <p className="text-muted-foreground text-xs">
+        La primera imagen se usa como portada. Los videos quedan asociados únicamente a este producto.
+      </p>
 
       {error && <p className="text-destructive text-sm">{error}</p>}
 
@@ -113,7 +127,12 @@ export function CampoMedios({
                     </>
                   )}
                 </Badge>
+                {medio.tipo !== "VIDEO" && i === primeraImagen && <Badge className="mb-1 ml-1">Portada</Badge>}
                 <p className="text-muted-foreground truncate text-xs">{medio.url}</p>
+              </div>
+              <div className="flex shrink-0 flex-col">
+                <Button type="button" variant="ghost" size="icon" className="size-7" disabled={i === 0 || subiendo > 0} onClick={() => mover(i, -1)} aria-label="Subir posición del medio"><ArrowUpIcon /></Button>
+                <Button type="button" variant="ghost" size="icon" className="size-7" disabled={i === medios.length - 1 || subiendo > 0} onClick={() => mover(i, 1)} aria-label="Bajar posición del medio"><ArrowDownIcon /></Button>
               </div>
               <Button
                 type="button"
@@ -136,9 +155,7 @@ export function CampoMedios({
           ))}
         </ul>
       )}
-      <p className="text-muted-foreground text-xs">
-        {soloImagenes ? "JPG, PNG o WebP." : "JPG, PNG, WebP, MP4, WebM o MOV."} Se almacenan en Google Cloud Storage.
-      </p>
+      <p className="text-muted-foreground text-xs">{soloImagenes ? "JPG, PNG o WebP." : "Imágenes JPG, PNG o WebP. Videos MP4, WebM o MOV."} Se almacenan en Google Cloud Storage.</p>
     </div>
   );
 }

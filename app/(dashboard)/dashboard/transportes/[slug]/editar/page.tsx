@@ -83,8 +83,8 @@ export default function PaginaEditarTransporte({
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
     if (!transporte) return;
-    if (medios.length === 0) {
-      setErrorMedios("Sube al menos una imagen o un video principal.");
+    if (!medios.some((medio) => medio.tipo !== "VIDEO")) {
+      setErrorMedios("Añade al menos una imagen para usarla como portada. El video es opcional.");
       return;
     }
     setErrorMedios(null);
@@ -207,7 +207,7 @@ export default function PaginaEditarTransporte({
             <CardHeader>
               <CardTitle>Fotos y videos</CardTitle>
               <CardDescription>
-                Obligatorio: al menos una imagen o un video principal. Al guardar
+                Conserva una imagen de portada y añade, si tienes, un video propio de esta ruta. Al guardar
                 se eliminan del almacenamiento los medios que quites.
               </CardDescription>
             </CardHeader>

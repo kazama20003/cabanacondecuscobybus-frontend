@@ -91,16 +91,8 @@ export default function PaginaTransportes() {
                       <div className="relative h-11 w-11">
                         <ImageSlot
                           radius={8}
-                          src={
-                            t.imagenes?.[0]?.tipo === "VIDEO"
-                              ? undefined
-                              : t.imagenes?.[0]?.url
-                          }
-                          video={
-                            t.imagenes?.[0]?.tipo === "VIDEO"
-                              ? t.imagenes?.[0]?.url
-                              : undefined
-                          }
+                          src={t.imagenes?.find((medio) => medio.tipo !== "VIDEO")?.url}
+                          video={!t.imagenes?.some((medio) => medio.tipo !== "VIDEO") ? t.imagenes?.find((medio) => medio.tipo === "VIDEO")?.url : undefined}
                           placeholder="—"
                         />
                       </div>
