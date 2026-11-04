@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart, Menu, X } from "lucide-react";
-import { LOGO_URL } from "@/lib/data";
+import { IMG_TEMPLO, LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
 import { useCarrito } from "@/components/cart-provider";
 import { useT } from "@/lib/i18n";
@@ -60,9 +60,10 @@ export default function SiteHeader() {
           <img src={LOGO_URL} alt="Inca Travel Peru" className={styles.logo} />
         </Link>
         <nav id="mobile-primary-nav" aria-label="Navegación principal" className={`${styles.nav} ${mobileOpen ? styles.navOpen : ""}`}>
-          <div className={styles.menuHeading}>
+          <div className={styles.menuFeature} style={{ backgroundImage: `linear-gradient(90deg, rgba(8, 10, 12, .76), rgba(8, 10, 12, .14)), url("${IMG_TEMPLO}")` }}>
             <span className={styles.menuEyebrow}>INCA TRAVEL PERU</span>
-            <span className={styles.menuTitle}>Descubre el Perú</span>
+            <span className={styles.menuTitle}>{t("home.heroTitle2")}</span>
+            <span className={styles.menuPlaces}>CUSCO <i /> COLCA <i /> AREQUIPA</span>
           </div>
           {NAV.map(({ clave, href, Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
