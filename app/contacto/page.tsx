@@ -1,11 +1,9 @@
-import type { Metadata } from "next";
 import ContactoContenido from "./contenido";
+import { metadataForStaticPage, requestLanguage } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contacto — Inca Travel Peru",
-  description:
-    "Reserva tu transporte, tour o traslado con Inca Travel Peru. Atención por WhatsApp, teléfono y correo desde Cusco, Perú.",
-};
+export async function generateMetadata() {
+  return metadataForStaticPage(await requestLanguage(), "contact", "/contacto");
+}
 
 export default function ContactoPage() {
   return <ContactoContenido />;

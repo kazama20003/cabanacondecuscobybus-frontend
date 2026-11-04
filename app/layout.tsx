@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import SmoothScroll from "@/components/smooth-scroll";
 import Providers from "@/components/providers";
+import { requestLanguage, siteMetadata } from "@/lib/seo";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -14,19 +14,15 @@ const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Inca Travel Peru — Transporte Turístico, Tours y Traslados",
-    template: "%s",
-  },
-  description:
-    "Agencia de turismo en el sur del Perú: transporte turístico entre Cusco, Arequipa, Colca y Puno, tours a Machu Picchu y traslados privados.",
-};
+export async function generateMetadata() {
+  return siteMetadata(await requestLanguage());
+}
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const idioma = await requestLanguage();
   return (
     <html
-      lang="es"
+      lang={idioma}
       className={cn(inter.variable, instrumentSerif.variable, "font-sans")}
       suppressHydrationWarning
     >
@@ -38,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body>
-        <Providers>
+        <Providers initialLanguage={idioma}>
           <SmoothScroll>{children}</SmoothScroll>
         </Providers>
       </body>
