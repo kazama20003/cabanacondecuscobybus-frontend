@@ -178,7 +178,7 @@ export default function RouteCard({
               loop
               muted
               playsInline
-              preload="metadata"
+              preload="none"
               style={{
                 position: "absolute",
                 inset: 0,

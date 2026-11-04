@@ -1,6 +1,6 @@
 "use client";
 
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 
 /* ---------- image-slot: placeholder box / imagen / video ---------- */
 export default function ImageSlot({
@@ -9,6 +9,8 @@ export default function ImageSlot({
   placeholder,
   src,
   video,
+  poster,
+  eager = false,
   style,
 }: {
   radius?: number;
@@ -18,10 +20,34 @@ export default function ImageSlot({
   src?: string;
   /** URL de video a reproducir en bucle, muteado (object-fit: cover) */
   video?: string;
+  /** Imagen fija mientras el video inicia o si el navegador no lo reproduce */
+  poster?: string;
+  /** Usa carga inmediata solo para el video principal visible al abrir la página */
+  eager?: boolean;
   style?: CSSProperties;
 }) {
   const [medioFallido, setMedioFallido] = useState<{ src?: string; video?: string } | null>(null);
+  const [videoCerca, setVideoCerca] = useState(eager);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const errorDeMedio = medioFallido?.src === src && medioFallido?.video === video;
+
+  useEffect(() => {
+    if (!video || eager || videoCerca) return;
+    const elemento = videoRef.current;
+    if (!elemento) return;
+    if (!("IntersectionObserver" in window)) {
+      setVideoCerca(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entrada]) => {
+      if (entrada.isIntersecting) {
+        setVideoCerca(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "280px" });
+    observer.observe(elemento);
+    return () => observer.disconnect();
+  }, [video, eager, videoCerca]);
 
   const box: CSSProperties = {
     position: "absolute",
@@ -50,13 +76,15 @@ export default function ImageSlot({
     }
     return (
       <video
+        ref={videoRef}
         style={{ ...box, objectFit: "cover" }}
-        src={video}
+        src={videoCerca ? video : undefined}
+        poster={poster ?? src}
         autoPlay
         loop
         muted
         playsInline
-        preload="metadata"
+        preload={eager ? "metadata" : "none"}
         onError={() => setMedioFallido({ src, video })}
       />
     );
