@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { API_BASE_URL } from "./api/base-url";
 import { languageForRequest, localizedPath, normalizeLanguage, SUPPORTED_LANGUAGES, type LangCode } from "./language";
+import { preciosDesdeSalidas } from "./precios";
+import type { SalidaApi } from "./api/tipos";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.cabanacondecuscobybus.com").replace(/\/$/, "");
 export const API_URL = API_BASE_URL;
@@ -88,6 +90,7 @@ export interface TransporteSeo {
   origenNombre: string;
   destinoNombre: string;
   duracionMinutosEstimada?: number;
+  salidas?: SalidaApi[];
   traducciones?: TraduccionSeo[];
   imagenes?: { url: string }[];
 }
@@ -96,6 +99,7 @@ export interface TourSeo {
   slug: string;
   destinoNombre: string;
   duracionMinutos?: number;
+  salidas?: SalidaApi[];
   traducciones?: TraduccionSeo[];
   imagenes?: { url: string }[];
 }
@@ -127,4 +131,41 @@ export function recortar(texto: string | undefined, max = 160): string | undefin
   if (!texto) return undefined;
   const limpio = texto.replace(/\s+/g, " ").trim();
   return limpio.length <= max ? limpio : `${limpio.slice(0, max - 1).trimEnd()}…`;
+}
+
+/** Incluye tarifas reales de próximas salidas en el texto que Google puede usar como snippet. */
+export function descripcionSeoConPrecio(
+  descripcion: string | undefined,
+  salidas: SalidaApi[] | undefined,
+  language: LangCode,
+): string | undefined {
+  const precio = preciosDesdeSalidas(salidas);
+  if (!precio) return recortar(descripcion);
+
+  const desde: Record<LangCode, string> = {
+    es: "Desde",
+    en: "From",
+    fr: "Dès",
+    it: "Da",
+    pt: "A partir de",
+    zh: "起价",
+    ja: "料金",
+    ru: "От",
+    de: "Ab",
+  };
+  const porPersona: Record<LangCode, string> = {
+    es: "por persona",
+    en: "per person",
+    fr: "par personne",
+    it: "a persona",
+    pt: "por pessoa",
+    zh: "每人",
+    ja: "1名あたり",
+    ru: "за человека",
+    de: "pro Person",
+  };
+  const sufijo = `${desde[language]} US$ ${precio.usd} (S/ ${precio.pen}) ${porPersona[language]}.`;
+  const maxDescripcion = Math.max(32, 160 - sufijo.length - 1);
+  const texto = recortar(descripcion, maxDescripcion);
+  return texto ? `${texto} ${sufijo}` : sufijo;
 }

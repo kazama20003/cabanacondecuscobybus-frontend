@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   obtenerJson,
+  descripcionSeoConPrecio,
   recortar,
   languageAlternates,
   requestLanguage,
@@ -25,10 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const traduccion = traduccionEn(tour.traducciones, idioma);
   const titulo = tituloTour(tour, idioma);
   const descripcion =
-    recortar(
-      traduccion?.resumen || traduccion?.descripcion,
-    ) ??
-    `Tour a ${tour.destinoNombre} con guía profesional y salidas programadas. Reserva en línea con Inca Travel Peru.`;
+    descripcionSeoConPrecio(
+      traduccion?.resumen || traduccion?.descripcion || `Tour a ${tour.destinoNombre} con guía profesional y salidas programadas. Reserva en línea con Inca Travel Peru.`,
+      tour.salidas,
+      idioma,
+    ) ?? "";
   const url = urlForPath(`/tours/${slug}`, idioma);
   const idiomasDisponibles = tour.traducciones?.map((item) => item.idioma) ?? ["es"];
   const imagen = tour.imagenes?.[0]?.url;

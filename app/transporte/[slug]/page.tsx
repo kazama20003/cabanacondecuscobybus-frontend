@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   obtenerJson,
+  descripcionSeoConPrecio,
   recortar,
   languageAlternates,
   requestLanguage,
@@ -25,8 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const traduccion = traduccionEn(transporte.traducciones, idioma);
   const titulo = tituloTransporte(transporte, idioma);
   const descripcion =
-    recortar(traduccion?.resumen || traduccion?.descripcion) ??
-    `Viaja de ${transporte.origenNombre} a ${transporte.destinoNombre} en transporte turístico. Consulta disponibilidad y reserva en línea con Inca Travel Peru.`;
+    descripcionSeoConPrecio(
+      traduccion?.resumen || traduccion?.descripcion || `Viaja de ${transporte.origenNombre} a ${transporte.destinoNombre} en transporte turístico. Consulta disponibilidad y reserva en línea con Inca Travel Peru.`,
+      transporte.salidas,
+      idioma,
+    ) ?? "";
   const url = urlForPath(`/transporte/${slug}`, idioma);
   const idiomasDisponibles = transporte.traducciones?.map((item) => item.idioma) ?? ["es"];
   const imagen = transporte.imagenes?.[0]?.url;
