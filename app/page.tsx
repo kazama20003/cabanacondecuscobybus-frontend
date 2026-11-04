@@ -9,6 +9,7 @@ import ImageSlot from "@/components/image-slot";
 import RouteCard from "@/components/route-card";
 import {
   MEDIA_VIDEO,
+  MEDIA_IMAGE,
   IMG_SAN_LAZARO,
   IMG_TEMPLO,
   type TransportRoute,
@@ -226,7 +227,7 @@ export default function Home() {
 
       <div className={styles.heroLayout} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
         <div className={styles.heroMedia} style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
-          <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video principal" />
+          <ImageSlot radius={10} src={MEDIA_IMAGE} poster={MEDIA_IMAGE} video={MEDIA_VIDEO} eager placeholder="Video principal" />
         </div>
         {/* aside: mismo alto que el video (el contenido absoluto no estira la fila);
             solo esta columna hace scroll interno */}
@@ -398,7 +399,7 @@ export default function Home() {
           ].map((testi, i) => (
             <figure key={i} style={{ margin: 0 }}>
               <div className={styles.testimonialMedia} style={{ width: "100%", height: 520, position: "relative" }}>
-                <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`${t("home.videoTesti")} ${i + 1}`} />
+                <ImageSlot radius={10} poster={MEDIA_IMAGE} video={MEDIA_VIDEO} placeholder={`${t("home.videoTesti")} ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
                 <span
