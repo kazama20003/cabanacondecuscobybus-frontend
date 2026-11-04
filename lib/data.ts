@@ -5,9 +5,9 @@ export const LOGO_URL =
 /* ---------- Datos del negocio: Inca Travel Peru ---------- */
 
 export const CONTACT = {
-  email: "reservas@incatravelperu.com",
-  phone: "+51 984 123 456",
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_RESERVAS ?? "51984123456",
+  email: "reservas.incatravelperu@gmail.com",
+  phone: "+51 959 748 730",
+  whatsapp: "51959748730",
   address: "Portal de Panes 123, Plaza de Armas, Cusco",
   city: "Cusco, Perú",
 };
