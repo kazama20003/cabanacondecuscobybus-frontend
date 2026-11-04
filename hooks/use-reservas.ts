@@ -2,16 +2,16 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { claves, servicioReservas } from "@/lib/api";
-import type { ComprobanteSaldoEntrada, SolicitudGestionReservaEntrada } from "@/lib/api";
+import type { ComprobanteSaldoEntrada, ParametrosPagina, SolicitudGestionReservaEntrada } from "@/lib/api";
 
 export function useCrearReserva() {
   return useMutation({ mutationFn: servicioReservas.crear });
 }
 
-export function useMisReservas(habilitado = true) {
+export function useMisReservas(habilitado = true, paginacion: ParametrosPagina = { pagina: 1, porPagina: 10 }) {
   return useQuery({
-    queryKey: ["reservas", "mias"],
-    queryFn: servicioReservas.mias,
+    queryKey: ["reservas", "mias", paginacion],
+    queryFn: () => servicioReservas.mias(paginacion),
     enabled: habilitado,
   });
 }

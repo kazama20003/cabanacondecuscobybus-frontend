@@ -46,12 +46,12 @@ export default function ReservaPage() {
   }, [codigo]);
 
   const invitado = useReservaInvitado(codigo, token ?? "");
-  const mias = useMisReservas(logueado && !token);
+  const mias = useMisReservas(logueado && !token, { pagina: 1, porPagina: 100 });
   const iniciarPago = useIniciarPagoAdelanto();
   const solicitarGestion = useSolicitarGestionReserva();
 
   const reserva: ReservaApi | undefined =
-    invitado.data ?? mias.data?.find((r) => r.codigo === codigo);
+    invitado.data ?? mias.data?.datos.find((r) => r.codigo === codigo);
 
   useEffect(() => {
     if (!confirmandoPago) return;

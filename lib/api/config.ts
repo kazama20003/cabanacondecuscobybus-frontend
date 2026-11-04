@@ -1,15 +1,20 @@
 /* Configuración central de la API. Un solo lugar para cambiar entornos. */
 
+import { API_BASE_URL } from "./base-url";
+
 export const apiConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api",
+  baseUrl: API_BASE_URL,
   timeoutMs: 15_000,
   tokenStorageKey: "inca-token",
+  refreshTokenStorageKey: "inca-refresh-token",
 } as const;
 
 /* Rutas de la API por módulo — evita strings sueltos por todo el código. */
 export const endpoints = {
   autenticacion: {
     google: "/autenticacion/google",
+    renovar: "/autenticacion/renovar",
+    cerrarSesion: "/autenticacion/cerrar-sesion",
     miPerfil: "/autenticacion/mi-perfil",
   },
   catalogo: {

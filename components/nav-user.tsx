@@ -44,8 +44,8 @@ export function NavUser({
   const router = useRouter()
   const cerrarSesion = useCerrarSesion()
 
-  const salir = () => {
-    cerrarSesion()
+  const salir = async () => {
+    await cerrarSesion()
     router.push("/login")
   }
 

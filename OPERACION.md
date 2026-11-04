@@ -8,4 +8,4 @@ Copia `.env.example` como `.env.local` y completa `NEXT_PUBLIC_API_URL`, políti
 
 ## Producción
 
-Las variables `NEXT_PUBLIC_*` se incluyen durante `pnpm build`, así que deben estar definidas al compilar. Configura en el backend los mismos enlaces y `VERSION_POLITICAS`; la API guarda la aceptación de política y no permite reservas de producción si esos documentos faltan. Las monedas y los idiomas visibles se limitan a las listas configuradas.
+En Vercel configura `NEXT_PUBLIC_API_URL=https://api.cabanacondecuscobybus.com/api` y vuelve a desplegar: las variables `NEXT_PUBLIC_*` se incluyen durante `pnpm build`. Como protección adicional, el frontend de producción reemplaza una URL `localhost` por el dominio de la API, incluso si la variable falta o quedó configurada localmente. Configura en el backend los mismos enlaces y `VERSION_POLITICAS`; la API guarda la aceptación de política y no permite reservas de producción si esos documentos faltan. Las monedas y los idiomas visibles se limitan a las listas configuradas.

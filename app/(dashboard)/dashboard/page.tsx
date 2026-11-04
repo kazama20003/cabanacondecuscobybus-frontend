@@ -116,7 +116,7 @@ export default function PaginaResumen() {
   const tours = useTours({ porPagina: 100 });
   const salidasTransporte = useSalidasAdmin({ tipo: "TRANSPORTE", porPagina: 100 });
   const salidasTour = useSalidasAdmin({ tipo: "TOUR", porPagina: 100 });
-  const plantillas = usePlantillasSalida();
+  const plantillas = usePlantillasSalida(undefined, { pagina: 1, porPagina: 100 });
   const promociones = usePromociones({ porPagina: 100 });
 
   const ahora = Date.now();
@@ -139,7 +139,7 @@ export default function PaginaResumen() {
   const salidasConCupoFinito = proximas.filter((s) => s.capacidad !== null);
   const asientosVendidosConCupoFinito = salidasConCupoFinito.reduce((n, s) => n + s.ocupados, 0);
   const asientosTotales = salidasConCupoFinito.reduce((n, s) => n + (s.capacidad ?? 0), 0);
-  const horariosActivos = (plantillas.data ?? []).filter((p) => p.activo);
+  const horariosActivos = (plantillas.data?.datos ?? []).filter((p) => p.activo);
   const cargandoSalidas = salidasTransporte.isLoading || salidasTour.isLoading;
 
   // Serie: salidas por día para los próximos 14 días, separadas por tipo.

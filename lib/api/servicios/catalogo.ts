@@ -38,8 +38,8 @@ export const servicioCatalogo = {
       query: { idioma },
     }),
 
-  buscarTransportes: (filtros: { origen?: string; destino?: string; fecha?: string }) =>
-    solicitar<TransporteApi[]>(endpoints.catalogo.buscarTransportes, { query: filtros }),
+  buscarTransportes: (filtros: ParametrosPagina & { origen?: string; destino?: string; fecha?: string; pasajeros?: number }) =>
+    solicitar<Paginado<SalidaApi>>(endpoints.catalogo.buscarTransportes, { query: filtros }),
 
   tours: (filtros?: ParametrosPagina & { destino?: string; esEvento?: boolean }) =>
     solicitar<Paginado<TourApi>>(endpoints.catalogo.tours, { query: filtros }),
@@ -154,9 +154,9 @@ export const servicioCatalogo = {
       cuerpo: datos,
     }),
 
-  plantillasSalida: (tipo?: "TRANSPORTE" | "TOUR") =>
-    solicitar<PlantillaSalidaApi[]>(endpoints.catalogo.plantillasSalida, {
-      query: tipo ? { tipo } : undefined,
+  plantillasSalida: (tipo?: "TRANSPORTE" | "TOUR", paginacion?: ParametrosPagina) =>
+    solicitar<Paginado<PlantillaSalidaApi>>(endpoints.catalogo.plantillasSalida, {
+      query: { tipo, ...paginacion },
     }),
 
   crearPlantillaTransporte: (transporteId: string, datos: CrearPlantillaEntrada) =>

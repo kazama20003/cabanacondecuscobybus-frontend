@@ -4,6 +4,8 @@ import type {
   ComprobanteSaldoEntrada,
   CrearReservaEntrada,
   PagoAdelantoApi,
+  Paginado,
+  ParametrosPagina,
   ReservaApi,
   SolicitudGestionReservaEntrada,
 } from "../tipos";
@@ -12,7 +14,10 @@ export const servicioReservas = {
   crear: (datos: CrearReservaEntrada) =>
     solicitar<ReservaApi>(endpoints.reservas.crear, { metodo: "POST", cuerpo: datos }),
 
-  mias: () => solicitar<ReservaApi[]>(endpoints.reservas.mias),
+  mias: (paginacion?: ParametrosPagina) =>
+    solicitar<Paginado<ReservaApi>>(endpoints.reservas.mias, {
+      query: paginacion,
+    }),
 
   verInvitado: (codigo: string, token: string) =>
     solicitar<ReservaApi>(endpoints.reservas.verInvitado(codigo), {

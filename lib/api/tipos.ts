@@ -25,6 +25,7 @@ export interface ParametrosPagina {
 
 export interface Sesion {
   tokenAcceso: string;
+  tokenRenovacion: string;
   usuario: { id: string; correo: string; rol: RolUsuario };
 }
 

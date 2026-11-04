@@ -1,10 +1,11 @@
 /** Utilidades de SEO compartidas por páginas server-side y el sitemap. */
 
+import { API_BASE_URL } from "./api/base-url";
+
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.incatravelperu.com";
 
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+export const API_URL = API_BASE_URL;
 
 export interface TraduccionSeo {
   idioma: string;

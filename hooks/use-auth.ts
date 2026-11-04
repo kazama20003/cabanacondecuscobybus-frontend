@@ -9,6 +9,7 @@ export function useSesionGoogle() {
     mutationFn: servicioAutenticacion.iniciarSesionGoogle,
     onSuccess: (sesion) => {
       tokenStorage.guardar(sesion.tokenAcceso);
+      tokenStorage.guardarRenovacion(sesion.tokenRenovacion);
       queryClient.invalidateQueries({ queryKey: claves.autenticacion.perfil });
     },
   });
@@ -25,9 +26,17 @@ export function useMiPerfil() {
 
 export function useCerrarSesion() {
   const queryClient = useQueryClient();
-  return () => {
-    tokenStorage.limpiar();
-    avatarStorage.limpiar();
-    queryClient.removeQueries({ queryKey: claves.autenticacion.perfil });
+  return async () => {
+    const tokenRenovacion = tokenStorage.obtenerRenovacion();
+    try {
+      if (tokenRenovacion) await servicioAutenticacion.cerrarSesion(tokenRenovacion);
+    } catch {
+      // Cierra la sesión local incluso si el servidor no está disponible.
+    } finally {
+      tokenStorage.limpiar();
+      tokenStorage.limpiarRenovacion();
+      avatarStorage.limpiar();
+      queryClient.removeQueries({ queryKey: claves.autenticacion.perfil });
+    }
   };
 }
