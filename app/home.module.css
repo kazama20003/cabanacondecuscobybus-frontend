@@ -1,0 +1,231 @@
+.home {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0 24px 48px;
+}
+
+@media (max-width: 760px) {
+  .home {
+    padding: 0 16px 32px;
+  }
+
+  .heroTitle {
+    max-width: 100%;
+    margin: 30px 0 22px !important;
+    font-size: clamp(40px, 11.5vw, 62px) !important;
+    line-height: 0.99 !important;
+    letter-spacing: -0.055em !important;
+    overflow-wrap: anywhere;
+  }
+
+  .heroLayout {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .heroMedia {
+    aspect-ratio: 4 / 3 !important;
+    min-height: 270px;
+    max-height: 440px;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+
+  .heroAside {
+    min-height: 0;
+  }
+
+  .heroAsideScroller {
+    position: static !important;
+    inset: auto !important;
+    overflow: visible !important;
+    gap: 12px !important;
+    padding: 0 !important;
+  }
+
+  .heroAsideScroller > div:first-child h3 {
+    font-size: 18px !important;
+  }
+
+  .heroAsideScroller > div:first-child a {
+    padding: 8px 0 8px 12px;
+    font-size: 14px !important;
+  }
+
+  .heroRouteRail {
+    display: flex;
+    gap: 12px;
+    margin: 0 -16px;
+    padding: 0 16px 5px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .heroRouteRail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .heroRouteCard {
+    flex: 0 0 min(84vw, 350px);
+    min-width: 0;
+    padding: 14px !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 14px;
+    background: var(--card);
+    scroll-snap-align: start;
+  }
+
+  .heroRouteCard h3 {
+    font-size: 17px !important;
+    line-height: 1.25;
+  }
+
+  .heroRouteImage {
+    height: 190px !important;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  .home > section {
+    margin-top: 76px !important;
+  }
+
+  .home > section h2 {
+    max-width: 100% !important;
+    margin: 0 0 24px !important;
+    font-size: clamp(27px, 7.4vw, 36px) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.045em !important;
+    text-align: left !important;
+  }
+
+  .testimonialGrid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .testimonialMedia {
+    height: auto !important;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+
+  .galleryGrid {
+    columns: 2 !important;
+    column-gap: 12px !important;
+  }
+
+  .galleryItem {
+    margin-bottom: 18px !important;
+  }
+
+  .galleryMedia {
+    height: clamp(138px, 43vw, 190px) !important;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .aboutSection {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .aboutCopy {
+    padding: 24px 20px !important;
+    border-radius: 14px;
+    font-size: clamp(20px, 5.7vw, 27px) !important;
+    line-height: 1.38 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .officeMedia {
+    height: clamp(240px, 72vw, 330px) !important;
+    overflow: hidden;
+    border-radius: 14px;
+  }
+
+  .aboutCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .aboutCard {
+    min-width: 0;
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .aboutCardMedia {
+    height: clamp(130px, 40vw, 180px) !important;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  .home :global(footer) {
+    margin-top: 82px !important;
+  }
+
+  .home :global(footer > div:first-child) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 28px !important;
+  }
+
+  .home :global(footer h3) {
+    margin-bottom: 12px !important;
+    font-size: 25px !important;
+  }
+
+  .home :global(footer > div:nth-child(2)) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 22px !important;
+    margin-top: 58px !important;
+    padding-bottom: 30px !important;
+  }
+
+  .home :global(footer > div:nth-child(2) > span:first-child) {
+    width: 94px !important;
+    height: 94px !important;
+  }
+
+  .home :global(footer > div:nth-child(2) > span:first-child > span) {
+    width: 56px !important;
+    height: 64px !important;
+  }
+
+  .home :global(footer > div:nth-child(2) > div > h2) {
+    margin-bottom: 22px !important;
+    font-size: 27px !important;
+  }
+
+  .home :global(footer > div:nth-child(2) > div > div) {
+    gap: 14px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .home {
+    padding-inline: 13px;
+  }
+
+  .heroTitle {
+    font-size: clamp(38px, 11.8vw, 46px) !important;
+  }
+
+  .heroRouteRail {
+    margin-inline: -13px;
+    padding-inline: 13px;
+  }
+
+  .heroRouteCard {
+    flex-basis: 88vw;
+  }
+
+  .aboutCards {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

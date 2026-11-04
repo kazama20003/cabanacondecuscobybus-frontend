@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart } from "lucide-react";
+import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart, Menu, X } from "lucide-react";
 import { LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
 import { useCarrito } from "@/components/cart-provider";
@@ -21,6 +21,7 @@ const NAV = [
 
 export default function SiteHeader() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const t = useT();
   const { totalLineas, hidratado } = useCarrito();
@@ -34,6 +35,10 @@ export default function SiteHeader() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const toggleTheme = () => {
     setTheme((t) => {
@@ -54,7 +59,7 @@ export default function SiteHeader() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO_URL} alt="Inca Travel Peru" className={styles.logo} />
         </Link>
-        <nav className={styles.nav}>
+        <nav id="mobile-primary-nav" aria-label="Navegación principal" className={`${styles.nav} ${mobileOpen ? styles.navOpen : ""}`}>
           {NAV.map(({ clave, href, Icon }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
@@ -62,12 +67,15 @@ export default function SiteHeader() {
                 key={clave}
                 href={href}
                 className={`${styles.navLink} ${active ? styles.active : ""}`}
+                onClick={() => setMobileOpen(false)}
               >
                 <Icon size={15} strokeWidth={2} />
                 {t(clave)}
               </Link>
             );
           })}
+          <Link href="/contacto" className={styles.mobileMenuLink} onClick={() => setMobileOpen(false)}><Phone size={17} />{t("header.contacto")}</Link>
+          <Link href="/login" className={styles.mobileMenuLink} onClick={() => setMobileOpen(false)}><LogIn size={17} />{t("header.login")}</Link>
         </nav>
       </div>
       <div className={styles.actions}>
@@ -120,6 +128,16 @@ export default function SiteHeader() {
           className={styles.themeButton}
         >
           {theme === "dark" ? "☀" : "☾"}
+        </button>
+        <button
+          type="button"
+          className={styles.mobileMenuButton}
+          aria-controls="mobile-primary-nav"
+          aria-expanded={mobileOpen}
+          aria-label={mobileOpen ? "Cerrar menú principal" : "Abrir menú principal"}
+          onClick={() => setMobileOpen((open) => !open)}
+        >
+          {mobileOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
       </div>
     </header>

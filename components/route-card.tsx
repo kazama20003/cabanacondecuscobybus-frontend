@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { TransportRoute } from "@/lib/data";
 import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useT } from "@/lib/i18n";
+import styles from "./route-card.module.css";
 
 /* Fila interactiva de ruta: al pasar el cursor se resalta la card, el video
    de la ruta se reproduce en lugar de la foto y aparece el CTA de reserva. */
@@ -45,6 +46,7 @@ export default function RouteCard({
 
   return (
     <div
+      className={styles.card}
       role="link"
       tabIndex={0}
       aria-label={`${r.from} a ${r.to}`}
@@ -75,7 +77,7 @@ export default function RouteCard({
       }}
     >
       {/* Col 1: ruta + descripción */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingRight: 20, minWidth: 0 }}>
+      <div className={styles.routeDetails} style={{ display: "flex", flexDirection: "column", gap: 10, paddingRight: 20, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span
             style={{
@@ -118,7 +120,7 @@ export default function RouteCard({
       </div>
 
       {/* Col 2: salidas */}
-      <div style={{ fontSize: 13.5, lineHeight: 1.7, alignSelf: "center" }}>
+      <div className={styles.routeSchedule} style={{ fontSize: 13.5, lineHeight: 1.7, alignSelf: "center" }}>
         <div style={{ color: "var(--muted)" }}>Salidas</div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "4px 0" }}>
           {r.departures.map((d) => (
@@ -143,7 +145,7 @@ export default function RouteCard({
       </div>
 
       {/* Col 3: duración / vehículo */}
-      <div style={{ fontSize: 13.5, lineHeight: 1.7, alignSelf: "center" }}>
+      <div className={styles.routeFacts} style={{ fontSize: 13.5, lineHeight: 1.7, alignSelf: "center" }}>
         <div style={{ color: "var(--muted)" }}>Duración</div>
         <div style={{ fontWeight: 600 }}>
           {r.duration} <span style={{ color: "var(--muted)", fontWeight: 400 }}>· {r.distance}</span>
@@ -152,8 +154,8 @@ export default function RouteCard({
       </div>
 
       {/* Col 4: media (foto → video en hover) + precio + CTA */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
-        <div style={{ position: "relative", width: "100%", aspectRatio: "3 / 2", borderRadius: 10, overflow: "hidden" }}>
+      <div className={styles.routeVisual} style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
+        <div className={styles.media} style={{ position: "relative", width: "100%", aspectRatio: "3 / 2", borderRadius: 10, overflow: "hidden" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={r.image || undefined}
@@ -189,6 +191,7 @@ export default function RouteCard({
             />
           )}
           <a
+            className={styles.mediaCta}
             href={whatsappHabilitado ? wa : href}
             target={whatsappHabilitado ? "_blank" : undefined}
             rel={whatsappHabilitado ? "noopener noreferrer" : undefined}

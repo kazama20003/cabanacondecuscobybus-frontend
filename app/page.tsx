@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import SiteHeader from "@/components/site-header";
+import styles from "./home.module.css";
 import SiteFooter from "@/components/site-footer";
 import ImageSlot from "@/components/image-slot";
 import RouteCard from "@/components/route-card";
@@ -204,11 +205,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--fg)", padding: "0 24px 48px" }}>
+    <main className={styles.home}>
       <SiteHeader />
 
       {/* Hero */}
-      <h1
+      <h1 className={styles.heroTitle}
         style={{
           fontSize: "clamp(48px, 6.2vw, 96px)",
           lineHeight: 1.06,
@@ -223,16 +224,16 @@ export default function Home() {
         {t("home.heroTitle2")}
       </h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
-        <div style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
+      <div className={styles.heroLayout} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 366px", gap: 16, alignItems: "stretch" }}>
+        <div className={styles.heroMedia} style={{ position: "relative", width: "100%", aspectRatio: "1502 / 645", minWidth: 0 }}>
           <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder="Video principal" />
         </div>
         {/* aside: mismo alto que el video (el contenido absoluto no estira la fila);
             solo esta columna hace scroll interno */}
-        <aside style={{ position: "relative", minWidth: 0 }}>
+        <aside className={styles.heroAside} style={{ position: "relative", minWidth: 0 }}>
           <div
             ref={asideScrollRef}
-            className="no-scrollbar"
+            className={"no-scrollbar " + styles.heroAsideScroller}
             style={{
               position: "absolute",
               inset: 0,
@@ -253,9 +254,11 @@ export default function Home() {
             {sinRutas && (
               <p style={{ margin: 0, color: "var(--muted)", fontSize: 14 }}>{t("lista.sinRutas")}</p>
             )}
+            <div className={styles.heroRouteRail}>
             {rutas.slice(0, 3).map((ruta, i) => (
               <div
                 key={ruta.slug}
+                className={styles.heroRouteCard}
                 style={{
                   paddingTop: i === 0 ? 0 : 20,
                   borderTop: i === 0 ? "none" : "1px solid var(--aside-divider)",
@@ -295,7 +298,7 @@ export default function Home() {
                     <span style={{ fontSize: 12.5, color: "var(--muted)" }}>{t("common.porPersona")}</span>
                   </> : <span style={{ fontSize: 13, color: "var(--muted)" }}>{t("common.consultar")}</span>}
                 </div>
-                <div style={{ position: "relative", width: "100%", height: 200 }}>
+                <div className={styles.heroRouteImage} style={{ position: "relative", width: "100%", height: 200 }}>
                   <ImageSlot radius={10} src={ruta.image} placeholder={`${ruta.from} → ${ruta.to}`} />
                   <span
                     style={{
@@ -335,12 +338,13 @@ export default function Home() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         </aside>
       </div>
 
       {/* Rutas de transporte destacadas */}
-      <section style={{ marginTop: 140 }}>
+      <section className={styles.routesSection} style={{ marginTop: 140 }}>
         <h2
           style={{
             margin: "0 0 8px 33%",
@@ -373,7 +377,7 @@ export default function Home() {
       </section>
 
       {/* Testimonios */}
-      <section style={{ marginTop: 160 }}>
+      <section className={styles.homeSection} style={{ marginTop: 160 }}>
         <h2
           style={{
             margin: "0 0 48px 33%",
@@ -387,13 +391,13 @@ export default function Home() {
         >
           {t("home.sec2")}
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 26 }}>
+        <div className={styles.testimonialGrid} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 26 }}>
           {[
             { name: "María Fernanda R.", role: t("home.testiRole1"), badge: "MR" },
             { name: "Lucas B.", role: t("home.testiRole2"), badge: "LB" },
           ].map((testi, i) => (
             <figure key={i} style={{ margin: 0 }}>
-              <div style={{ width: "100%", height: 520, position: "relative" }}>
+              <div className={styles.testimonialMedia} style={{ width: "100%", height: 520, position: "relative" }}>
                 <ImageSlot radius={10} video={MEDIA_VIDEO} placeholder={`${t("home.videoTesti")} ${i + 1}`} />
               </div>
               <figcaption style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
@@ -439,7 +443,7 @@ export default function Home() {
       </section>
 
       {/* Galería tours / destinos */}
-      <section style={{ marginTop: 160 }}>
+      <section className={styles.homeSection} style={{ marginTop: 160 }}>
         <h2
           style={{
             margin: "0 auto 56px",
@@ -454,10 +458,10 @@ export default function Home() {
         >
           {t("home.sec3")}
         </h2>
-        <div style={{ columns: 5, columnGap: 10 }}>
+        <div className={styles.galleryGrid} style={{ columns: 5, columnGap: 10 }}>
           {toursLista.map((tour, i) => (
-            <Link key={tour.slug} href="/tours" style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
-              <div style={{ width: "100%", height: 160 + ((i * 67) % 160), position: "relative" }}>
+            <Link key={tour.slug} href="/tours" className={styles.galleryItem} style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
+              <div className={styles.galleryMedia} style={{ width: "100%", height: 160 + ((i * 67) % 160), position: "relative" }}>
                 <ImageSlot radius={10} src={tour.image} placeholder={tour.name} />
               </div>
               <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
@@ -471,8 +475,8 @@ export default function Home() {
             </Link>
           ))}
           {destinations.map((d, i) => (
-            <Link key={d.slug} href="/destinos" style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
-              <div style={{ width: "100%", height: 140 + ((i * 89) % 180), position: "relative" }}>
+            <Link key={d.slug} href="/destinos" className={styles.galleryItem} style={{ display: "block", margin: "0 0 22px", breakInside: "avoid" }}>
+              <div className={styles.galleryMedia} style={{ width: "100%", height: 140 + ((i * 89) % 180), position: "relative" }}>
                 <ImageSlot radius={10} src={d.image} placeholder={d.name} />
               </div>
               <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.45 }}>
@@ -488,6 +492,7 @@ export default function Home() {
 
       {/* Sobre la empresa */}
       <section
+        className={styles.aboutSection}
         style={{
           marginTop: 160,
           display: "grid",
@@ -497,6 +502,7 @@ export default function Home() {
         }}
       >
         <div
+          className={styles.aboutCopy}
           style={{
             background: "var(--card)",
             padding: "48px 44px",
@@ -511,7 +517,7 @@ export default function Home() {
           <p style={{ margin: 0 }}>{t("home.aboutP3")}</p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ position: "relative", width: "100%", height: 480 }}>
+          <div className={styles.officeMedia} style={{ position: "relative", width: "100%", height: 480 }}>
             <ImageSlot radius={10} src={IMG_SAN_LAZARO} placeholder={t("home.officePhoto")} />
             <div style={{ position: "absolute", top: 14, left: 16, pointerEvents: "none", lineHeight: 1.3, fontSize: 13.5, color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
               <strong>Cusco</strong>
@@ -519,18 +525,18 @@ export default function Home() {
               <span style={{ opacity: 0.85 }}>{t("home.oficinaPrincipal")}</span>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
+          <div className={styles.aboutCards} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: 12 }}>
             {[
               { name: t("home.transporteTuristico"), role: t("home.cardTransRole"), href: "/transporte" },
               { name: t("nav.tours"), role: t("home.cardTransRole"), href: "/tours" },
             ].map((f) => (
-              <Link key={f.name} href={f.href} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
+              <Link key={f.name} href={f.href} className={styles.aboutCard} style={{ background: "var(--card)", padding: "14px 16px 16px", borderRadius: 14, display: "block" }}>
                 <div style={{ lineHeight: 1.3, fontSize: 13.5, marginBottom: 12 }}>
                   <strong>{f.name}</strong>
                   <br />
                   <span style={{ color: "var(--muted)" }}>{f.role}</span>
                 </div>
-                <div style={{ position: "relative", width: "100%", height: 300 }}>
+                <div className={styles.aboutCardMedia} style={{ position: "relative", width: "100%", height: 300 }}>
                   <ImageSlot radius={10} src={IMG_TEMPLO} placeholder={f.name} />
                 </div>
               </Link>
@@ -540,6 +546,6 @@ export default function Home() {
       </section>
 
       <SiteFooter />
-    </div>
+    </main>
   );
 }
