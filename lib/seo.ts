@@ -97,7 +97,7 @@ export interface TransporteSeo {
 
 export interface TourSeo {
   slug: string;
-  destinoNombre: string;
+  destinoNombre?: string;
   duracionMinutos?: number;
   salidas?: SalidaApi[];
   traducciones?: TraduccionSeo[];
@@ -124,7 +124,7 @@ export function tituloTransporte(t: TransporteSeo, language: LangCode = "es"): s
 }
 
 export function tituloTour(t: TourSeo, language: LangCode = "es"): string {
-  return traduccionEn(t.traducciones, language)?.titulo || `Tour ${t.destinoNombre}`;
+  return traduccionEn(t.traducciones, language)?.titulo || (t.destinoNombre ? `Tour ${t.destinoNombre}` : "Tour");
 }
 
 export function recortar(texto: string | undefined, max = 160): string | undefined {

@@ -35,12 +35,12 @@ function formatoTiempoRelativo(minutos?: number | null): string | null {
   return `Aprox. ${horas ? `${horas} h` : ""}${horas && resto ? " " : ""}${resto ? `${resto} min` : horas ? "" : "0 min"} desde la salida`;
 }
 
-export default function TourPage() {
+export default function TourPage({ initialData }: { initialData?: TourApi }) {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
   const { idioma } = useIdioma();
   const t = useT();
-  const { data: tour, isLoading, isError } = useTour(slug, idioma);
+  const { data: tour, isLoading, isError } = useTour(slug, idioma, initialData);
 
   if (isLoading) {
     return (

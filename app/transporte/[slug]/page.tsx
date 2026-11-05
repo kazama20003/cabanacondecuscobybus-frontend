@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Paginado, TransporteApi } from "@/lib/api/tipos";
 import {
   obtenerJson,
   descripcionSeoConPrecio,
@@ -19,7 +20,10 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const idioma = await requestLanguage();
-  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}?idioma=all`);
+  const [transporte, catalogo] = await Promise.all([
+    obtenerJson<TransporteSeo>(`/transportes/${encodeURIComponent(slug)}?idioma=all`),
+    obtenerJson<Paginado<TransporteApi>>("/transportes?pagina=1&porPagina=100"),
+  ]);
   if (!transporte) {
     return { title: "Transporte no encontrado", robots: { index: false, follow: false } };
   }
@@ -28,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const descripcion =
     descripcionSeoConPrecio(
       traduccion?.resumen || traduccion?.descripcion || `Viaja de ${transporte.origenNombre} a ${transporte.destinoNombre} en transporte turístico. Consulta disponibilidad y reserva en línea con Inca Travel Peru.`,
-      transporte.salidas,
+      catalogo?.datos.find((item) => item.slug === slug)?.salidas ?? transporte.salidas,
       idioma,
     ) ?? "";
   const url = urlForPath(`/transporte/${slug}`, idioma);
@@ -58,7 +62,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TransportePage({ params }: Props) {
   const { slug } = await params;
   const idioma = await requestLanguage();
-  const transporte = await obtenerJson<TransporteSeo>(`/transportes/${slug}?idioma=all`);
+  const [transporte, catalogo] = await Promise.all([
+    obtenerJson<TransporteApi>(`/transportes/${encodeURIComponent(slug)}?idioma=${encodeURIComponent(idioma)}`),
+    obtenerJson<Paginado<TransporteApi>>("/transportes?pagina=1&porPagina=100"),
+  ]);
   const traduccion = transporte ? traduccionEn(transporte.traducciones, idioma) : undefined;
 
   const jsonLd = transporte
@@ -104,7 +111,7 @@ export default async function TransportePage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <TransporteContenido />
+      <TransporteContenido initialData={transporte ?? undefined} initialCatalogo={catalogo ?? undefined} />
     </>
   );
 }

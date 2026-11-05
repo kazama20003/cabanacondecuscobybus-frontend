@@ -13,7 +13,7 @@ import { canalesReservaPara, CONTACT } from "@/lib/data";
 import { useIdioma } from "@/components/lang-provider";
 import { useT } from "@/lib/i18n";
 import { useTransporte, useSalidasTransporte } from "@/hooks/use-catalogo";
-import type { ImagenApi, TransporteApi, TraduccionApi, ParadaApi } from "@/lib/api/tipos";
+import type { ImagenApi, Paginado, TransporteApi, TraduccionApi, ParadaApi, SalidaApi } from "@/lib/api/tipos";
 import { preciosDesdeSalidas } from "@/lib/precios";
 import styles from "../../tours/tours.module.css";
 
@@ -30,13 +30,13 @@ function formatearDuracion(minutos: number | undefined, t: (clave: string) => st
   return [h > 0 ? `${h} ${t("transporte.horasCorto")}` : null, m > 0 ? `${m} ${t("transporte.minutosCorto")}` : null].filter(Boolean).join(" ") || null;
 }
 
-export default function RoutePage() {
+export default function RoutePage({ initialData, initialCatalogo }: { initialData?: TransporteApi; initialCatalogo?: Paginado<TransporteApi> }) {
   const params = useParams();
   const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
   const { idioma } = useIdioma();
   const t = useT();
-  const { data: transporte, isLoading, isError } = useTransporte(slug, idioma);
-  const { salidas } = useSalidasTransporte(slug);
+  const { data: transporte, isLoading, isError } = useTransporte(slug, idioma, initialData);
+  const { salidas } = useSalidasTransporte(slug, initialCatalogo);
   const [fotoActiva, setFotoActiva] = useState(0);
   const [mostrarVideo, setMostrarVideo] = useState(false);
 
