@@ -21,41 +21,50 @@ import type {
   ItinerarioEntrada,
   ParadaEntrada,
   ParametrosPagina,
+  Paginado,
+  TourApi,
+  TransporteApi,
 } from "@/lib/api";
 
 export function useTransportes(
   filtros?: ParametrosPagina & { origen?: string; destino?: string },
+  initialData?: Paginado<TransporteApi>,
 ) {
   return useQuery({
     queryKey: [...claves.catalogo.transportes(), filtros ?? {}],
     queryFn: () => servicioCatalogo.transportes(filtros),
     placeholderData: keepPreviousData,
+    initialData,
   });
 }
 
-export function useTransporte(slug: string, idioma?: string) {
+export function useTransporte(slug: string, idioma?: string, initialData?: TransporteApi) {
   return useQuery({
     queryKey: [...claves.catalogo.transporte(slug), idioma ?? "es"],
     queryFn: () => servicioCatalogo.transporte(slug, idioma),
     enabled: !!slug,
+    initialData,
   });
 }
 
 export function useTours(
   filtros?: ParametrosPagina & { destino?: string; esEvento?: boolean },
+  initialData?: Paginado<TourApi>,
 ) {
   return useQuery({
     queryKey: [...claves.catalogo.tours(filtros?.destino), filtros ?? {}],
     queryFn: () => servicioCatalogo.tours(filtros),
     placeholderData: keepPreviousData,
+    initialData,
   });
 }
 
-export function useEventos(filtros?: ParametrosPagina) {
+export function useEventos(filtros?: ParametrosPagina, initialData?: Paginado<TourApi>) {
   return useQuery({
     queryKey: ["eventos", "publicos", filtros ?? {}],
     queryFn: () => servicioCatalogo.eventos(filtros),
     placeholderData: keepPreviousData,
+    initialData,
   });
 }
 
@@ -100,11 +109,12 @@ export function useReordenarCatalogo() {
   });
 }
 
-export function useTour(slug: string, idioma?: string) {
+export function useTour(slug: string, idioma?: string, initialData?: TourApi) {
   return useQuery({
     queryKey: [...claves.catalogo.tour(slug), idioma ?? "es"],
     queryFn: () => servicioCatalogo.tour(slug, idioma),
     enabled: !!slug,
+    initialData,
   });
 }
 
@@ -114,8 +124,8 @@ export function useTour(slug: string, idioma?: string) {
  * pedido, para poder elegir una salida en la vista de detalle y agregarla al
  * carrito.
  */
-export function useSalidasTransporte(slug: string) {
-  const consulta = useTransportes({ pagina: 1, porPagina: 100 });
+export function useSalidasTransporte(slug: string, initialData?: Paginado<TransporteApi>) {
+  const consulta = useTransportes({ pagina: 1, porPagina: 100 }, initialData);
   const item = consulta.data?.datos?.find((t) => t.slug === slug);
   return { ...consulta, salidas: item?.salidas ?? [] };
 }
