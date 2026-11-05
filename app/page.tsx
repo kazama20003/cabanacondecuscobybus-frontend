@@ -258,9 +258,11 @@ export default function Home() {
             )}
             <div className={styles.heroRouteRail}>
             {rutas.slice(0, 3).map((ruta, i) => (
-              <div
+              <Link
                 key={ruta.slug}
                 className={styles.heroRouteCard}
+                href={`/transporte/${ruta.slug}`}
+                aria-label={`Ver detalles del transporte ${ruta.from} a ${ruta.to}`}
                 style={{
                   paddingTop: i === 0 ? 0 : 20,
                   borderTop: i === 0 ? "none" : "1px solid var(--aside-divider)",
@@ -270,9 +272,7 @@ export default function Home() {
                   <span style={{ fontSize: 12.5, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {t("home.ruta")} {String(i + 1).padStart(2, "0")}{ruta.duration ? ` · ${ruta.duration}` : ""}
                   </span>
-                  <Link href={`/transporte/${ruta.slug}`} style={{ color: "var(--fg)", fontSize: 15 }}>
-                    +
-                  </Link>
+                  <span aria-hidden="true" style={{ color: "var(--fg)", fontSize: 12.5, fontWeight: 650 }}>Ver detalle ↗</span>
                 </div>
                 <h3 style={{ margin: "8px 0 6px", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em" }}>
                   {ruta.from} → {ruta.to}
@@ -338,7 +338,7 @@ export default function Home() {
                     </span>
                   )}
                 </div>
-              </div>
+              </Link>
             ))}
             </div>
           </div>
