@@ -4,8 +4,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, MapPin, CalendarDays, Compass, Users, Phone, LogIn, ShoppingCart, Menu, X } from "lucide-react";
-import { LOGO_URL } from "@/lib/data";
+import { Bus, MapPin, CalendarDays, Compass, Users, Phone, MessageCircle, LogIn, ShoppingCart, Menu, X } from "lucide-react";
+import { CONTACT, LOGO_URL } from "@/lib/data";
 import LangSwitcher from "@/components/lang-switcher";
 import { useCarrito } from "@/components/cart-provider";
 import { useT } from "@/lib/i18n";
@@ -81,6 +81,7 @@ export default function SiteHeader() {
           })}
           <div className={styles.menuActions}>
             <Link href="/contacto" className={styles.mobileMenuLink} onClick={() => setMobileOpen(false)}><Phone size={17} />{t("header.contacto")}</Link>
+            <a href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hola, quisiera información sobre sus servicios turísticos.")}`} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp" className={`${styles.mobileMenuLink} ${styles.mobileWhatsappLink}`} onClick={() => setMobileOpen(false)}><MessageCircle size={17} />WhatsApp</a>
             <Link href="/login" className={styles.mobileMenuLink} onClick={() => setMobileOpen(false)}><LogIn size={17} />{t("header.login")}</Link>
           </div>
         </nav>
@@ -90,6 +91,10 @@ export default function SiteHeader() {
           <Phone size={15} strokeWidth={2} />
           <span>{t("header.contacto")}</span>
         </Link>
+        <a href={`https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hola, quisiera información sobre sus servicios turísticos.")}`} target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp" className={`${styles.actionPill} ${styles.whatsappAction}`}>
+          <MessageCircle size={16} strokeWidth={2} />
+          <span>WhatsApp</span>
+        </a>
         <Link
           href="/carrito"
           aria-label={t("carrito.titulo")}

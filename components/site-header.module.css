@@ -21,6 +21,7 @@
 .actions { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
 .actionPill { padding: 7px 10px; }
 .contactLink { padding-inline: 12px; }
+.whatsappAction { background: #128c7e; color: #fff; }
 .cartLink { position: relative; }
 .loginButton { display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 3px; background: var(--btn-bg); color: var(--btn-fg); text-decoration: none; }
 .language { display: flex; align-items: center; }
@@ -79,7 +80,7 @@
   .navLink.active .navIcon { color: #f39a20; }
   .menuActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
   .actions { flex: 0 0 auto; gap: 6px; font-size: 12px; }
-  .contactLink,.loginButton { display: none; }
+  .contactLink,.whatsappAction,.loginButton { display: none; }
   .cartLink { width: 42px; height: 42px; justify-content: center; padding: 0; border: 1px solid var(--line); border-radius: 12px; }
   .language { position: relative; max-width: 72px; overflow: visible; }
   .themeButton { width: 36px; height: 42px; font-size: 20px; }
@@ -113,6 +114,8 @@
     font-weight: 700;
     text-decoration: none;
   }
+  .mobileWhatsappLink { border-color: #128c7e; background: #128c7e; color: #fff; }
+  .mobileMenuLink:last-child { grid-column: 1 / -1; }
 }
 
 @media (max-width: 380px) {
