@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { LOGO_URL } from "./data";
 import { API_BASE_URL } from "./api/base-url";
 import { languageForRequest, localizedPath, normalizeLanguage, SUPPORTED_LANGUAGES, type LangCode } from "./language";
 import { preciosDesdeSalidas } from "./precios";
@@ -45,6 +46,11 @@ export function siteMetadata(language: LangCode): Metadata {
   const text = DESCRIPCIONES[language];
   return {
     metadataBase: new URL(SITE_URL),
+    icons: {
+      icon: [{ url: LOGO_URL, type: "image/png", sizes: "1024x1024" }],
+      shortcut: [LOGO_URL],
+      apple: [{ url: LOGO_URL, type: "image/png", sizes: "1024x1024" }],
+    },
     title: { default: text.title, template: `%s | ${NOMBRE_SITIO}` },
     description: text.description,
     applicationName: NOMBRE_SITIO,
