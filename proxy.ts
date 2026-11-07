@@ -25,6 +25,14 @@ function saveLanguage(response: NextResponse, request: NextRequest, language: La
 }
 
 export function proxy(request: NextRequest) {
+  // Canonical domain: once the apex DNS points to Vercel, send every request to www.
+  if (request.nextUrl.hostname.toLowerCase() === "cabanacondecuscobybus.com") {
+    const destination = request.nextUrl.clone();
+    destination.protocol = "https:";
+    destination.hostname = "www.cabanacondecuscobybus.com";
+    destination.port = "";
+    return NextResponse.redirect(destination, 308);
+  }
   const path = request.nextUrl.pathname;
   const prefix = path.match(/^\/(es|en|fr|it|pt|zh|ja|ru|de)(?=\/|$)/)?.[1] as LangCode | undefined;
   const pathWithoutLocale = prefix ? path.replace(/^\/(?:es|en|fr|it|pt|zh|ja|ru|de)(?=\/|$)/, "") || "/" : path;
